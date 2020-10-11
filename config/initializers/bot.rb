@@ -1,1 +1,0 @@
-DiscordWorker.perform_async
