@@ -4,6 +4,7 @@
     %h2 Sign up
     = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
       = render "devise/shared/error_messages", resource: resource
+      = f.hidden_field :discord_id
       .form-group
         = f.label :email
         %br/
@@ -23,3 +24,5 @@
         = f.submit "Bestätigen", class: "btn btn-primary"
     = action_bar do
       - render "users/shared/links"
+
+= javascript_pack_tag 'register/new'

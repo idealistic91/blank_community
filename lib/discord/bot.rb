@@ -1,6 +1,8 @@
 module Discord
     class Bot < Server
         
+        include Rails.application.routes.url_helpers
+        
         attr_accessor :bot
 
         def initialize
@@ -12,8 +14,8 @@ module Discord
             self.bot.send_message(id, content)
         end
 
-        def prepair_register_link
-            
+        def build_registration_link(id)
+            new_user_registration_url(discord_id: id)
         end
     end
 end

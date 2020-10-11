@@ -23,4 +23,11 @@ DISCORD_BOT.bot.message(with_text: 'git-repo!') do |event|
     event.respond ENV["git_repo"]
 end
 
-DISCORD_BOT.bot.run(:async)
+DISCORD_BOT.bot.message(with_text: 'register:me') do |event|
+    id = event.message.author.id
+    event.respond "Gib mir einen Moment #{event.message.author.username}\n**Registriere dich hier:**\n#{DISCORD_BOT.build_registration_link(id)}"
+end
+
+if Rails.env.production?
+    DISCORD_BOT.bot.run(:async)
+end

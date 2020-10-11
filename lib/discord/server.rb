@@ -19,19 +19,16 @@ module Discord
             roles.select{|r| r['id'] == id }.first
         end
 
-        def self.member_by(name)
-            # get ID
-            res = members.select{|m| m['user']['username'] == name }.first
+        def self.member_by(value)
+            by_name = value.is_a?(String) ? true : false
+            res = members.select{|m| m['user'][by_name ? 'username' : 'id'] == value.to_s }.first
+            return nil if res.nil?
             res['role_names'] = res['roles'].map{ |r| role(r)['name'] }
             res
         end
 
         def member_roles(name)
             member_by(name)['role_names']
-        end
-
-        def get_member(type)
-            
         end
 
         def self.text_channels
