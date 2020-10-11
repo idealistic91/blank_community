@@ -22,7 +22,7 @@ bot.bot.message(with_text: 'Users!') do |event|
 end
 
 bot.bot.message(with_text: 'git-repo!') do |event|
-    event.respond "test"
+    event.respond ENV["git_repo"]
 end
 
 bot.bot.run

@@ -8,7 +8,7 @@ module DiscordNotifications
     end
 
     def created_notification(name)
-        "**#{name}** hat ein neues Event erstellt:\n#{event}\n#{event_url(self)}"
+        "**#{name}** hat ein neues Event erstellt:\n#{event_notification}\n#{event_url(self)}"
     end
 
     def event_notification
