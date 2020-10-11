@@ -1,4 +1,7 @@
 class Event < ApplicationRecord
+
+    include DiscordNotifications
+
     belongs_to :creator, class_name: 'Member', foreign_key: :creator_id
     has_many :participants
     has_many :members, through: :participants
@@ -20,9 +23,5 @@ class Event < ApplicationRecord
 
     def game_name
         game ? game.name : nil
-    end
-
-    def do_i_participate?
-        
     end
 end

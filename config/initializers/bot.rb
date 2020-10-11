@@ -7,8 +7,7 @@ DISCORD_BOT.bot.message(with_text: 'Ping!') do |event|
 
 DISCORD_BOT.bot.message(with_text: 'Events!') do |event|
     events = Event.all.map do |e|
-        game = e.try(:game)
-        ":mega: `#{e.title}`\n:video_game: `#{game ? e.game.name : 'Nicht vorhanden' }`"
+        e.event_notification
     end
     event.respond events.join("\n-------------------\n")
   end
@@ -22,4 +21,7 @@ DISCORD_BOT.bot.message(with_text: 'Users!') do |event|
 end
 # ToDo: Only run in development, later to be run on a worker
 
-DISCORD_BOT.bot.run(:async)
+
+if Rails.env.development?
+  DISCORD_BOT.bot.run(:async)
+end

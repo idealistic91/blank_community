@@ -94,15 +94,14 @@ class EventsController < ApplicationController
     end
 
     def join_notification
-      DISCORD_BOT.send_to_channel('chat', "**#{current_user.member.nickname}** ist dem Event **#{@event.title}** beigetreten")
+      DISCORD_BOT.send_to_channel('chat', @event.join_notification(current_user.member.nickname))
     end
 
     def destroy_notification
-      DISCORD_BOT.send_to_channel('chat', "Das Event **#{@event.title}** wurde von **#{current_user.member.nickname}** abgesagt!")
+      DISCORD_BOT.send_to_channel('chat', @event.cancel_notification(current_user.member.nickname))
     end
 
     def inform_discord
-      link = "http://localhost:3000/#{event_path(@event)}"
-      DISCORD_BOT.send_to_channel('chat', "**#{current_user.member.nickname}** hat ein neues Event erstellt:\n:mega: `#{@event.title}`\n:video_game: `#{@event.game.name}`\n#{link}")
+      DISCORD_BOT.send_to_channel('chat', @event.created_notification(current_user.member.nickname))
     end
 end
