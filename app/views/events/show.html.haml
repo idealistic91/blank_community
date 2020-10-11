@@ -1,0 +1,29 @@
+
+.container
+  .row
+    .col-md-12
+      .card.text-white.mt-4.bg-dark.mb-3.d-flex#event-card-show{style: "background: url('#{picture_url(@event.game, type: :title_picture)}');"}
+        .card-header.event-header-show
+          = render partial: 'event_nav'
+        .card-body#event-body-show
+          #myTabContent.tab-content
+            #details.tab-pane.fade.show.active{"aria-labelledby" => "details-tab", :role => "tabpanel"}
+              = render partial: 'details', locals: { event: @event }
+            #comments.tab-pane.fade{"aria-labelledby" => "comments-tab", :role => "tabpanel"} ...
+            #participants.tab-pane.fade{"aria-labelledby" => "participants-tab", :role => "tabpanel"}
+              = render partial: 'participants_list', locals: { event: @event }
+            #media.tab-pane.fade{"aria-labelledby" => "media-tab", :role => "tabpanel"} ...
+        .card-footer
+          .row
+            .col-md-2
+              %small= @event.date
+            .col-md-2.ml-auto
+              %small= "Hosted by #{@event.host_name_info}"
+
+= render layout: 'layouts/actions' do
+  = link_to 'Zurück', events_path
+  = link_to 'Bearbeiten', edit_event_path(@event)
+  = link_to 'Löschen', @event, method: :delete, data: { confirm: 'Are you sure?' }
+  = link_to 'Teilnehmen', join_events_path(id: @event.id), method: :post, remote: true, class: 'btn btn-primary btn-small'
+  
+= javascript_pack_tag 'events/show'

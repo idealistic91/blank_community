@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: 127.0.0.1
+  username: blank_admin
+  password: blank
+  pool: 5
+
+development:
+  <<: *default
+  database: blank_dev
+
+test:
+  <<: *default
+  database: marketing-development
+
+production:
+  url: <%= ENV['DATABASE_URL'] %>

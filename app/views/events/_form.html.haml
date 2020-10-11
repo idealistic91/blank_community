@@ -1,0 +1,31 @@
+.container
+  .row.pt-4.pb-4{style: "background: url('#{picture_url(event.game, type: :title_picture)}');"}
+    = form_with(model: event, local: true, class: 'event_form col-md-6') do |form|
+      .form-group.card.bg-dark.p-2.pb-3
+        = form.label 'Titel'
+        = form.text_field :title, class: 'form-control'
+      .form-group.card.bg-dark.p-2
+        = form.label 'Game'
+        #game-collection
+          = render partial: 'game_selection', locals: { form: form }
+        %a{"data-target" => "#exampleModalCenter", "data-toggle" => "modal", :href => '#'}
+          %small Spiel nicht dabei?
+      .card.bg-dark.p-2.mb-3
+        .form-group
+          = form.label 'Datum'
+          = form.text_field :date, class: 'form-control', id: 'picker', ignore_time: true
+        .form-group
+          = form.label 'Start'
+          = form.time_select :start_at, class: 'form-control'
+        .form-group
+          = form.label 'Ende'
+          = form.time_select :ends_at, class: 'form-control'
+      .form-group.card.bg-dark.p-2
+        = form.label 'Beschreibung'
+        = form.text_area :description, class: 'form-control'
+        
+      = form.submit class: "btn btn-primary"
+
+= render partial: 'game_form', locals: { game: game == event.game ? Game.new : game, event: event }
+
+= javascript_pack_tag('events/form')

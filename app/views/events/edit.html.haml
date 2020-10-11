@@ -1,0 +1,6 @@
+.container
+    %h1 Event bearbeiten
+    = render 'form', event: @event, game: @event.game
+    = render layout: 'layouts/actions' do
+        = link_to 'Show', @event
+        = link_to 'Back', events_path

@@ -1,0 +1,19 @@
+%nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+  %a.navbar-brand{:href => "#"} Blank_
+  %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
+    %span.navbar-toggler-icon
+  #navbarSupportedContent.collapse.navbar-collapse
+    %ul.navbar-nav.mr-auto
+      %li.nav-item.active
+        = link_to 'Home', root_path, class: "nav-link"
+        %span.sr-only (current)
+      %li.nav-item
+        = link_to 'Events', events_path, class: "nav-link"
+    %ul.navbar-nav.ml-auto
+      %li.nav-item
+      - if user_signed_in?
+        %a.nav-link{:href => "#"} Profil
+        = link_to 'Ausloggen', destroy_user_session_path, class: "nav-link", method: 'delete'
+      - else  
+        = link_to 'Einloggen', new_user_session_path, class: "nav-link"
+        = link_to 'Registrieren', new_user_registration_path, class: "nav-link"

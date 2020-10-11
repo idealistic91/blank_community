@@ -1,0 +1,14 @@
+%a.card.text-white.bg-dark.event_card.mb-4.d-flex{href: "#{event_path(event)}", style: "background: url('#{picture_url(event.game, type: :index_picture)}');"}
+  .card-header.event-header
+    = event.game_name
+    - if event.game
+      = index_picture(event.game, class: 'event-picture', hidden: 'true')
+  .card-body
+    %h5.card-title= event.title
+    %p.card-text= truncate(event.description, length: 100, omission: '... (continued)')
+  .card-footer
+    .row
+      .col-md-4
+        %small= event.date
+      .col-md-4.ml-auto
+        %small= "Hosted by #{event.host_name_info}"
