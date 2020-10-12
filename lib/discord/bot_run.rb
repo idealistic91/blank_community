@@ -1,1 +1,3 @@
-DISCORD_BOT.bot.run :async
+module Discord::BotRun
+    DISCORD_BOT.bot.run
+end
