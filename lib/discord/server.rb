@@ -16,7 +16,9 @@ module Discord
         end
 
         def self.role(id)
-            roles.select{|r| r['id'] == id }.first
+            roles = roles.select{|r| r['id'] == id }
+            return nil if roles.nil?
+            roles.first
         end
 
         def self.member_by(value)
@@ -47,6 +49,7 @@ module Discord
             channel = self.send("#{type}_channels").select do |c|
                 c['name'] == name
             end
+            return nil unless channel.any?
             channel.first['id']
         end
     end
