@@ -5,10 +5,10 @@ DISCORD_BOT.bot.message(with_text: 'Ping!') do |event|
 end
 
 DISCORD_BOT.bot.message(with_text: 'Events!') do |event|
-    events = Event.all.map do |e|
-        e.event_notification
-    end
-    event.respond events.join("\n-------------------\n")
+    events = Event.including_game
+
+    event.respond events.map(&:event_notification)
+                    .join("\n-------------------\n")
 end
 
 DISCORD_BOT.bot.message(with_text: 'Users!') do |event|

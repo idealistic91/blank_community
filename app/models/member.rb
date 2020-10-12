@@ -3,6 +3,7 @@ class Member < ApplicationRecord
   has_many :hosts, through: :hosts, dependent: :destroy
   has_many :participants
   has_many :events, through: :participants
+  has_one_attached :picture
 
   after_create :set_defaults
 
@@ -19,5 +20,9 @@ class Member < ApplicationRecord
   def nickname_is_set?
     return false if nickname.nil?
     nickname != 'Nicht vorhanden'
+  end
+
+  def has_picture?
+    picture.attached?
   end
 end

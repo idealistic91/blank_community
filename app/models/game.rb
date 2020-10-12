@@ -8,7 +8,7 @@ class Game < ApplicationRecord
 
     def convert_image
         unless title_picture.blob.content_type == 'image/png'
-           
+           # ToDo: Refactor!
             temp = File.open('temp.jpg', 'wb') do |file| 
                 file << title_picture.blob.download
             end
