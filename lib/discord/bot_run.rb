@@ -1,0 +1,1 @@
+DISCORD_BOT.bot.run :async
