@@ -32,30 +32,21 @@ body {
     min-height: 400px;
 }
 
-#event-card-show img {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    opacity: 0.1;
-    overflow: hidden;
-}
-
-#event-picture {
-    position: absolute;
-    left: 0;
-    top: -20;
-    width: 100%;
-    height: auto;
-    opacity: 0.1;
-    z-index: -1;
-}
-
 #event-bar {
     z-index: 2; 
 }
 
 small {
     color: white;
+}
+
+#profile_picture {
+    width: 50px;
+    height: 50px;
+}
+
+.img-placeholder {
+    width: 50px;
+    height: 50px;
+    display: inline;
 }

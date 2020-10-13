@@ -1,16 +1,4 @@
-$(document).on('turbolinks:load', function(){
-    let count = 0;
-    function setHeight() {
-        count +=1;
-        let image = $('#event-picture')
-        let height = image.height();
-        if(height === 0 && count < 4){
-            setHeight();
-        } else {
-            $('#event-card-show').css('height', height.toString())
-        }
-    }
-    
+$(document).on('turbolinks:load', function(){    
     //set color to black if tab selected
     $('#event-bar a').on('click', function(){
         $(this).removeClass('text-light');

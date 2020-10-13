@@ -18,7 +18,7 @@
             .col-md-2
               %small= @event.date
             .col-md-2.ml-auto
-              %small= "Hosted by #{@event.host_name_info}"
+              %small= "Hosted by #{@event.hosts.map(&:host_name_info).join(', ')}"
 
 = render layout: 'layouts/actions' do
   = link_to 'Zurück', events_path

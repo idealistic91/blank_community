@@ -1,7 +1,9 @@
 %ul
     - event.members.each do |p|
-        %li.card.bg-dark.p-3
-            %span#picture
-                dwad
-                %span#picture
-                    = p.nickname
+        %li.card.bg-dark.p-3.mb-2
+            %span
+                - if p.picture.attached?
+                    = image_tag url_for(p.picture), id: 'profile_picture', class: 'mr-4'
+                - else
+                    .img-placeholder
+                = p.nickname

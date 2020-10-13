@@ -16,16 +16,21 @@ module Discord
         end
 
         def self.role(id)
-            roles = roles.select{|r| r['id'] == id }
-            return nil if roles.nil?
-            roles.first
+            result = roles
+            if result.nil?
+                nil
+            else
+                result = roles
+                result = result.select{|r| r['id'] == id }
+                result.first if result.any?
+            end
         end
 
         def self.member_by(value)
             by_name = value.is_a?(String) ? true : false
             res = members.select{|m| m['user'][by_name ? 'username' : 'id'] == value.to_s }.first
             return nil if res.nil?
-            res['role_names'] = res['roles'].map{ |r| role(r)['name'] }
+            res['role_names'] = res['roles'].map{ |r| role(r) ? role(r)['name'] : '' }
             res
         end
 

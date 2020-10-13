@@ -11,4 +11,4 @@
       .col-md-4
         %small= event.date
       .col-md-4.ml-auto
-        %small= "Hosted by #{event.host_name_info}"
+        %small= "Hosted by #{event.hosts.map(&:host_name_info).join(', ')}"

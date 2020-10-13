@@ -27,5 +27,7 @@ DISCORD_BOT.bot.message(with_text: 'register:me') do |event|
     id = author.id
     author.pm("Gib mir einen Moment #{author.display_name}\n
         **Registriere dich hier:**\n#{DISCORD_BOT.build_registration_link(id)}")
-    event.respond "@#{author.display_name}\nIn deinem Postfach findest du einen Registrierungslink\nTeile diesen mit niemanden!"
+    event.respond "@#{author.display_name}\n
+                    In deinem Postfach findest du einen Registrierungslink\n
+                    Teile diesen mit niemanden!"
 end
