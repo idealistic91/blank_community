@@ -5,10 +5,22 @@ body {
     color: white;
 }
 
+#nav-profile-picture {
+    height: 40px;
+}
+
 #content {
     background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:link {
+    text-decoration: none;
 }
 
 #actions {
@@ -41,12 +53,44 @@ small {
 }
 
 #profile_picture {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 .img-placeholder {
     width: 50px;
     height: 50px;
     display: inline;
+}
+
+
+.event-details .card-header {
+    padding: 0px;
+    padding-top: 10px;
+    text-align: center;
+}
+
+.event-details {
+    height: 100%;
+}
+
+#join-leave-btn {
+    display: inline;
+}
+
+.event-slot {
+    background-color: rgba($color: #343A40, $alpha: 0.9);
+    min-height: 66px;
+    margin-bottom: 10px;
+}
+.participant-slot {
+    background-color: #2F3136!important;
+}
+.card-title {
+    text-shadow:5px 5px 10px #030703;
+}
+
+#logout svg{
+    height: 40px;
+    width: 40px;
 }

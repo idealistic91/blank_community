@@ -16,14 +16,20 @@
         .card-footer
           .row
             .col-md-2
-              %small= @event.date
+              %small= l(@event.date, format: :long)
             .col-md-2.ml-auto
               %small= "Hosted by #{@event.hosts.map(&:host_name_info).join(', ')}"
 
 = render layout: 'layouts/actions' do
   = link_to 'Zurück', events_path
-  = link_to 'Bearbeiten', edit_event_path(@event)
-  = link_to 'Löschen', @event, method: :delete, data: { confirm: 'Are you sure?' }
-  = link_to 'Teilnehmen', join_events_path(id: @event.id), method: :post, remote: true, class: 'btn btn-primary btn-small'
-  
-= javascript_pack_tag 'events/show'
+  - if current_user.am_i_hosting?(@event)
+    = link_to 'Bearbeiten', edit_event_path(@event)
+    = link_to 'Löschen', @event, method: :delete, data: { confirm: 'Are you sure?' }
+  - else
+    - if current_user.do_i_participate?(@event)
+      = render partial: 'events/partials/join_leave_button', locals: { name: 'Verlassen', action: :leave, event: @event, style: :danger } 
+    - else
+      = render partial: 'events/partials/join_leave_button', locals: { name: 'Teilnehmen', action: :join, event: @event, style: :primary } 
+
+- content_for(:custom_js) do
+  = javascript_pack_tag 'events/show'

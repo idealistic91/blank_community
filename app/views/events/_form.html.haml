@@ -8,18 +8,22 @@
         = form.label 'Game'
         #game-collection
           = render partial: 'game_selection', locals: { form: form }
-        %a{"data-target" => "#exampleModalCenter", "data-toggle" => "modal", :href => '#'}
+        %a{"data-target" => "#game-create-modal", "data-toggle" => "modal", :href => '#'}
           %small Spiel nicht dabei?
+      .card.bg-dark.p-2.mb-3
+        .form-group.card.bg-dark.p-2
+          = form.label 'Plätze'
+          = form.select :slots, ((1..20).map{|i| [i, i] })
       .card.bg-dark.p-2.mb-3
         .form-group
           = form.label 'Datum'
-          = form.text_field :date, class: 'form-control', id: 'picker', ignore_time: true
+          = form.date_field :date, class: 'form-control', ignore_time: true
         .form-group
           = form.label 'Start'
-          = form.time_select :start_at, class: 'form-control'
+          = form.time_select :start_at, class: 'form-control', ignore_date: true
         .form-group
           = form.label 'Ende'
-          = form.time_select :ends_at, class: 'form-control'
+          = form.time_select :ends_at, class: 'form-control', ignore_date: true
       .form-group.card.bg-dark.p-2
         = form.label 'Beschreibung'
         = form.text_area :description, class: 'form-control'
@@ -28,4 +32,5 @@
 
 = render partial: 'game_form', locals: { game: game == event.game ? Game.new : game, event: event }
 
-= javascript_pack_tag('events/form')
+- content_for(:custom_js) do
+  = javascript_pack_tag('events/form')

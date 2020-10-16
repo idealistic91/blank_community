@@ -6,9 +6,16 @@
   .card-body
     %h5.card-title= event.title
     %p.card-text= truncate(event.description, length: 100, omission: '... (continued)')
+    .item-date
+      %i.fas.fa-calendar-day
+      %small= l(event.date)
+    .item-time
+      %i.fas.fa-clock
+      %small= l(event.start_at.to_time)
+      %i.fas.fa-clock{style: 'color: #2F3136'}
+      %small= l(event.ends_at.to_time)
+
   .card-footer
     .row
-      .col-md-4
-        %small= event.date
-      .col-md-4.ml-auto
-        %small= "Hosted by #{event.hosts.map(&:host_name_info).join(', ')}"
+      .col-md-12.text-center
+        %small.mx-auto= "Hosted by #{event.hosts.map(&:host_name_info).join(', ')}"

@@ -1,9 +1,15 @@
-%ul
-    - event.members.each do |p|
-        %li.card.bg-dark.p-3.mb-2
-            %span
-                - if p.picture.attached?
-                    = image_tag url_for(p.picture), id: 'profile_picture', class: 'mr-4'
-                - else
-                    .img-placeholder
-                = p.nickname
+.container
+    .row
+        - event.members.each do |p|
+            .slot-container{class: "col-md-#{event.slots <= 5 ? 12 : 6}"}
+                .event-slot.p-2
+                    .card.bg-dark.mb-2.participant-slot
+                        %span
+                            - if p.picture.attached?
+                                = image_tag url_for(p.picture), id: 'profile_picture', class: 'mr-4'
+                            - else
+                                .img-placeholder
+                            = p.nickname
+        - (event.slots - event.members.size).times do
+            .slot-container{class: "col-md-#{event.slots <= 5 ? 12 : 6}"}
+                .event-slot.p-2

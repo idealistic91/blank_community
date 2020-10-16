@@ -1,2 +1,25 @@
-%h5.card-title= event.title
-%p.card-text= event.description
+.row.mb-1
+    .col-md-10
+        %h3.card-title= event.title
+    .col-md-2
+        %h3.card-title.ml-auto
+            %i.fas.fa-user-friends
+            = "#{event.members.size}/#{event.slots}"
+.row
+    .col-md-4
+        .card.bg-dark.text-white.d-flex.event-details
+            .card-header
+                %h5.card-title Zeit
+            .card-body
+                %p 
+                    %strong Start um 
+                    =l(event.start_at.to_time)
+                %p 
+                    %strong Endet um
+                    =l(event.ends_at.to_time)
+    .col-md-8
+        .card.bg-dark.text-white.d-flex.event-details
+            .card-header
+                %h5.card-title Beschreibung
+            .card-body
+                %p.card-text= event.description

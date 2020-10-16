@@ -1,11 +1,13 @@
 .container
-  %h1 Events
-  .row.justify-content-center
-    - size = @events.size < 3 ? 6 : 4
-    - @events.each do |event|
-      %div{class: "col-md-#{size}"}
-        = render partial: 'item', locals: { event: event }
-  %br/
-  = action_bar do
-    - link_to 'Erstellen', new_event_path
-= javascript_pack_tag 'events/index'
+  .card.bg-dark
+    .card-header
+      %h1 Events
+    .card-body
+      .row
+        - size = @events.size < 3 ? 6 : 4
+        - @events.each do |event|
+          %div{class: "col-md-#{size}"}
+            = render partial: 'item', locals: { event: event }
+      %br/
+= action_bar do
+  - link_to 'Erstellen', new_event_path

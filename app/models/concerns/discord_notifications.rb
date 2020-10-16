@@ -12,11 +12,96 @@ module DiscordNotifications
     end
 
     def event_notification
-        ":mega: `#{title}`\n:video_game: `#{game ? game_name : 'Nicht vorhanden' }`"
+        ":mega: `#{title}`\n:video_game: `#{game ? game_name : 'Nicht vorhanden' }`\n:date:#{I18n.l(date)}\n:clock4: #{I18n.l(start_at)}\n:clock11: #{I18n.l(ends_at)}"
+    end
+
+    def event_embed
+        {
+            "title": "Event: #{title}",
+            "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
+            "url": "#{event_url(self)}",
+            "color": 15682568,
+            "timestamp": "#{Time.now.utc.iso8601}",
+            "footer": {
+                "icon_url": "#{self.hosts.first.discord_avatar}",
+                "text": "footer text"
+            },
+            "thumbnail": {
+                "url": "#{url_for(self.game.index_picture)}"
+            },
+            "author": {
+                "name": "#{self.hosts.first.nickname}",
+                "url": "#{root_url}",
+                "icon_url": "#{self.hosts.first.discord_avatar}"
+            },
+            "fields": [
+                    {
+                        "name": "Plätze",
+                        "value": "#{self.members.size}/#{slots}"
+                    },
+                    {
+                        "name": "Start",
+                        "value": "#{I18n.l(start_at, format: :short)}",
+                        "inline": true
+                    },
+                    {
+                        "name": "Ende",
+                        "value": "#{I18n.l(ends_at, format: :short)}",
+                        "inline": true
+                    },
+                    {
+                        "name": "Actions",
+                        "value": "[Join](#{event_url(self)})"
+                    }
+                ]
+        }
+    end
+
+    def event_embed_small
+        {
+            "title": "Event: #{title}",
+            "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
+            "url": "#{event_url(self)}",
+            "color": 15682568,
+            "timestamp": "#{created_at.utc.iso8601}",
+            "footer": {
+                "icon_url": "#{self.hosts.first.discord_avatar}",
+                "text": "Erstellt "
+            },
+            "author": {
+                "name": "#{self.hosts.first.nickname}",
+                "url": "#{root_url}",
+                "icon_url": "#{self.hosts.first.discord_avatar}"
+            },
+            "fields": [
+                    {
+                        "name": "Plätze",
+                        "value": "#{self.members.size}/#{slots}"
+                    },
+                    {
+                        "name": "Start",
+                        "value": "#{I18n.l(start_at, format: :short)}",
+                        "inline": true
+                    },
+                    {
+                        "name": "Ende",
+                        "value": "#{I18n.l(ends_at, format: :short)}",
+                        "inline": true
+                    },
+                    {
+                        "name": "Actions",
+                        "value": "[Join](#{event_url(self)})"
+                    }
+                ]
+        }
     end
 
     def cancel_notification(name)
         "Das Event **#{title}** wurde von **#{name}** abgesagt!"
+    end
+
+    def leave_notification(name)
+        "**#{name}** nimmt nicht mehr am Event **#{title}** teil!"
     end
 
 end

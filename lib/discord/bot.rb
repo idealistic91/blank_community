@@ -9,9 +9,9 @@ module Discord
             @bot = Discordrb::Bot.new token: BOT_TOKEN, client_id: CLIENT_ID
         end
 
-        def send_to_channel(name, content)
+        def send_to_channel(name, content = nil, embed = nil, tts = false)
             id = Server.get_channel_id(name)
-            self.bot.send_message(id, content)
+            self.bot.send_message(id, content, tts, embed)
         end
 
         def build_registration_link(id)

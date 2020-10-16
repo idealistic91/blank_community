@@ -2,7 +2,7 @@ class EventsController < ApplicationController
 
   include Discord
 
-  before_action :set_event, only: [:show, :edit, :update, :destroy, :join]
+  before_action :set_event, only: [:show, :edit, :update, :destroy, :join, :leave]
 
   # GET /events
   # GET /events.json
@@ -75,9 +75,22 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.js {
         @event.members << current_user.member
-        template = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+        list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+        button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html', locals: { name: 'Verlassen',action: :leave, event: @event, style: :danger } 
         join_notification
-        render json: { template: template }
+        render json: { list: list, button: button }
+      }
+    end
+  end
+
+  def leave
+    respond_to do |format|
+      format.js {
+        @event.members.delete(current_user.member)
+        list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+        button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html', locals: { name: 'Teilnehmen', action: :join, event: @event, style: :primary } 
+        leave_notification
+        render json: { list: list, button: button }
       }
     end
   end
@@ -90,11 +103,17 @@ class EventsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def event_params
-      params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :game_id)
+      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
+      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
+      params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :game_id, :slots)
     end
 
     def join_notification
       DISCORD_BOT.send_to_channel('chat', @event.join_notification(current_user.member.nickname))
+    end
+
+    def leave_notification
+      DISCORD_BOT.send_to_channel('chat', @event.leave_notification(current_user.member.nickname))
     end
 
     def destroy_notification

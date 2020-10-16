@@ -8,8 +8,7 @@ class Member < ApplicationRecord
 
   after_create :set_defaults
 
-  validates :nickname, uniqueness: true
-  validates :user_id, uniqueness: { scope: :member_id }
+  validates :user_id, uniqueness: true
 
   def set_defaults
     nickname = 'Nicht vorhanden'
@@ -17,8 +16,8 @@ class Member < ApplicationRecord
     if user.discord_id
       dc_user = discord_user
       set_picture(dc_user.avatar_url('png'))
-      nickname = dc_user.username
-      DISCORD_BOT.send_to_channel('chat', "**#{nickname}** hat sein Discord mit der blank_app verbunden")
+      self.nickname = dc_user.username
+      DISCORD_BOT.send_to_channel('chat', "**#{self.nickname}** hat sein Discord mit der blank_app verbunden")
     end
     self.save
   end
@@ -39,6 +38,10 @@ class Member < ApplicationRecord
     picture.attached?
   end
 
+  def discord_avatar
+    discord_user.avatar_url('png')
+  end
+
   def host_name_info
     nickname_is_set? ? nickname : user.email
   end
@@ -54,12 +57,12 @@ class Member < ApplicationRecord
   def set_picture(url)
     unless has_picture?
       image = Net::HTTP.get(URI.parse(url))
-      temp = Tempfile.new('avatar.png')
-      temp.write(image)
-      temp.rewind
-      temp.close
-      picture.attach(io: File.open('temp.png'), filename: "#{nickname}.png", content_type: "image/png")
-      temp.unlink
+      file = Tempfile.open('avatar.png') do |f|
+        f.binmode
+        f.write(image)
+        f.flush
+      end
+      picture.attach(io: File.open(file.path), filename: "#{nickname}.png", content_type: "image/png")
     end
   end
 end
