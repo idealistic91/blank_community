@@ -36,11 +36,11 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :amazon
   config.hosts << ENV['HOST']
-  config.web_socket_server_url = "wss://#{ENV['HOST']}/cable"
+  #config.web_socket_server_url = "wss://#{ENV['HOST']}/cable"
   # Allow all origins for now
-  config.action_cable.allowed_request_origins = ["https://#{ENV['HOST']}", "http://#{ENV['HOST']}", ENV['CLIENT_URL'], /http:\/\/*/]
+  #config.action_cable.allowed_request_origins = ["https://#{ENV['HOST']}", "http://#{ENV['HOST']}", ENV['CLIENT_URL'], /http:\/\/*/]
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
