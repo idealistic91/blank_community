@@ -1,9 +1,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: 127.0.0.1
-  username: blank_admin
-  password: blank
+  # for docker container: db
+  host: <%= ENV['DEV_DB_HOST'] %>
+  username: postgres
+  password: postgres
   pool: 5
 
 development:

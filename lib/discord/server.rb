@@ -2,17 +2,17 @@ module Discord
     class Server < Base
         def self.channels
             channels = Discordrb::API::Server.channels(BOT_TOKEN, SERVER_ID)
-            channels = JSON.parse(channels.to_str)
+            JSON.parse(channels.to_str)
         end
 
         def self.members
             members = Discordrb::API::Server.resolve_members(BOT_TOKEN, SERVER_ID, 100)
-            members = JSON.parse(members.to_str)
+            JSON.parse(members.to_str)
         end
 
         def self.roles
             roles = Discordrb::API::Server.roles(BOT_TOKEN, SERVER_ID)
-            roles = JSON.parse(roles.to_str)
+            JSON.parse(roles.to_str)
         end
 
         def self.role(id)

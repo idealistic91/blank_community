@@ -6,7 +6,7 @@ class Event < ApplicationRecord
     has_many :participants
     has_many :members, through: :hosting_events
     has_many :members, through: :participants
-    belongs_to :game
+    belongs_to :game, optional: true
     has_many_attached :images
 
     validates :start_at, presence: true
@@ -16,12 +16,10 @@ class Event < ApplicationRecord
 
     before_create :set_end_date
     before_update :set_end_date
-    after_create :host_join_event
+    after_save :host_join_event
 
     scope :including_game, -> { includes(:game) }
     scope :include_game_members, -> { includes(:game, :members) }
-
-    scope :participating, -> (member) { joins(:members).where('members.id = members.id') }
 
     def game_name
         game ? game.name : nil

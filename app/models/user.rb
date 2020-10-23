@@ -6,9 +6,11 @@ class User < ApplicationRecord
   has_one :member, dependent: :destroy
 
   after_create :create_member
+
   validate :discord_id_check
   validates :discord_id, uniqueness: true
-  
+  validates :discord_id, presence: true
+
   def create_member
     m = Member.new()
     m.user = self
