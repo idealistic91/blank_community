@@ -8,6 +8,10 @@ class User < ApplicationRecord
   after_create :create_member
   validate :discord_id_check
   
+  def self.find_by_discord_id(id)
+    find_by(discord_id: id)
+  end
+  
   def create_member
     m = Member.new()
     m.user = self

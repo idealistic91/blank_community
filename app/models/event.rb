@@ -21,8 +21,6 @@ class Event < ApplicationRecord
     scope :including_game, -> { includes(:game) }
     scope :include_game_members, -> { includes(:game, :members) }
 
-    scope :participating, -> (member) { joins(:members).where('members.id = members.id') }
-
     def game_name
         game ? game.name : nil
     end

@@ -8,11 +8,11 @@ module DiscordNotifications
     end
 
     def created_notification(name)
-        "**#{name}** hat ein neues Event erstellt:\n#{event_notification}\n#{event_url(self)}"
+        "**#{name}** hat ein neues Event erstellt:"
     end
 
     def event_notification
-        ":mega: `#{title}`\n:video_game: `#{game ? game_name : 'Nicht vorhanden' }`\n:date:#{I18n.l(date)}\n:clock4: #{I18n.l(start_at)}\n:clock11: #{I18n.l(ends_at)}"
+        ":hash: `#{id}` :mega: `#{title}` :video_game: `#{game ? game_name : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
     end
 
     def event_embed
@@ -103,5 +103,4 @@ module DiscordNotifications
     def leave_notification(name)
         "**#{name}** nimmt nicht mehr am Event **#{title}** teil!"
     end
-
 end

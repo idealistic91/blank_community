@@ -121,6 +121,6 @@ class EventsController < ApplicationController
     end
 
     def inform_discord
-      DISCORD_BOT.send_to_channel('chat', @event.created_notification(current_user.member.nickname))
+      DISCORD_BOT.send_to_channel('chat', @event.created_notification(current_user.member.nickname), @event.event_embed)
     end
 end
