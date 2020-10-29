@@ -20,8 +20,8 @@ class Event < ApplicationRecord
 
     scope :including_game, -> { includes(:game) }
     scope :include_game_members, -> { includes(:game, :members) }
-
-    scope :participating, -> (member) { joins(:members).where('members.id = members.id') }
+    scope :upcoming_events, -> { where('date > ?', DateTime.now) }
+    scope :past_events, -> { where('date < ?', DateTime.now) }
 
     def game_name
         game ? game.name : nil
@@ -30,7 +30,9 @@ class Event < ApplicationRecord
     def hosts
         hosting_events.includes(:member).map(&:member)
     end
-
+    
+    private
+    
     def set_end_date
         if self.ends_at <= self.start_at
             self.ends_at = self.ends_at + 1.day
