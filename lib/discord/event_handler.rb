@@ -9,7 +9,7 @@ module Discord
             
             DISCORD_BOT.bot.message(with_text: 'events:all') do |event|
                 authorize(event) do
-                    events = Event.include_game_members
+                    events = Event.upcoming_events.include_game_members
                     if events
                         event.respond 'Gib mir einen Moment!'
                         embeded_events = events.map(&:event_notification)
@@ -55,9 +55,9 @@ module Discord
                     if user.member.hosting_events.any?
                         event.respond 'Gib mir einen Moment!'
                         events = user.member.hosting_events.map(&:event)
-                        embeded_events = events.map(&:event_embed_small)
+                        embeded_events = events.map(&:event_notification)
                         embeded_events.each do |message|
-                            event.respond nil, false, message
+                            event.respond message
                         end
                     else
                         event.respond 'Du hast noch kein Event erstellt!'
