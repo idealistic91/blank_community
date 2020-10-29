@@ -9,7 +9,7 @@ module Discord
             
             DISCORD_BOT.bot.message(with_text: 'events:all') do |event|
                 authorize(event) do
-                    events = Event.upcoming_events.include_game_members
+                    events = Event.upcoming_events
                     if events
                         event.respond 'Gib mir einen Moment!'
                         embeded_events = events.map(&:event_notification)
