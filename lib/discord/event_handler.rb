@@ -9,8 +9,8 @@ module Discord
             
             DISCORD_BOT.bot.message(with_text: 'events:all') do |event|
                 authorize(event) do
-                    events = Event.upcoming_events
-                    if events
+                    events = Event.include_game_members.upcoming_events
+                    if events.any?
                         event.respond 'Gib mir einen Moment!'
                         embeded_events = events.map(&:event_notification)
                         embeded_events.each do |message|
@@ -18,7 +18,7 @@ module Discord
                         end
                         event.respond "Tippe 'event:<id>' für mehr Informationen."    
                     else
-                        event.respond "Keine Events gefunden..."
+                        event.respond "Es stehen keine Events an"
                     end
                 end
             end
