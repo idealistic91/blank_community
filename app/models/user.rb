@@ -11,6 +11,11 @@ class User < ApplicationRecord
   validates :discord_id, uniqueness: true
   validates :discord_id, presence: true
 
+  
+  def self.find_by_discord_id(id)
+    find_by(discord_id: id)
+  end
+  
   def create_member
     m = Member.new()
     m.user = self
