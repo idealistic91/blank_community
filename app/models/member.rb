@@ -5,6 +5,7 @@ class Member < ApplicationRecord
   has_many :events, through: :hosting_events
   has_many :events, through: :participants
   has_one_attached :picture
+  has_one :community
 
   after_create :set_defaults
 

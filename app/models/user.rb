@@ -3,7 +3,9 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-  has_one :member, dependent: :destroy
+  has_and_belongs_to_many :communities
+  has_many :memberships, class_name: 'Member'
+  has_many :communities, foreign_key: :owner_id
 
   after_create :create_member
   validate :discord_id_check

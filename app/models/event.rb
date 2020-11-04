@@ -7,6 +7,7 @@ class Event < ApplicationRecord
     has_many :members, through: :hosting_events
     has_many :members, through: :participants
     belongs_to :game
+    belongs_to :community
     has_many_attached :images
 
     validates :start_at, presence: true
