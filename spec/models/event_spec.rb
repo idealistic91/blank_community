@@ -1,5 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Event, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:event) { FactoryBot.create(:event) }
+
+  describe 'instance methods' do
+
+  end
 end

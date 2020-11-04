@@ -11,7 +11,12 @@ module Discord
 
         def send_to_channel(name, content = nil, embed = nil, tts = false)
             id = Server.get_channel_id(name)
-            self.bot.send_message(id, content, tts, embed)
+            if embed
+                self.bot.send_message(id, content, tts, embed)
+
+            else
+                self.bot.send_message(id, content)
+            end
         end
 
         def build_registration_link(id)
