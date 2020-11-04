@@ -8,7 +8,11 @@ class User < ApplicationRecord
   has_many :communities, foreign_key: :owner_id
 
   after_create :create_member
+
   validate :discord_id_check
+  validates :discord_id, uniqueness: true
+  validates :discord_id, presence: true
+
   
   def self.find_by_discord_id(id)
     find_by(discord_id: id)

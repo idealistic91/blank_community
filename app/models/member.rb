@@ -50,7 +50,7 @@ class Member < ApplicationRecord
   def update_picture
     picture.detach
     picture.purge_later
-    set_picture(discord_user.avatar_url)
+    set_picture(discord_avatar)
   end
   
   private

@@ -19,7 +19,6 @@ Rails.application.configure do
   config.public_file_server.headers = {
     'Cache-Control' => "public, max-age=#{1.hour.to_i}"
   }
-
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
@@ -33,7 +32,7 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
-
+  config.active_job.queue_adapter = :inline
   config.action_mailer.perform_caching = false
 
   # Tell Action Mailer not to deliver emails to the real world.
