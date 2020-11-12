@@ -1,13 +1,32 @@
 class Community < ApplicationRecord
-    has_and_belongs_to_many :users
-    has_many :members
-    has_many :discord_roles
-    has_many :events
+    has_many :members, dependent: :destroy
+    has_many :discord_roles, dependent: :destroy
+    has_many :events, dependent: :destroy
     belongs_to :creator, class_name: 'User', foreign_key: :owner_id
 
-    validates_presence_of :creator
+    validates_presence_of :server_id
+    validates_uniqueness_of :server_id
+    
+    after_create :create_discord_roles, :create_owner_member
 
-    def get_discord_roles
-        
+    def server
+        Discord::Server.new(id: server_id)
+    end
+
+    private 
+    
+    def create_discord_roles
+        server.roles.each do |role|
+            DiscordRole.create(name: role["name"],
+                discord_id: role["id"],
+                community_id: id
+            )
+        end
+    end
+
+    def create_owner_member
+        if creator
+            creator.memberships << Member.create_owner_member(self)
+        end
     end
 end

@@ -5,8 +5,8 @@
                 .event-slot.p-2
                     .card.bg-dark.mb-2.participant-slot
                         %span
-                            - if p.picture.attached?
-                                = image_tag url_for(p.picture), id: 'profile_picture', class: 'mr-4'
+                            - if p.user.picture.attached?
+                                = image_tag url_for(p.user.picture), id: 'profile_picture', class: 'mr-4'
                             - else
                                 .img-placeholder
                             = p.nickname

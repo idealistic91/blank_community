@@ -11,6 +11,7 @@ RSpec.describe User, type: :model do
     stub_member
     stub_bot
   end
+  
   describe 'instance methods' do
     let(:user) { FactoryBot.create(:user, discord_id: '25681874') }
     let(:event) do

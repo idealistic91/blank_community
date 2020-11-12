@@ -25,7 +25,7 @@ class Game < ApplicationRecord
             # detach current picture & attach new one
             title_picture.detach
             title_picture.purge_later
-            title_picture.attach(io: File.open("temp.png"), filename: "#{name}.png", content_type: "image/png")
+            title_picture.attach(io: File.open("temp.png"), filename: "#{name.gsub(' ', '_').downcase}.png", content_type: "image/png")
 
             index_image = Magick::Image.read('temp.png').first
             index_image = index_image.resize_to_fit('600')
@@ -34,7 +34,7 @@ class Game < ApplicationRecord
             index_image.opacity = Magick::QuantumRange - (Magick::QuantumRange * 0.4)
 
             index_image.write("temp.png")
-            index_picture.attach(io: File.open("temp.png"), filename: "index_#{name}.png", content_type: "image/png")
+            index_picture.attach(io: File.open("temp.png"), filename: "index_#{name.gsub(' ', '_').downcase}.png", content_type: "image/png")
             # maybe delete temp files
             File.delete('temp.png')
             File.delete('temp.jpg')

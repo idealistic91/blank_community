@@ -10,4 +10,4 @@
             = render partial: 'item', locals: { event: event }
       %br/
 = action_bar do
-  - link_to 'Erstellen', new_event_path
+  - link_to 'Erstellen', new_community_event_path(@community)

@@ -4,12 +4,15 @@ class Member < ApplicationRecord
   has_many :hosting_events, dependent: :destroy
   has_many :events, through: :hosting_events
   has_many :events, through: :participants
-  has_one_attached :picture
-  has_one :community
+  belongs_to :community
+
+  validates_presence_of :user
+  validates_presence_of :community_id
+  validate :user_present_on_server
 
   after_create :set_defaults
 
-  validates :user_id, uniqueness: true
+  scope :by_community, ->(community_id) { where(community_id: community_id) }
 
   def set_defaults
     nickname = 'Nicht vorhanden'
@@ -18,7 +21,9 @@ class Member < ApplicationRecord
       dc_user = discord_user
       set_picture(dc_user.avatar_url('png'))
       self.nickname = dc_user.username
-      DISCORD_BOT.send_to_channel('chat', "**#{self.nickname}** hat sein Discord mit der blank_app verbunden")
+      bot = Discord::Bot.new(id: community.server_id)
+      # Todo: Send to main channel set in the community settings
+      bot.send_to_channel('chat', "**#{self.nickname}** hat sein Discord mit der blank_app verbunden")
     end
     self.save
   end
@@ -28,15 +33,15 @@ class Member < ApplicationRecord
     nickname != 'Nicht vorhanden'
   end
 
-  def discord_user
-    if user.discord_id
-      data = Discord::Server.member_by(user.discord_id.to_i)
-      Discordrb::User.new(data['user'], DISCORD_BOT.bot)
-    end
+  def self.create_for_owner(community)
+    create(user_id: community.creator.id, community_id: community.id)
   end
 
-  def has_picture?
-    picture.attached?
+  def discord_user
+    if user.discord_id
+      data = Discord::Server.new(id: community.server_id).member_by(user.discord_id.to_i)
+      Discordrb::User.new(data['user'], DISCORD_BOT.bot)
+    end
   end
 
   def discord_avatar
@@ -48,22 +53,28 @@ class Member < ApplicationRecord
   end
 
   def update_picture
-    picture.detach
-    picture.purge_later
+    user.picture.detach
+    user.picture.purge_later
     set_picture(discord_avatar)
   end
   
   private
   
   def set_picture(url)
-    unless has_picture?
+    unless user.has_picture?
       image = Net::HTTP.get(URI.parse(url))
       file = Tempfile.open('avatar.png') do |f|
         f.binmode
         f.write(image)
         f.flush
       end
-      picture.attach(io: File.open(file.path), filename: "#{nickname}.png", content_type: "image/png")
+      user.picture.attach(io: File.open(file.path), filename: "#{self.nickname}.png", content_type: "image/png")
+    end
+  end
+
+  def user_present_on_server
+    unless community.server.member_by(user.discord_id.to_i)
+      errors.add(:community_id, "User nicht Teil der #{community.name}-community!")
     end
   end
 end

@@ -8,15 +8,16 @@
         = link_to 'Home', root_path, class: "nav-link"
         %span.sr-only (current)
       %li.nav-item
-        = link_to 'Events', events_path, class: "nav-link"
+      - if user_signed_in?
+        = link_to 'Events', community_events_path(community_id: current_user.memberships.last.community.id), class: "nav-link"
     %ul.navbar-nav.ml-auto
       %li.nav-item
       - if user_signed_in?
         = link_to destroy_user_session_path, class: "nav-link", method: 'delete', id: 'logout' do
           %i.fas.fa-power-off
         = link_to '#', class: 'nav-link' do
-          - if current_user.member.has_picture?
-            = image_tag url_for(current_user.member.picture), id: 'nav-profile-picture', class: 'rounded-circle'
+          - if current_user.has_picture?
+            = image_tag url_for(current_user.picture), id: 'nav-profile-picture', class: 'rounded-circle'
           - else
             = current_user.member.nickname
       - else    

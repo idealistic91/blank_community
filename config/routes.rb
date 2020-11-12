@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
   resources :games
-  resources :events do
-    collection do
-      post :join
-      post :leave
-    end
+  resources :communities do
+    resources :events do
+      collection do
+        post :join
+        post :leave
+      end
+    end  
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, controllers: {

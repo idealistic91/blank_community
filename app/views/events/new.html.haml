@@ -2,4 +2,4 @@
     %h1 Neues Event
     = render 'form', event: @event, game: @game
     = action_bar do
-        - link_to 'Back', events_path
+        - link_to 'Back', community_events_path(@community)
