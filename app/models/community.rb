@@ -26,7 +26,7 @@ class Community < ApplicationRecord
 
     def create_owner_member
         if creator
-            creator.memberships << Member.create_owner_member(self)
+            creator.memberships << Member.create_for_owner(self)
         end
     end
 end
