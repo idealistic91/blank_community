@@ -3,6 +3,6 @@ FactoryBot.define do
        name { Faker::Lorem.word }
        description { Faker::Lorem.sentence }
        server_id { "764050414542389251" }
-       association :creator, factory: :user_with_fix_dc_id
+       creator { FactoryBot.create(:user_with_discord_id) }
     end
 end

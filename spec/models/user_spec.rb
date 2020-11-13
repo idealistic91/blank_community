@@ -1,7 +1,7 @@
 require 'rails_helper'
-RSpec.describe User, type: :model do
+  RSpec.describe User, type: :model do
   before do
-    stub_all_members('25681874')
+    stub_all_members(%w[25681874 5345345])
     stub_roles
     stub_avatar_request
     stub_channels
@@ -13,19 +13,15 @@ RSpec.describe User, type: :model do
   end
   
   describe 'instance methods' do
-    let(:user) { FactoryBot.create(:user, discord_id: '25681874') }
+    let(:user) { FactoryBot.create(:user_with_membership, discord_id: '5345345') }
     let(:event) do
-      event = FactoryBot.create(:event)
-      event.hosting_events << HostingEvent.create(event_id: event.id, member_id: user.member.id)
+      event = FactoryBot.build(:event, community_id: user.memberships.first.community.id)
+      debugger
+      event.hosting_events << FactoryBot.create(:hosting_event, event: event, member: user.memberships.first)
       event.save
       event
     end
 
-    context 'create_member' do
-        it 'it creates and links a member record' do
-          expect(user.member.blank?).to eq(false)
-        end
-    end
     context 'do_i_participate?' do
       it 'returns true if user is part of the events participants' do
         expect(user.do_i_participate?(event)).to eq(true)

@@ -1,6 +1,6 @@
 class Member < ApplicationRecord
   belongs_to :user
-  has_many :participants
+  has_many :participants, dependent: :destroy
   has_many :hosting_events, dependent: :destroy
   has_many :events, through: :hosting_events
   has_many :events, through: :participants
@@ -15,15 +15,15 @@ class Member < ApplicationRecord
   scope :by_community, ->(community_id) { where(community_id: community_id) }
 
   def set_defaults
-    nickname = 'Nicht vorhanden'
     name = 'Nicht vorhanden'
     if user.discord_id
       dc_user = discord_user
-      set_picture(dc_user.avatar_url('png'))
       self.nickname = dc_user.username
+      debugger
+      set_picture(dc_user.avatar_url('png'))
       bot = Discord::Bot.new(id: community.server_id)
       # Todo: Send to main channel set in the community settings
-      bot.send_to_channel('chat', "**#{self.nickname}** hat sein Discord mit der blank_app verbunden")
+      bot.send_to_channel('chat', "**#{nickname}** hat sein Discord mit der blank_app verbunden")
     end
     self.save
   end
@@ -39,7 +39,7 @@ class Member < ApplicationRecord
 
   def discord_user
     if user.discord_id
-      data = Discord::Server.new(id: community.server_id).member_by(user.discord_id.to_i)
+      data = community.server.member_by(user.discord_id.to_i)
       Discordrb::User.new(data['user'], DISCORD_BOT.bot)
     end
   end

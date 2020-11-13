@@ -112,15 +112,6 @@ ActiveRecord::Schema.define(version: 2020_11_09_182816) do
     t.index ["member_id"], name: "index_participants_on_member_id"
   end
 
-  create_table "positions", force: :cascade do |t|
-    t.string "longitude"
-    t.string "latitude"
-    t.text "name"
-    t.string "category"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "roles_tables", force: :cascade do |t|
     t.string "name"
   end

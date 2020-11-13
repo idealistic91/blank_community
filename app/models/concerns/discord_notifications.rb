@@ -7,7 +7,7 @@ module DiscordNotifications
         "**#{name}** ist dem Event **#{title}** beigetreten"
     end
 
-    def created_notification(name)
+    def create_notification(name)
         "**#{name}** hat ein neues Event erstellt:"
     end
 
@@ -57,7 +57,7 @@ module DiscordNotifications
         }
     end
 
-    def cancel_notification(name)
+    def destroy_notification(name)
         "Das Event **#{title}** wurde von **#{name}** abgesagt!"
     end
 
