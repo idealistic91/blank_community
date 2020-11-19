@@ -14,6 +14,7 @@ class User < ApplicationRecord
   after_create :create_memberships
 
   scope :membership_by_community, ->(id) { memberships.by_community(id) }
+  scope :memberships, -> { memberships.by_user_id(id) }
   
   def self.find_by_discord_id(id)
     find_by(discord_id: id)

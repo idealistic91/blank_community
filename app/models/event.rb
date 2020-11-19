@@ -17,7 +17,6 @@ class Event < ApplicationRecord
 
     before_create :set_end_date
     before_update :set_end_date
-    after_save :host_join_event
 
     scope :including_game, -> { includes(:game) }
     scope :include_game_members, -> { includes(:game, :members) }
@@ -31,18 +30,24 @@ class Event < ApplicationRecord
     def hosts
         hosting_events.includes(:member).map(&:member)
     end
-    
-    private
-    
-    def set_end_date
-        if self.ends_at <= self.start_at
-            self.ends_at = self.ends_at + 1.day
-        end
+
+    def add_host(member_id)
+        self.hosting_events << HostingEvent.create(event_id: id, member_id: member_id)
+        self.save
     end
 
     def host_join_event
         if hosts.any?
             hosts.each { |host| members << host }
+            self.save
+        end
+    end
+
+    private
+    
+    def set_end_date
+        if self.ends_at <= self.start_at
+            self.ends_at = self.ends_at + 1.day
         end
     end
 end

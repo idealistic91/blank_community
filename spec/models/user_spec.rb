@@ -1,32 +1,21 @@
 require 'rails_helper'
-  RSpec.describe User, type: :model do
+RSpec.describe User, type: :model do
   before do
-    stub_all_members(%w[25681874 5345345])
-    stub_roles
-    stub_avatar_request
-    stub_channels
-    stub_send_message
-    stub_channel
-    stub_guild
-    stub_member
-    stub_bot
+    dc_api_stub = DiscordApiStub.new(server_id: "764050414542389251",
+                                     members: %w[25681874 5345345 5736458743],
+                                     roles: %w[admin members family])
+    dc_api_stub.stub
   end
-  
-  describe 'instance methods' do
-    let(:user) { FactoryBot.create(:user_with_membership, discord_id: '5345345') }
-    let(:event) do
-      event = FactoryBot.build(:event, community_id: user.memberships.first.community.id)
-      debugger
-      event.hosting_events << FactoryBot.create(:hosting_event, event: event, member: user.memberships.first)
-      event.save
-      event
-    end
 
+  describe 'instance methods' do
+    let(:user) { FactoryBot.create(:user_hosting_an_event, discord_id: '5345345') }
     context 'do_i_participate?' do
       it 'returns true if user is part of the events participants' do
         expect(user.do_i_participate?(event)).to eq(true)
+        #expect(user2.do_i_participate?(event)).to eq(false)
       end
     end
+
     context 'am_i_hosting?' do
       it 'returns true if user is a host' do
         expect(user.am_i_hosting?(event)).to eq(true)

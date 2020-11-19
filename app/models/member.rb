@@ -13,13 +13,13 @@ class Member < ApplicationRecord
   after_create :set_defaults
 
   scope :by_community, ->(community_id) { where(community_id: community_id) }
+  scope :by_user_id, ->(id) { where(user_id: id) }
 
   def set_defaults
     name = 'Nicht vorhanden'
     if user.discord_id
       dc_user = discord_user
       self.nickname = dc_user.username
-      debugger
       set_picture(dc_user.avatar_url('png'))
       bot = Discord::Bot.new(id: community.server_id)
       # Todo: Send to main channel set in the community settings
@@ -57,24 +57,24 @@ class Member < ApplicationRecord
     user.picture.purge_later
     set_picture(discord_avatar)
   end
-  
+
   private
   
   def set_picture(url)
     unless user.has_picture?
       image = Net::HTTP.get(URI.parse(url))
-      file = Tempfile.open('avatar.png') do |f|
-        f.binmode
-        f.write(image)
-        f.flush
-      end
-      user.picture.attach(io: File.open(file.path), filename: "#{self.nickname}.png", content_type: "image/png")
+      file = Tempfile.new('avatar.png')
+      file.binmode
+      file.write(image)
+      file.flush
+      user.picture.attach(io: File.open(file.path), filename: "#{self.nickname.gsub('.', '_')}.png", content_type: "image/png")
+      file.unlink
     end
   end
 
   def user_present_on_server
     unless community.server.member_by(user.discord_id.to_i)
-      errors.add(:community_id, "User nicht Teil der #{community.name}-community!")
+      errors.add(:base, "User nicht Teil der #{community.name}-community!")
     end
   end
 end
