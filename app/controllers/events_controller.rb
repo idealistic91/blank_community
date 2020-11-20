@@ -29,7 +29,6 @@ class EventsController < ApplicationController
       if @event.save
         # Todo: Have nested attributes for hosting events
         @event.add_host(@membership.id)
-        @event.host_join_event
         format.html {
           send_notification(@membership.nickname, @event.event_embed)
           redirect_to community_event_path(@community, @event), notice: 'Event was successfully created.' 

@@ -8,7 +8,7 @@ class DiscordApiStub
   }
 
   attr_accessor :server_id, :members, :roles
-  attr_reader :members_hash, :roles_hash, :member_names
+  attr_reader :members_hash, :roles_hash, :member_names, :role_ids
 
   def initialize(server_id:, members: [], roles: [])
     @server_id = server_id
@@ -16,15 +16,16 @@ class DiscordApiStub
     @member_names = members.map { Faker::Internet.username }
     @roles = roles
     @roles_hash = build_role
+    @role_ids = roles_hash.map{ |r| r[:id] }
     @members_hash = build_member
   end
 
   def build_role
     roles.map do |role_name|
       {
-          "id": "764064754494603295",
+          "id": "#{Faker::Number.number(digits: 18)}",
           "name": role_name,
-          "permissions": "104320577",
+          "permissions": 104320577,
           "position": 0,
           "color": 0,
           "hoist": false,
@@ -44,7 +45,7 @@ class DiscordApiStub
               "discriminator": "#{Faker::Number.number(digits: 4)}",
               "public_flags": 0
           },
-          "roles": roles,
+          "roles": role_ids,
           "nick": nil,
           "premium_since": nil,
           "joined_at": "2020-10-09T10:28:09.507000+00:00",
@@ -56,13 +57,12 @@ class DiscordApiStub
   end
 
   def stub
-    debugger
     stub_all_members
     stub_roles
     stub_avatar_request
     stub_channels
-    stub_send_message
     stub_channel
+    stub_send_message
     stub_guild
     stub_member
     stub_bot
@@ -107,10 +107,11 @@ class DiscordApiStub
   end
 
   def stub_send_message
-    res_body = {
+    @member_names.each do |name|
+      res_body = {
         "id": "768195988288307272",
         "type": 0,
-        "content": "**Idealistic** hat sein Discord mit der blank_app verbunden",
+        "content": "**#{name}** hat sein Discord mit der blank_app verbunden",
         "channel_id": "764050415054356482",
         "author": {
             "id": "764062582310436875",
@@ -132,9 +133,9 @@ class DiscordApiStub
         "flags": 0,
         "referenced_message": nil
     }
-    WebMock.stub_request(:post, "https://discordapp.com/api/v6/channels/764050415054356482/messages").
+      WebMock.stub_request(:post, "https://discordapp.com/api/v6/channels/764050415054356482/messages").
         with(
-            body: /.*/,
+            body: "{\"content\":\"**#{name}** hat sein Discord mit der blank_app verbunden\",\"tts\":false,\"embed\":null,\"nonce\":null}",
             headers: {
                 'Accept'=>'*/*',
                 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
@@ -145,6 +146,8 @@ class DiscordApiStub
                 'User-Agent'=>'DiscordBot (https://github.com/meew0/discordrb, v3.3.0) rest-client/2.1.0 ruby/2.7.1p83 discordrb/3.3.0'
             }).
         to_return(status: 200, body: res_body.to_json, headers: {})
+    end
+    
   end
 
   def stub_channel
@@ -178,7 +181,7 @@ class DiscordApiStub
         "features": [],
         "emojis": [],
         "banner": nil,
-        "owner_id": "267017148235382784",
+        "owner_id": "25681874",
         "application_id": nil,
         "region": "europe",
         "afk_channel_id": nil,
@@ -211,9 +214,9 @@ class DiscordApiStub
   end
 
   def stub_member
-    members_hash.each_with_index do |m, i|
+    members_hash.each do |m|
       body = m
-      WebMock.stub_request(:get, "https://discordapp.com/api/v6/guilds/#{server_id}/members/#{members[i]}").
+      WebMock.stub_request(:get, "https://discordapp.com/api/v6/guilds/#{server_id}/members/#{m[:user][:id]}").
           with(headers: DEFAULT_HEADERS).
           to_return(status: 200, body: body.to_json, headers: {})
     end
@@ -229,9 +232,7 @@ class DiscordApiStub
             "public_flags": 0,
             "bot": true
         },
-        "roles": [
-            "764064754494603295"
-        ],
+        "roles": role_ids,
         "nick": nil,
         "premium_since": nil,
         "joined_at": "2020-10-09T10:00:33.168000+00:00",

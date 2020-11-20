@@ -15,24 +15,6 @@ class Member < ApplicationRecord
   scope :by_community, ->(community_id) { where(community_id: community_id) }
   scope :by_user_id, ->(id) { where(user_id: id) }
 
-  def set_defaults
-    name = 'Nicht vorhanden'
-    if user.discord_id
-      dc_user = discord_user
-      self.nickname = dc_user.username
-      set_picture(dc_user.avatar_url('png'))
-      bot = Discord::Bot.new(id: community.server_id)
-      # Todo: Send to main channel set in the community settings
-      bot.send_to_channel('chat', "**#{nickname}** hat sein Discord mit der blank_app verbunden")
-    end
-    self.save
-  end
-
-  def nickname_is_set?
-    return false if nickname.nil?
-    nickname != 'Nicht vorhanden'
-  end
-
   def self.create_for_owner(community)
     create(user_id: community.creator.id, community_id: community.id)
   end
@@ -48,10 +30,6 @@ class Member < ApplicationRecord
     discord_user.avatar_url('png')
   end
 
-  def host_name_info
-    nickname_is_set? ? nickname : user.email
-  end
-
   def update_picture
     user.picture.detach
     user.picture.purge_later
@@ -60,6 +38,19 @@ class Member < ApplicationRecord
 
   private
   
+  def set_defaults
+    name = 'Nicht vorhanden'
+    if user.discord_id
+      dc_user = discord_user
+      self.nickname = dc_user.username
+      set_picture(dc_user.avatar_url('png'))
+      bot = Discord::Bot.new(id: community.server_id)
+      # Todo: Send to main channel set in the community settings
+      bot.send_to_channel('chat', "**#{nickname}** hat sein Discord mit der blank_app verbunden")
+    end
+    self.save
+  end
+
   def set_picture(url)
     unless user.has_picture?
       image = Net::HTTP.get(URI.parse(url))

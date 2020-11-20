@@ -19,14 +19,13 @@ FactoryBot.define do
         trait :hosting_an_event do
           after(:create) do |user|
             event = FactoryBot.create(:event, community_id: user.memberships.first.community.id)
-            event.save
             event.add_host(user.memberships.first.id)
-            event.host_join_event
+            event.save
           end
         end
 
         factory :user_with_discord_id, traits: [:with_discord_id]
         factory :user_with_membership, traits: [:with_membership]
-        factory :user_hosting_an_event, traits: [:with_membership, :hosting_an_event]
+        factory :user_hosting_an_event, traits: [:hosting_an_event]
     end
 end

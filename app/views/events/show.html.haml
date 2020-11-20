@@ -18,7 +18,7 @@
             .col-md-2
               %small= l(@event.date, format: :long)
             .col-md-2.ml-auto
-              %small= "Hosted by #{@event.hosts.map(&:host_name_info).join(', ')}"
+              %small= "Hosted by #{@event.hosts.map(&:nickname).join(', ')}"
 
 = render layout: 'layouts/actions' do
   = link_to 'Zurück', community_events_path(@community)

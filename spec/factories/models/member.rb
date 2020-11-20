@@ -4,7 +4,7 @@ FactoryBot.define do
         nickname { Faker::Internet.username }
 
         trait :linked_community do
-          community { FactoryBot.create(:community) }
+          association :community, factory: :community
         end
 
         factory :membership_to_community, traits: [:linked_community]

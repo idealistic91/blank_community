@@ -34,17 +34,18 @@ class Event < ApplicationRecord
     def add_host(member_id)
         self.hosting_events << HostingEvent.create(event_id: id, member_id: member_id)
         self.save
-    end
-
-    def host_join_event
-        if hosts.any?
-            hosts.each { |host| members << host }
-            self.save
-        end
+        host_join_event
     end
 
     private
     
+    def host_join_event
+        if hosts.any?
+            hosts.each { |host| members << host unless members.include?(host) }
+        end
+        self.save
+    end
+
     def set_end_date
         if self.ends_at <= self.start_at
             self.ends_at = self.ends_at + 1.day

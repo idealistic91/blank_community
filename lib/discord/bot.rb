@@ -17,7 +17,6 @@ module Discord
             if embed
                 self.bot.send_message(channel_id, content, tts, embed)
             else
-                debugger
                 self.bot.send_message(channel_id, content)
             end
         end

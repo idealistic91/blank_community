@@ -18,4 +18,4 @@
   .card-footer
     .row
       .col-md-12.text-center
-        %small.mx-auto= "Hosted by #{event.hosts.map(&:host_name_info).join(', ')}"
+        %small.mx-auto= "Hosted by #{event.hosts.map(&:nickname).join(', ')}"
