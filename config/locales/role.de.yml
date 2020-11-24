@@ -1,0 +1,10 @@
+de:
+  activerecord:
+    attributes:
+      role:
+    models:
+        role:
+          options_static_types:
+            owner: Besitzer
+            admin: Admin
+            member: Mitglied

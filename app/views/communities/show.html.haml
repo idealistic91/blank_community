@@ -1,0 +1,16 @@
+.container
+  .row
+    .col-md-12
+      .card.text-white.mt-4.bg-dark.mb-3.d-flex#event-card-show
+        .card-header.event-header-show
+          %h3= "#{@community.name} community"
+        .card-body#event-body-show
+          %h4 DC Server Roles
+          %ul
+            - @community.discord_roles.each do |role|
+              %li= role.name
+        .card-footer
+
+= render layout: 'layouts/actions' do
+  = link_to 'Edit', edit_community_path(@community)
+  = link_to 'Back', communities_path

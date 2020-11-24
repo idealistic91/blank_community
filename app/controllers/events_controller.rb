@@ -104,6 +104,10 @@ class EventsController < ApplicationController
 
   def get_community
     @community = Community.find_by(id: params[:community_id])
+    unless @community
+      flash[:error] = "Community not found!"
+      redirect_back(fallback_location: root_path)
+    end
   end
 
   def get_events
@@ -112,10 +116,18 @@ class EventsController < ApplicationController
 
   def get_membership
     @membership = current_user.membership_by_community(@community.id).first
+    unless @membership
+      flash[:error] = "You do not have a membership to this community!"
+      redirect_back(fallback_location: root_path)
+    end
   end
 
   def get_event
     @event = @community.events.where(id: params[:id]).first
+    unless @event
+      flash[:error] = "Event not found!"
+      redirect_back(fallback_location: root_path)
+    end
   end
 
   def load_bot
@@ -124,6 +136,7 @@ class EventsController < ApplicationController
 
   def send_notification(nickname, embed = nil)
     Thread.new do
+      # Todo: Get channel from community settings
       @bot.send_to_channel('chat', @event.send("#{action_name}_notification", nickname), embed)
     end
   end
