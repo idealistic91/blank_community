@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_21_151448) do
+ActiveRecord::Schema.define(version: 2020_11_21_154746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,15 @@ ActiveRecord::Schema.define(version: 2020_11_21_151448) do
     t.string "category"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "role_assignments", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "discord_role_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["discord_role_id"], name: "index_role_assignments_on_discord_role_id"
+    t.index ["role_id"], name: "index_role_assignments_on_role_id"
   end
 
   create_table "roles", force: :cascade do |t|

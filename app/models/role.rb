@@ -17,6 +17,9 @@ class Role < ApplicationRecord
     define_singleton_method "#{key}_label" do
       STATIC_TYPES[key.to_sym]
     end
+    define_singleton_method "#{key}_role" do
+      find_by(key: "#{key}")
+    end
   end
 
   register_types_and_methods
