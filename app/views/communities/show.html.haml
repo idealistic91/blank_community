@@ -1,16 +1,23 @@
 .container
   .row
     .col-md-12
-      .card.text-white.mt-4.bg-dark.mb-3.d-flex#event-card-show
-        .card-header.event-header-show
-          %h3= "#{@community.name} community"
-        .card-body#event-body-show
-          %h4 DC Server Roles
-          %ul
-            - @community.discord_roles.each do |role|
-              %li= role.name
+      .card.text-white.mt-4.bg-dark.mb-3.d-flex#community-card-show
+        .card-header.community-header-show
+          %h2.mb-3= "#{@community.name} community"
+          = render partial: 'communities/partials/community_nav'
+        .card-body#community-body-show
+          #communityTabContent.tab-content
+            #overview.tab-pane.fade.show.active{"aria-labelledby" => "overview-tab", :role => "tabpanel"} ...
+            #members.tab-pane.fade{"aria-labelledby" => "members-tab", :role => "tabpanel"}
+              = render partial: 'communities/partials/memberlist', locals: { community: @community }
+            #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"}
+              = render partial: 'communities/partials/settings', locals: { community: @community }
+            #roles.tab-pane.fade{"aria-labelledby" => "roles-tab", :role => "tabpanel"}
+              = render partial: 'communities/partials/roles', locals: { roles: @community.discord_roles }
         .card-footer
 
 = render layout: 'layouts/actions' do
-  = link_to 'Edit', edit_community_path(@community)
   = link_to 'Back', communities_path
+
+- content_for(:custom_js) do
+  = javascript_pack_tag 'communities/show'

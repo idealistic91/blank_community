@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_21_154746) do
+ActiveRecord::Schema.define(version: 2020_12_03_144815) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,6 +92,15 @@ ActiveRecord::Schema.define(version: 2020_11_21_154746) do
     t.index ["member_id"], name: "index_hosting_events_on_member_id"
   end
 
+  create_table "member_discord_roles", force: :cascade do |t|
+    t.bigint "member_id"
+    t.bigint "discord_role_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["discord_role_id"], name: "index_member_discord_roles_on_discord_role_id"
+    t.index ["member_id"], name: "index_member_discord_roles_on_member_id"
+  end
+
   create_table "members", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -136,6 +145,13 @@ ActiveRecord::Schema.define(version: 2020_11_21_154746) do
 
   create_table "roles_tables", force: :cascade do |t|
     t.string "name"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.string "main_channel"
+    t.boolean "public", default: true
+    t.bigint "community_id"
+    t.index ["community_id"], name: "index_settings_on_community_id"
   end
 
   create_table "users", force: :cascade do |t|

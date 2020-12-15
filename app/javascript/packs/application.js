@@ -11,7 +11,7 @@ import 'bootstrap'
 
 //require("channels")
 
-import JQuery from 'jquery';
+import JQuery, { data } from 'jquery';
 window.$ = window.JQuery = JQuery;
 
 import "../src/style.scss";
@@ -23,6 +23,40 @@ import { faTwitter } from '@fortawesome/free-brands-svg-icons'
 library.add(fas, faTwitter)
 
 dom.watch()
+
+
+$(document).on('turbolinks:load', function(){
+    let data = $('#main-container').data();
+    let controller = data.controller
+    let view = data.view
+    $(`li.${controller}-nav`).addClass('active')
+});
+
+function showSpinner() {
+    $('#kitt').css('display', 'block');
+};
+function hideSpinner() {
+    setTimeout(function(){
+        $('#kitt').css('display', 'none');
+    }, 500)
+}
+
+$(document).on('ajax:success', function(event){
+    let data = event.detail[2]
+    data = JSON.parse(data.response)
+    if(data.flash_box) {
+        let alertContainer = $('#alert-container')
+        alertContainer.html(data.flash_box)
+        setTimeout(()=> {
+            $('.alert').fadeOut()
+        }, 3000)
+    }
+    hideSpinner()
+});
+
+$(document).on('ajax:before', function(){
+    showSpinner()
+});
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)

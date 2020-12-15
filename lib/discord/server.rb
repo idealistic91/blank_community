@@ -12,8 +12,13 @@ module Discord
             JSON.parse(channels.to_str)
         end
 
+        def info
+            info = Discordrb::API::Server.resolve(BOT_TOKEN, id)
+            JSON.parse(info.to_str)
+        end
+
         def members
-            members = Discordrb::API::Server.resolve_members(BOT_TOKEN, id, 100)
+            members = Discordrb::API::Server.resolve_members(BOT_TOKEN, id, 150)
             JSON.parse(members.to_str)
         end
 
@@ -41,7 +46,17 @@ module Discord
             res
         end
 
-        def member_roles(name)
+        def get_member_by_id(discord_id)
+            begin
+                member = Discordrb::API::Server.resolve_member(BOT_TOKEN, id, discord_id)
+                return JSON.parse(member)
+            rescue RestClient::NotFound => exception
+                return false
+            end
+        end
+
+        def member_roles(value)
+            by_name = value.is_a?(String) ? true : false
             member_by(name)['role_names']
         end
 

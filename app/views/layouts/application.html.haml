@@ -8,9 +8,11 @@
     = stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   %body
-    .container
+    .container#main-container{data: {controller: "#{controller_name}", action: "#{action_name}"}}
       = render partial: 'layouts/navbar'
-      .p-2
+      #spinner-container.row.d-flex.justify-content-center.hidden
+        = render partial: 'layouts/knightrider_spinner'
+      .p-2#alert-container
         = render partial: 'layouts/flash', locales: { flash: flash }
       = yield(:actions)
       #content

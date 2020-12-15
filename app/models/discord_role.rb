@@ -1,5 +1,5 @@
 class DiscordRole < ApplicationRecord
-    has_one :community
+    belongs_to :community
     has_many :role_assignments, dependent: :destroy
     has_many :roles, through: :role_assignments
 

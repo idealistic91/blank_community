@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "communities/new", type: :view do
+RSpec.describe "communities/new", type: :view, skip: true do
   before(:each) do
     assign(:community, Community.new())
   end

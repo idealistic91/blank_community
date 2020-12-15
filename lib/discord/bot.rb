@@ -34,8 +34,14 @@ module Discord
             end
         end
 
-        def build_registration_link(id, server_id)
-            new_user_registration_url(discord_id: id, server_id: server_id)
+        def build_registration_link(id, server_id = nil)
+            params = { discord_id: id }
+            params[:server_id] = server_id if server_id
+            new_user_registration_url(params)
+        end
+
+        def build_community_config_link(id)
+            edit_community_url(id)
         end
     end
 end

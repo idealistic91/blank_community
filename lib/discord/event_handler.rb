@@ -67,53 +67,70 @@ module Discord
             
             DISCORD_BOT.bot.message(with_text: 'register:me') do |event|
                 find_community(event, false) do |community|
-                    respond_with_register_link(event)
+                    user = user(event)
+                    if user
+                        user.create_membership(community)
+                    else
+                        respond_with_register_link(event)
+                    end
                 end
             end
             
             DISCORD_BOT.bot.message(with_text: 'register:server') do |event|
-                author_is_owner = event.author.server.owner == event.message.author
-                if author_is_owner 
-                    author_user = User.find_by_discord_id(event.message.author.id)
-                    params = {
-                        name: event.author.server.name,
-                        server_id: event.author.server.id.to_s,
-                        creator: author_user ? author_user : nil
-                    }
-                    community = Community.new(params)
-                    if community.save
-                        # send link to community setup page if user already exists
-                        if author_user
-                            event.respond "#{community.name} wurde erfolgreich angelegt!\nIch habe dir einen link zur Community via PM zugestellt."
-                            # Todo: Link to community setup view/controller etc.
+                if author_is_owner?(event) 
+                    author_user = user(event)
+                    if author_user
+                        params = {
+                            name: event.author.server.name,
+                            server_id: event.author.server.id.to_s,
+                            creator: author_user
+                        }
+                        community = Community.new(params)
+                        if community.save
+                            respond_with_community_link(event, community)
                         else
-                            respond_with_register_link(event)
+                            event.respond "Folgende Fehler haben das Registrieren verhindert:\n#{community.errors.full_messages.join(', ')}"
                         end
                     else
-                        event.respond "Folgende Fehler haben das Registrieren verhindert:\n#{community.errors.full_messages.join(', ')}"
+                        respond_with_register_link(event, true)
                     end
                 else
-                    event.respond "Nur Besitzer können den Server registrieren!\nUm dich als Benutzer zu registrieren tippe `register:server`"
+                    event.respond "Nur Besitzer können den Server registrieren!"
                 end
-                # Create a community with given server id unless it already exists
-                # Check if author is owner of the server
             end
 
             DISCORD_BOT.bot.run
         end
 
         def self.authorize(event)
-            user = User.find_by_discord_id(event.message.author.id)
+            user = user(event)
             if user
                 yield(user)
             else
-                event.respond "Du hast blank_community noch nicht mit discord verbunden!\nTippe 'register:me' um einen Registrierungslink zu erhalten"
+                event.respond "Du hast blank_community noch nicht mit discord verbunden!\nTippe `register:me` um einen Registrierungslink zu erhalten"
             end
         end
 
-        def self.respond_with_register_link(event)
-            event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich hier:**\n#{DISCORD_BOT.build_registration_link(event.message.author.id, event.message.author.server.id)}")
+        def self.user(event)
+            User.find_by_discord_id(event.message.author.id)
+        end
+
+        def self.author_is_owner?(event)
+            event.author.server.owner == event.message.author
+        end
+
+        def self.respond_with_register_link(event, with_community = false)
+            if with_community
+                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich und deine Community hier:**\n#{DISCORD_BOT.build_registration_link(event.message.author.id, event.message.author.server.id)}")
+            else
+                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich hier:**\n#{DISCORD_BOT.build_registration_link(event.message.author.id)}")
+            end
             event.respond "@#{event.message.author.display_name}\nIn deinem Postfach findest du einen Registrierungslink\nTeile diesen mit niemanden!"
+        end
+
+        def self.respond_with_community_link(event, community)
+            event.respond "#{community.name} wurde erfolgreich angelegt!\nIch habe dir einen link zu deiner Community via PM zugestellt."
+            event.message.author.pm("Hier der Link zu deinen #{community.name}-community settings.\n#{DISCORD_BOT.build_community_config_link(community.id)}")            
         end
 
         def self.find_community(event, authorize = true)
@@ -132,7 +149,7 @@ module Discord
                     yield(community)
                 end
             else
-                event.respond "Dieser Server ist noch nicht mit der App verbunden\nTippe als Besitzer 'register:server'"
+                event.respond "Dieser Server ist noch nicht mit der App verbunden\nTippe als Besitzer `register:server`"
             end
         end
     end

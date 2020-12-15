@@ -1,0 +1,13 @@
+.container
+    .row
+        - community.members.each do |m|
+            .slot-container{class: "col-md-6"}
+                .event-slot.p-2
+                    .card.bg-dark.mb-2.participant-slot
+                        %span
+                            - if m.user.picture.attached?
+                                = image_tag url_for(m.user.picture), id: 'profile_picture', class: 'mr-4'
+                            = m.nickname
+                            .member-role-badges
+                                - m.roles.each do |role|
+                                    = role_badge(role: role)

@@ -36,6 +36,21 @@ class User < ApplicationRecord
     self.memberships.by_community(id)
   end
 
+  def create_membership(community)
+    dc_user = community.server.get_member_by_id(discord_id)
+    if dc_user
+      membership = Member.new(user_id: id, community_id: community.id)
+      if membership.save
+        self.memberships << membership
+        { success: true }
+      else
+        { success: false, message: membership.errors.full_messages.join(', ') }
+      end
+    else
+      { success: false, message: "Du scheinst kein Mitglied auf dem #{community.name} Server zu sein!" }
+    end
+  end
+
   private 
 
   def discord_id_check
@@ -46,12 +61,7 @@ class User < ApplicationRecord
 
   def create_memberships
     Community.all.each do |c|
-      dc_user = c.server.member_by(discord_id.to_i)
-        if dc_user
-          m = Member.new(user_id: id, community_id: c.id)
-          m.save
-          self.memberships << m
-        end
+      create_membership(c)
     end
   end
 end

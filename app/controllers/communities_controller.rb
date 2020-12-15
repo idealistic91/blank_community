@@ -1,6 +1,6 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: [:show, :edit, :update, :destroy]
-  before_action :has_right?
+  before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role, :set_active, :join]
+  before_action :has_right?, except: [:assign_role, :unassign_role, :set_active, :index, :join]
 
   # GET /communities
   # GET /communities.json
@@ -11,11 +11,6 @@ class CommunitiesController < ApplicationController
   # GET /communities/1
   # GET /communities/1.json
   def show
-  end
-
-  # GET /communities/new
-  def new
-    @community = Community.new
   end
 
   # GET /communities/1/edit
@@ -61,6 +56,49 @@ class CommunitiesController < ApplicationController
     end
   end
 
+  def assign_role
+    respond_to do |format|
+      format.js {
+        discord_role = DiscordRole.find_by(id: params[:dc_role_id])
+        discord_role.assign_role(params[:role])
+        element = render_to_string partial: 'communities/partials/discord_role_list', locals: { dc_role: discord_role }, layout: false, format: :html
+        render json: { element: element, dc_role_id: discord_role.id }
+      }
+    end
+  end
+
+  def unassign_role
+    respond_to do |format|
+      format.js {
+        discord_role = DiscordRole.find_by(id: params[:dc_role_id])
+        assignment = RoleAssignment.find_by(id: params[:assignment_id])
+        assignment.destroy
+        element = render_to_string partial: 'communities/partials/discord_role_list', locals: { dc_role: discord_role }, layout: false, format: :html
+        render json: { element: element, dc_role_id: discord_role.id }
+      }
+    end
+  end
+
+  def set_active
+    set_active_cookie(params[:id])
+    redirect_to root_path
+  end
+
+  def join
+    respond_to do |format|
+      format.js {
+        process = current_user.create_membership(@community)
+        if process[:success]
+          flash.now[:success] = "Erfolgreich beigetreten"
+          render_flash_as_json
+        else
+          flash.now[:alert] = process[:message]
+          render_flash_as_json
+        end
+      }
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
   def set_community
@@ -71,15 +109,16 @@ class CommunitiesController < ApplicationController
     end
   end
 
+  def set_member
+    @member = current_user.membership_by_community(@community.id).first
+  end
+
   def has_right?
-    has_right = current_user == @community.creator
-    unless has_right
-      flash[:error] = "Action not permitted!"
-      redirect_back(fallback_location: root_path) and return
-    end
+    @is_creator = current_user == @community.creator
   end
     # Only allow a list of trusted parameters through.
   def community_params
-    params.fetch(:community, {})
+    params.require(:community).permit(settings_attributes: [:public, :main_channel])
+    #params.require(:community, {settings: })
   end
 end

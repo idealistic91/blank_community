@@ -1,2 +1,2 @@
 - flash.each do |k, v|
-    %p{class: "#{k}"}= v
+    %p{class: "alert alert-#{k == 'alert' ? 'danger' : 'success'}"}= v

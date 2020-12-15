@@ -75,7 +75,7 @@ class DiscordApiStub
     members_hash.each do |member|
       body << member
     end
-    WebMock.stub_request(:get, "https://discordapp.com/api/v6/guilds/#{server_id}/members?limit=100")
+    WebMock.stub_request(:get, "https://discordapp.com/api/v6/guilds/#{server_id}/members?limit=150")
         .with(headers: DEFAULT_HEADERS)
         .to_return(status: 200, body: body.to_json, headers: {})
   end

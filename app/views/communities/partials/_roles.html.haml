@@ -1,0 +1,19 @@
+%h3= "Server Rollenzuweisung"
+.row
+    - roles.each do |dc_role|
+        .col-md-8.mb-2
+            .card.bg-dark
+                .card-header
+                    = dc_role.name
+                .card-body
+                    .row
+                        .col-md-8{id: "discord_role_#{dc_role.id}"}
+                            = render partial: 'communities/partials/discord_role_list', locals: { dc_role: dc_role } 
+                        .col-md-4
+                            = form_with(url: assign_role_communities_path(id: @community.id), method: :post, class: "form-inline") do |form|
+                                = form.hidden_field :dc_role_id, value: dc_role.id
+                                .form-group{class: 'mx-sm-3'}
+                                    = form.select :role, role_collection, {}, {class: 'form-control'}
+                                = form.submit "+", class: "btn btn-primary"
+
+        

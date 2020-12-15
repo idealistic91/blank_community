@@ -6,7 +6,7 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @events = Event.including_game
+    @events = @events.including_game
   end
 
   def show; end
@@ -72,7 +72,13 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.js {
         @event.members << @membership
-        render_join_leave
+        if @event.valid?
+          flash.now[:success] = 'Erfolgreich beigetreten'
+          render_join_leave
+        else
+          flash.now[:error] = 'Es gab ein Fehler beim Beitreten.'
+          render_flash_as_json
+        end
       }
     end
   end
@@ -81,6 +87,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.js {
         @event.members.delete(@membership)
+        flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
         render_join_leave
       }
     end
@@ -93,7 +100,7 @@ class EventsController < ApplicationController
     button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html',
                               locals: { name: action_name == 'join' ? "Verlassen" : "Teilnehmen", action: action_name == 'join' ? :leave : :join, event: @event, style: action_name == 'join' ? :danger : :primary }
     send_notification(@membership.nickname)
-    render json: { list: list, button: button }
+    render json: { list: list, button: button, flash_box: flash_html } and return
   end
 
   def event_params
@@ -103,7 +110,11 @@ class EventsController < ApplicationController
   end
 
   def get_community
-    @community = Community.find_by(id: params[:community_id])
+    if params[:id]
+      @community = Community.find_by(id: params[:community_id])
+    else
+      @community = @current_community
+    end
     unless @community
       flash[:error] = "Community not found!"
       redirect_back(fallback_location: root_path)
@@ -136,8 +147,8 @@ class EventsController < ApplicationController
 
   def send_notification(nickname, embed = nil)
     Thread.new do
-      # Todo: Get channel from community settings
-      @bot.send_to_channel('chat', @event.send("#{action_name}_notification", nickname), embed)
+      channel = @community.get_main_channel
+      @bot.send_to_channel(channel[:name], @event.send("#{action_name}_notification", nickname), embed) if channel
     end
   end
 end

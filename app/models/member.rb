@@ -1,13 +1,16 @@
 class Member < ApplicationRecord
   belongs_to :user
+  belongs_to :community
   has_many :participants, dependent: :destroy
   has_many :hosting_events, dependent: :destroy
   has_many :events, through: :hosting_events
   has_many :events, through: :participants
-  belongs_to :community
-
+  has_many :member_discord_roles, dependent: :destroy
+  has_many :discord_roles, through: :member_discord_roles
+  
   validates_presence_of :user
   validates_presence_of :community_id
+  validates_uniqueness_of :user, scope: :community_id
   validate :user_present_on_server
 
   after_create :set_defaults
@@ -21,8 +24,20 @@ class Member < ApplicationRecord
 
   def discord_user
     if user.discord_id
-      data = community.server.member_by(user.discord_id.to_i)
+      data = community.server.get_member_by_id(user.discord_id)
       Discordrb::User.new(data['user'], DISCORD_BOT.bot)
+    end
+  end
+
+  def server_roles
+    community.server.get_member_by_id(user.discord_id)["roles"]
+  end
+
+  def roles
+    if discord_roles.any?
+      discord_roles.map(&:roles).flatten.uniq
+    else
+      nil
     end
   end
 
@@ -36,6 +51,16 @@ class Member < ApplicationRecord
     set_picture(discord_avatar)
   end
 
+  def assign_roles
+    # Todo: Needs logic to update roles from discord server
+    dc_roles = community.discord_roles.where(discord_id: server_roles)
+    dc_roles.each do |dc_role|
+      unless discord_roles.include?(dc_role)
+        self.member_discord_roles << MemberDiscordRole.create(discord_role: dc_role, member: self)
+      end
+    end
+  end
+
   private
   
   def set_defaults
@@ -46,7 +71,11 @@ class Member < ApplicationRecord
       set_picture(dc_user.avatar_url('png'))
       bot = Discord::Bot.new(id: community.server_id)
       # Todo: Send to main channel set in the community settings
-      bot.send_to_channel('chat', "**#{nickname}** hat sein Discord mit der blank_app verbunden")
+      assign_roles
+      Thread.new do
+        channel = community.get_main_channel
+        bot.send_to_channel(channel[:name], "**#{nickname}** ist der #{community.name}-community beigetreten") if channel
+      end
     end
     self.save
   end
@@ -54,7 +83,7 @@ class Member < ApplicationRecord
   def set_picture(url)
     unless user.has_picture?
       image = Net::HTTP.get(URI.parse(url))
-      file = Tempfile.new('avatar.png')
+      file = Tempfile.new("#{self.nickname}.png")
       file.binmode
       file.write(image)
       file.flush
@@ -64,7 +93,7 @@ class Member < ApplicationRecord
   end
 
   def user_present_on_server
-    unless community.server.member_by(user.discord_id.to_i)
+    unless community.server.get_member_by_id(user.discord_id)
       errors.add(:base, "User nicht Teil der #{community.name}-community!")
     end
   end

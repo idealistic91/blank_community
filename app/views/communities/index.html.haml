@@ -1,0 +1,10 @@
+- @communities.each do |community|
+    .card.bg-dark
+        .card-header
+            = link_to community.name, '#'
+            = link_to 'Join', join_communities_path(id: community.id), remote: true, method: :post
+        .card-body
+            %ul
+            - community.attributes.each do |k, v|
+                %li
+                    = "#{k}: #{v}"
