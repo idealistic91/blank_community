@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       collection do
         post :join
         post :leave
+        get :public_join
       end
     end  
   end

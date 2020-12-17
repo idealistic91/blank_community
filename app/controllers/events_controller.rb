@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   before_action :get_community
-  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave]
+  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join]
   before_action :get_events, only: :index
   before_action :get_membership
   before_action :load_bot, except: [:index, :show, :new]
@@ -70,17 +70,27 @@ class EventsController < ApplicationController
   # Todo: Make join/leave one action
   def join
     respond_to do |format|
+      @event.members << @membership
       format.js {
-        @event.members << @membership
         if @event.valid?
           flash.now[:success] = 'Erfolgreich beigetreten'
           render_join_leave
         else
-          flash.now[:error] = 'Es gab ein Fehler beim Beitreten.'
+          flash.now[:error] = @event.errors.full_messages.join(', ')
           render_flash_as_json
         end
       }
     end
+  end
+
+  def public_join
+    @event.members << @membership
+    if @event.valid?
+      flash[:success] = 'Erfolgreich beigetreten'
+    else
+      flash[:error] = @event.errors.full_messages.join(', ')
+    end
+    redirect_to community_event_path(@community, @event)
   end
 
   def leave

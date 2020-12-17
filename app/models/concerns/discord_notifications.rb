@@ -51,7 +51,7 @@ module DiscordNotifications
                     },
                     {
                         "name": "Actions",
-                        "value": "[Join](#{community_event_url(self.community, self)})"
+                        "value": "[Join](#{public_join_community_events_url(community_id: self.community, id: self.id)})"
                     }
                 ]
         }

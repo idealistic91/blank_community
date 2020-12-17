@@ -13,7 +13,9 @@ class Event < ApplicationRecord
     validates :start_at, presence: true
     validates :ends_at, presence: true
     validates :date, presence: true
-    validates :title, presence: true 
+    validates :title, presence: true
+    validates :slots, inclusion: 3..10
+    validate :max_slots_reached, on: :update
 
     before_create :set_end_date
     before_update :set_end_date
@@ -37,7 +39,15 @@ class Event < ApplicationRecord
         host_join_event
     end
 
+    def event_full?
+        slots == members.size
+    end
+
     private
+
+    def max_slots_reached
+        errors.add(:slots, "Leider ist kein Platz mehr!") if event_full?
+    end
     
     def host_join_event
         if hosts.any?
