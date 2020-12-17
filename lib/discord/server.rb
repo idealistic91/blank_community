@@ -38,14 +38,6 @@ module Discord
             end
         end
 
-        def member_by(value)
-            by_name = value.is_a?(String) ? true : false
-            res = members.select{|m| m['user'][by_name ? 'username' : 'id'] == value.to_s }.first
-            return nil if res.nil?
-            res['role_names'] = res['roles'].map{ |r| role(r) ? role(r)['name'] : '' }
-            res
-        end
-
         def get_member_by_id(discord_id)
             begin
                 member = Discordrb::API::Server.resolve_member(BOT_TOKEN, id, discord_id)
@@ -53,11 +45,6 @@ module Discord
             rescue RestClient::NotFound => exception
                 return false
             end
-        end
-
-        def member_roles(value)
-            by_name = value.is_a?(String) ? true : false
-            member_by(name)['role_names']
         end
 
         def text_channels

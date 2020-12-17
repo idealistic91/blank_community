@@ -86,9 +86,14 @@ class EventsController < ApplicationController
   def leave
     respond_to do |format|
       format.js {
-        @event.members.delete(@membership)
-        flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
-        render_join_leave
+        if hosts.map(&:member).include?(@membership)
+          flash.now[:error] = 'Du bist Host dieses Events und kannst daher das Event nicht verlassen!'
+          render_flash_as_json
+        else
+          @event.members.delete(@membership)
+          flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
+          render_join_leave
+        end
       }
     end
   end
@@ -98,7 +103,9 @@ class EventsController < ApplicationController
   def render_join_leave
     list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
     button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html',
-                              locals: { name: action_name == 'join' ? "Verlassen" : "Teilnehmen", action: action_name == 'join' ? :leave : :join, event: @event, style: action_name == 'join' ? :danger : :primary }
+                              locals: { name: action_name == 'join' ? "Verlassen" : "Teilnehmen",
+                                action: action_name == 'join' ? :leave : :join,
+                                event: @event, style: action_name == 'join' ? :danger : :primary }
     send_notification(@membership.nickname)
     render json: { list: list, button: button, flash_box: flash_html } and return
   end
