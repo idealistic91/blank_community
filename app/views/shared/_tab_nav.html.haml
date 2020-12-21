@@ -1,0 +1,7 @@
+%ul.nav.nav-tabs.bg-dark{id: "#{controller_name}-#{action_name}-bar", role: "tablist"}
+  - nav_items.each do |item|
+    %li.nav-item
+      %a{id: "#{item[:key]}-tab", "aria-controls" => "#{item[:key]}-pane",
+      "aria-selected" => "#{item == nav_items.first ? 'true' : 'false'}",
+      "class" => "#{item == nav_items.first ? 'nav-link active' : 'nav-link'}",
+      "data-toggle" => "tab", :href => "##{item[:key]}", :role => "tab"}= item[:label]

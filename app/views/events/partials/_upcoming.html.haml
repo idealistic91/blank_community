@@ -1,0 +1,6 @@
+.row
+  - size = @upcoming.size < 3 ? 6 : 4
+  - @upcoming.each do |event|
+    %div{class: "col-md-#{size}"}
+      = render partial: 'events/partials/item', locals: { event: event }
+  %br/

@@ -6,7 +6,14 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @events = @events.including_game
+    @upcoming = @events.including_game.upcoming_events
+    @past = @events.including_game.past_events
+    @nav_items = [
+        { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
+        },
+        { key: :past, partial: 'events/partials/past', label: 'Vergangene'
+        }
+    ]
   end
 
   def show; end
