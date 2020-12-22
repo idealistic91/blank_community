@@ -30,15 +30,24 @@ $(document).on('turbolinks:load', function(){
     let controller = data.controller
     let view = data.view
     $(`li.${controller}-nav`).addClass('active')
+    tabNavStyling();
 });
 
 function showSpinner() {
     $('#kitt').css('display', 'block');
-};
+}
+
 function hideSpinner() {
     setTimeout(function(){
         $('#kitt').css('display', 'none');
     }, 500)
+}
+
+function tabNavStyling() {
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $(e.relatedTarget).addClass('text-light')
+        $(e.target).removeClass('text-light');
+    })
 }
 
 $(document).on('ajax:success', function(event){
