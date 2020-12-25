@@ -21,10 +21,10 @@
 
 = render layout: 'layouts/actions' do
   = link_to 'Zurück', community_events_path(@community)
-  - if current_user.am_i_hosting?(@event)
+  - if current_user.am_i_hosting?(@event) || @membership.has_role?(:admin)
     = link_to 'Bearbeiten', edit_community_event_path(@community, @event)
     = link_to 'Löschen', [@community, @event], method: :delete, data: { confirm: 'Are you sure?' }
-  - else
+  - if !current_user.am_i_hosting?(@event)
     - if current_user.do_i_participate?(@event)
       = render partial: 'events/partials/join_leave_button', locals: { name: 'Verlassen', action: :leave, event: @event, style: :danger } 
     - else

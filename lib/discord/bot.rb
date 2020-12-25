@@ -41,7 +41,7 @@ module Discord
         end
 
         def build_community_config_link(id)
-            edit_community_url(id)
+            community_url(id)
         end
     end
 end

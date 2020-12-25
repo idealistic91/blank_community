@@ -39,6 +39,8 @@ class Community < ApplicationRecord
     private 
     
     def create_discord_roles
+        owner_role = DiscordRole.create(name: 'Owner', community_id: id)
+        owner_role.assign_role(:owner)
         server.roles.each do |role|
             DiscordRole.create(name: role["name"],
                 discord_id: role["id"],

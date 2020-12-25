@@ -51,6 +51,14 @@ class Member < ApplicationRecord
     set_picture(discord_avatar)
   end
 
+  def owner?
+    self.community.owner_id == self.user.id
+  end
+
+  def has_role?(key)
+    roles.include?(Role.send("#{key}_role"))
+  end
+
   def assign_roles
     # Todo: Needs logic to update roles from discord server
     dc_roles = community.discord_roles.where(discord_id: server_roles)
@@ -59,12 +67,15 @@ class Member < ApplicationRecord
         self.member_discord_roles << MemberDiscordRole.create(discord_role: dc_role, member: self)
       end
     end
+    if owner?
+      self.member_discord_roles <<
+          MemberDiscordRole.create(discord_role: DiscordRole.find_by(name: 'Owner'), member: self)
+    end
   end
 
   private
   
   def set_defaults
-    name = 'Nicht vorhanden'
     if user.discord_id
       dc_user = discord_user
       self.nickname = dc_user.username
