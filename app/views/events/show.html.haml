@@ -8,16 +8,30 @@
           #myTabContent.tab-content
             #details.tab-pane.fade.show.active{"aria-labelledby" => "details-tab", :role => "tabpanel"}
               = render partial: 'details', locals: { event: @event }
-            #comments.tab-pane.fade{"aria-labelledby" => "comments-tab", :role => "tabpanel"} ...
             #participants.tab-pane.fade{"aria-labelledby" => "participants-tab", :role => "tabpanel"}
               = render partial: 'participants_list', locals: { event: @event }
-            #media.tab-pane.fade{"aria-labelledby" => "media-tab", :role => "tabpanel"} ...
+            #tools.tab-pane.fade{"aria-labelledby" => "tools-tab", :role => "tabpanel"}
+              = render partial: 'events/partials/tools'
         .card-footer
           .row
             .col-md-2
               %small= l(@event.date, format: :long)
             .col-md-2.ml-auto
               %small= "Hosted by #{@event.hosts.map(&:nickname).join(', ')}"
+
+#tool-modal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:role => "document"}
+    .modal-content.bg-dark
+      .modal-header
+        %h5#exampleModalLabel.modal-title
+          %i.fas.fa-poll
+          Umfrage
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+      .modal-body{id: 'tool-modal-body', data: {url: send_poll_community_event_path(@community, @event), token: form_authenticity_token}}
+
+      .modal-footer
+        %button.btn.btn-secondary{"data-dismiss" => "modal", :type => "button"} Close
 
 = render layout: 'layouts/actions' do
   = link_to 'Zurück', community_events_path(@community)

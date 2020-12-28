@@ -8,9 +8,13 @@ Rails.application.routes.draw do
       post :join
     end
     resources :events do
+      member do
+        post :send_poll
+      end
       collection do
         post :join
         post :leave
+        #post :send_poll
         get :public_join
       end
     end  

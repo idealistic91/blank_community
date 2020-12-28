@@ -15,6 +15,10 @@ module DiscordNotifications
         ":hash: `#{id}` :mega: `#{title}` :video_game: `#{game ? game_name : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
     end
 
+    def send_poll_notification(name)
+        "**#{name}** hat eine Umfrage gestartet"
+    end
+
     def event_embed
         {
             "title": "Event: #{title}",

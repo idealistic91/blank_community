@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   before_action :get_community
-  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join]
+  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll]
   before_action :get_events, only: :index
   before_action :get_membership
   before_action :load_bot, except: [:index, :show, :new]
@@ -103,7 +103,7 @@ class EventsController < ApplicationController
   def leave
     respond_to do |format|
       format.js {
-        if hosts.map(&:member).include?(@membership)
+        if @event.hosts.include?(@membership)
           flash.now[:error] = 'Du bist Host dieses Events und kannst daher das Event nicht verlassen!'
           render_flash_as_json
         else
@@ -111,6 +111,15 @@ class EventsController < ApplicationController
           flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
           render_join_leave
         end
+      }
+    end
+  end
+
+  def send_poll
+    respond_to do |format|
+      format.js {
+        #send_notification(@membership.nickname)
+        render json: { success: "true", message: 'Poll was send to the others' }
       }
     end
   end

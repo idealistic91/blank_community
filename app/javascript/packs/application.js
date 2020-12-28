@@ -19,6 +19,7 @@ import "../src/style.scss";
 import { library, dom } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { faTwitter } from '@fortawesome/free-brands-svg-icons'
+import Poll from '../packs/poll/main'
 
 library.add(fas, faTwitter)
 
