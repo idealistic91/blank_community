@@ -12,6 +12,7 @@ class Member < ApplicationRecord
   validates_presence_of :community_id
   validates_uniqueness_of :user, scope: :community_id
   validate :user_present_on_server
+  validate :has_right_to_join?
 
   after_create :set_defaults
 
@@ -73,7 +74,23 @@ class Member < ApplicationRecord
     end
   end
 
+  def has_right_to_join?
+    rights_via_server_roles = community.discord_roles
+                                  .where(discord_id: server_roles)
+                                  .map(&:roles).flatten.uniq.map(&:key)
+    has_right = %w(member admin owner).detect{|key| rights_via_server_roles.include?(key) }
+    unless has_right || owner?
+      errors.add(:base, "Die fehlen die Rechte um der Community beizutreten.\nFolgende Server-Rollen berechtigen dich zum Beitreten: #{joinable_dc_roles.join(', ')}")
+    end
+  end
+
   private
+
+  def joinable_dc_roles
+    community.discord_roles.map(&:role_assignments)
+        .flatten.select{|assignment| assignment.role.key == 'admin' || assignment.role.key == 'member' }
+        .map{|assignment| assignment.discord_role.name }
+  end
   
   def set_defaults
     if user.discord_id
@@ -87,8 +104,8 @@ class Member < ApplicationRecord
         channel = community.get_main_channel
         bot.send_to_channel(channel[:name], "**#{nickname}** ist der #{community.name}-community beigetreten") if channel
       end
+      self.save
     end
-    self.save
   end
 
   def set_picture(url)

@@ -10,10 +10,11 @@
             #overview.tab-pane.fade.show.active{"aria-labelledby" => "overview-tab", :role => "tabpanel"} ...
             #members.tab-pane.fade{"aria-labelledby" => "members-tab", :role => "tabpanel"}
               = render partial: 'communities/partials/memberlist', locals: { community: @community }
-            #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"}
-              = render partial: 'communities/partials/settings', locals: { community: @community }
-            #roles.tab-pane.fade{"aria-labelledby" => "roles-tab", :role => "tabpanel"}
-              = render partial: 'communities/partials/roles', locals: { roles: @community.discord_roles }
+            - if @member.has_role?(:owner)
+              #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"}
+                = render partial: 'communities/partials/settings', locals: { community: @community }
+              #roles.tab-pane.fade{"aria-labelledby" => "roles-tab", :role => "tabpanel"}
+                = render partial: 'communities/partials/roles', locals: { roles: @community.discord_roles }
         .card-footer
 
 = render layout: 'layouts/actions' do

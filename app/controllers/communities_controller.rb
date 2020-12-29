@@ -1,7 +1,6 @@
 class CommunitiesController < ApplicationController
   before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role, :set_active, :join]
-  before_action :has_right?, except: [:assign_role, :unassign_role, :set_active, :index, :join]
-
+  before_action :check_permission
   # GET /communities
   # GET /communities.json
   def index
@@ -112,13 +111,34 @@ class CommunitiesController < ApplicationController
   def set_member
     @member = current_user.membership_by_community(@community.id).first
   end
-
-  def has_right?
-    @is_creator = current_user == @community.creator
-  end
     # Only allow a list of trusted parameters through.
   def community_params
     params.require(:community).permit(settings_attributes: [:public, :main_channel])
     #params.require(:community, {settings: })
+  end
+
+  def check_permission
+    no_permission = false
+    roles = role_hash[action_name.to_sym]
+    permitted_roles = roles.detect{|role| @member.has_role?(role) }
+    if permitted_roles.nil? && roles.any?
+      no_permission = true
+    end
+    if no_permission
+      flash[:alert] = "Dir fehlen Rechte für diese Aktion!"
+      redirect_back fallback_location: root_path and return
+    end
+  end
+
+  def role_hash
+    {
+        index: [],
+        show: [:member, :owner, :admin],
+        update: [:owner],
+        destroy: [:owner],
+        join: [],
+        assign_role: [:owner],
+        unassign_role: [:owner]
+    }
   end
 end

@@ -69,7 +69,13 @@ module Discord
                 find_community(event, false) do |community|
                     user = user(event)
                     if user
-                        user.create_membership(community)
+                        result = user.create_membership(community)
+                        if result[:success]
+                            event.message.author.pm("Du bist jetzt Mitglied der #{community.name} Community!")
+                            event.message.author.pm("Hier geht es zur Community: #{DISCORD_BOT.build_community_config_link(community.id)}")
+                        else
+                            event.message.author.pm("Fehler beim Erstellen der Mitgliedschaft: #{result[:message]}")
+                        end
                     else
                         respond_with_register_link(event)
                     end
