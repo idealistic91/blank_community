@@ -9,7 +9,12 @@
     .col-md-4
         .card.bg-dark.text-white.d-flex.event-details
             .card-header
-                %h5.card-title Zeit
+                %h5.card-title.row
+                    .col-md-2
+                        %i.fas.fa-calendar-day.ml-2
+                    .col-md-10
+                        .float-right.pr-2
+                            = l(event.date)
             .card-body
                 %p 
                     %strong Start um 

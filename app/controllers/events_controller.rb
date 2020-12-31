@@ -77,9 +77,8 @@ class EventsController < ApplicationController
   # Todo: Make join/leave one action
   def join
     respond_to do |format|
-      @event.members << @membership
       format.js {
-        if @event.valid?
+        if @event.join(@membership)
           flash.now[:success] = 'Erfolgreich beigetreten'
           render_join_leave
         else
@@ -91,8 +90,7 @@ class EventsController < ApplicationController
   end
 
   def public_join
-    @event.members << @membership
-    if @event.valid?
+    if @event.join(@membership)
       flash[:success] = 'Erfolgreich beigetreten'
     else
       flash[:error] = @event.errors.full_messages.join(', ')
@@ -133,7 +131,7 @@ class EventsController < ApplicationController
                                 action: action_name == 'join' ? :leave : :join,
                                 event: @event, style: action_name == 'join' ? :danger : :primary }
     send_notification(@membership.nickname)
-    render json: { list: list, button: button, flash_box: flash_html } and return
+    render json: { success: true, list: list, button: button, flash_box: flash_html } and return
   end
 
   def event_params

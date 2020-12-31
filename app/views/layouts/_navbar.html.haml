@@ -16,7 +16,11 @@
               = "#{@current_community.name}"
             .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
               - current_user.memberships.each do |membership|
-                = link_to membership.community.name, set_active_communities_path(id: membership.community.id), method: 'post', class: "dropdown-item"
+                = link_to set_active_communities_path(id: membership.community.id), method: 'post', class: "dropdown-item" do
+                  %span
+                    = community_icon(membership.community)
+                  %span.ml-1
+                    = membership.community.name
         %li.nav-item{class: "communities-nav"}
           = link_to 'Communities', communities_path, class: "nav-link"
     %ul.navbar-nav.ml-auto
@@ -26,7 +30,7 @@
           %i.fas.fa-power-off
         = link_to '#', class: 'nav-link' do
           - if current_user.has_picture?
-            = image_tag url_for(current_user.picture), id: 'nav-profile-picture', class: 'rounded-circle'
+            = profile_picture_icon(current_user)
           - else
             = current_user.member.nickname
       - else    

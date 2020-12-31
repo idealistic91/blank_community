@@ -7,4 +7,7 @@
     %li.nav-item
       %a#settings-tab.nav-link.text-light{"aria-controls" => "settings", "aria-selected" => "false", "data-toggle" => "tab", :href => "#settings", :role => "tab"} Einstellungen
     %li.nav-item
-      %a#roles-tab.nav-link.text-light{"aria-controls" => "roles", "aria-selected" => "false", "data-toggle" => "tab", :href => "#roles", :role => "tab"} Rollen
+      %a#roles-tab.nav-link.text-light{"aria-controls" => "roles", "aria-selected" => "false", "data-toggle" => "tab", :href => "#roles", :role => "tab"}
+        Rollen
+        - if @community.joinable_dc_roles.empty?
+          %i.fas.fa-exclamation-triangle#community-state-warning

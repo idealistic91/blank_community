@@ -1,4 +1,5 @@
 @import "~bootstrap/scss/bootstrap";
+@import '_custom';
 
 body {
     background-color: #2F3136;
@@ -12,9 +13,15 @@ a { color: inherit; }
 }
 
 #content {
-    background-color: #36393F;
+      background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
+}
+
+.community-icon {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
 }
 
 a:visited {
@@ -220,3 +227,11 @@ small {
     90%  {opacity:0.2;}
     100%  {opacity:1;}
   }
+
+.fa-exclamation-triangle {
+  color: orange;
+}
+
+.participant-avatars img{
+  margin-right: -10px;
+}

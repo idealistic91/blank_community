@@ -43,7 +43,25 @@ class Event < ApplicationRecord
         slots == members.size
     end
 
+    def join(member)
+        if event_upcoming?
+            members << member
+            true
+        else
+            false
+        end
+    end
+
     private
+
+    def event_upcoming?
+        finished = date < DateTime.now
+        if finished
+            errors.add(:base, 'Event liegt in der Vergangenheit!')
+            return false
+        end
+        true
+    end
 
     def max_slots_reached
         errors.add(:slots, "Leider ist kein Platz mehr!") if event_full?

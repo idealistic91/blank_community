@@ -74,7 +74,7 @@ export default class Poll {
 
     renderControls() {
         let controls = Object.entries(this.controls)
-        let wrapper = $('<div id="actions"></div>')
+        let wrapper = $('<div id="controls"></div>')
         let self = this
         controls.forEach((keyValue)=> {
             let btn = $(this.buildButton(keyValue[0], keyValue[1]))

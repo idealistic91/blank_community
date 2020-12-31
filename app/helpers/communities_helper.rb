@@ -7,8 +7,16 @@ module CommunitiesHelper
     end
     
     def role_collection
-        Role.all.map do |role|
+        Role.all.reject{ |role| role.key == 'owner'}.map do |role|
             [role.label, role.key]
+        end
+    end
+
+    def community_icon(c)
+        if c.picture.attached?
+            image_tag url_for(c.picture), class: 'community-icon'
+        else
+            image_tag 'community_default.png', class: 'community-icon'
         end
     end
 

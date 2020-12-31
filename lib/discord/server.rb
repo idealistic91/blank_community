@@ -1,15 +1,22 @@
 module Discord
     class Server < Base
         
-        attr_accessor :id
+        attr_accessor :id, :this
         
-        def initialize(id:)
+        def initialize(id:, bot: nil)
             @id = id
+            @this = Discordrb::Server.new(info, bot) if bot
         end
         
         def channels
             channels = Discordrb::API::Server.channels(BOT_TOKEN, id)
             JSON.parse(channels.to_str)
+        end
+
+        def download_icon
+            url = this.icon_url
+            image = Net::HTTP.get(URI.parse(url))
+            return image
         end
 
         def info

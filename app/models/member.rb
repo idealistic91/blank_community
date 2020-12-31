@@ -80,18 +80,12 @@ class Member < ApplicationRecord
                                   .map(&:roles).flatten.uniq.map(&:key)
     has_right = %w(member admin owner).detect{|key| rights_via_server_roles.include?(key) }
     unless has_right || owner?
-      errors.add(:base, "Die fehlen die Rechte um der Community beizutreten.\nFolgende Server-Rollen berechtigen dich zum Beitreten: #{joinable_dc_roles.join(', ')}")
+      errors.add(:base, "Dir fehlen Rechte um der Community beizutreten. Folgende Server-Rollen berechtigen dich zum Beitritt: #{community.joinable_dc_roles.join(', ')}")
     end
   end
 
   private
 
-  def joinable_dc_roles
-    community.discord_roles.map(&:role_assignments)
-        .flatten.select{|assignment| assignment.role.key == 'admin' || assignment.role.key == 'member' }
-        .map{|assignment| assignment.discord_role.name }
-  end
-  
   def set_defaults
     if user.discord_id
       dc_user = discord_user

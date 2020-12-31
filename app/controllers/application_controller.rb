@@ -29,6 +29,6 @@ class ApplicationController < ActionController::Base
   end
 
   def render_flash_as_json
-    render json: { flash_box: flash_html } and return
+    render json: { success: false, flash_box: flash_html } and return
   end
 end

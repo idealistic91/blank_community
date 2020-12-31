@@ -5,6 +5,16 @@ class CommunitiesController < ApplicationController
   # GET /communities.json
   def index
     @communities = Community.all
+    @registered_in = current_user.memberships.map(&:community)
+    @my_communities = Community.all.select{|c| c.server.get_member_by_id(current_user.discord_id) }
+    @nav_items = [
+        { key: :registered_in, partial: 'communities/partials/registered_in', label: 'Beigetreten'
+        },
+        { key: :my_communities, partial: 'communities/partials/my_communities', label: 'Discord'
+        },
+        { key: :all, partial: 'communities/partials/all_communities', label: 'Alle'
+        }
+    ]
   end
 
   # GET /communities/1
@@ -133,6 +143,7 @@ class CommunitiesController < ApplicationController
   def role_hash
     {
         index: [],
+        set_active: [:owner, :admin, :member],
         show: [:member, :owner, :admin],
         update: [:owner],
         destroy: [:owner],
