@@ -1,0 +1,6 @@
+.container
+  = render partial: 'shared/card_with_tabs',
+  locals: { nav_items: @nav_items }
+
+- content_for(:custom_js) do
+  = javascript_pack_tag 'communities/index'

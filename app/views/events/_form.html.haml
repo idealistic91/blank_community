@@ -1,6 +1,6 @@
 .container
   .row.pt-4.pb-4{style: "background: url('#{picture_url(event.game, type: :title_picture)}');"}
-    = form_with(model: event, local: true, class: 'event_form col-md-6') do |form|
+    = form_with(model: [@community, event], local: true, class: 'event_form col-md-6') do |form|
       .form-group.card.bg-dark.p-2.pb-3
         = form.label 'Titel'
         = form.text_field :title, class: 'form-control'

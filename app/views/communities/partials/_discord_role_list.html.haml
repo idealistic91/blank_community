@@ -1,0 +1,5 @@
+- if dc_role.role_assignments.any?
+    - dc_role.role_assignments.each do |assignment|
+        = role_badge(role_assignment: assignment)
+- else 
+    = "Keine Rollen zugewiesen"

@@ -7,7 +7,7 @@ module DiscordNotifications
         "**#{name}** ist dem Event **#{title}** beigetreten"
     end
 
-    def created_notification(name)
+    def create_notification(name)
         "**#{name}** hat ein neues Event erstellt:"
     end
 
@@ -15,11 +15,15 @@ module DiscordNotifications
         ":hash: `#{id}` :mega: `#{title}` :video_game: `#{game ? game_name : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
     end
 
+    def send_poll_notification(name)
+        "**#{name}** hat eine Umfrage gestartet"
+    end
+
     def event_embed
         {
             "title": "Event: #{title}",
             "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
-            "url": "#{event_url(self)}",
+            "url": "#{community_event_url(self.community, self)}",
             "color": 15682568,
             "timestamp": "#{Time.now.utc.iso8601}",
             "footer": {
@@ -51,52 +55,13 @@ module DiscordNotifications
                     },
                     {
                         "name": "Actions",
-                        "value": "[Join](#{event_url(self)})"
+                        "value": "[Join](#{public_join_community_events_url(community_id: self.community, id: self.id)})"
                     }
                 ]
         }
     end
 
-    def event_embed_small
-        {
-            "title": "Event: #{title}",
-            "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
-            "url": "#{event_url(self)}",
-            "color": 15682568,
-            "timestamp": "#{created_at.utc.iso8601}",
-            "footer": {
-                "icon_url": "#{self.hosts.first.discord_avatar}",
-                "text": "Erstellt "
-            },
-            "author": {
-                "name": "#{self.hosts.first.nickname}",
-                "url": "#{root_url}",
-                "icon_url": "#{self.hosts.first.discord_avatar}"
-            },
-            "fields": [
-                    {
-                        "name": "Plätze",
-                        "value": "#{self.members.size}/#{slots}"
-                    },
-                    {
-                        "name": "Start",
-                        "value": "#{I18n.l(start_at, format: :short)}",
-                        "inline": true
-                    },
-                    {
-                        "name": "Ende",
-                        "value": "#{I18n.l(ends_at, format: :short)}",
-                        "inline": true
-                    },
-                    {
-                        "name": "Actions",
-                        "value": "[Join](#{event_url(self)})"
-                    }
-                ]
-        }
-    end
-
-    def cancel_notification(name)
+    def destroy_notification(name)
         "Das Event **#{title}** wurde von **#{name}** abgesagt!"
     end
 

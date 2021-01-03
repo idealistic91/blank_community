@@ -3,6 +3,8 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
+  before_action :check_community, only: :create
+  after_action :create_community, only: :create
 
   # GET /resource/sign_up
   def new
@@ -10,14 +12,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # POST /resource
-  # def create
-  #   super
-  # end
+  def create
+    super
+  end
 
   # GET /resource/edit
-  # def edit
-  #   super
-  # end
+  def edit
+    super
+  end
 
   # PUT /resource
   # def update
@@ -38,7 +40,32 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # protected
+  protected
+
+  def check_community
+    if params[:server_id]
+      server = Discord::Server.new(id: params[:server_id])
+      begin
+        @info = server.info
+        @community = Community.new(name: @info['name'], server_id: @info['id'])
+        unless @community.save
+          flash[:error] = "Fehler: #{@community.errors.full_messages.join(', ')}"
+          render :new and return
+        end
+      rescue => exception
+        flash[:error] = "Discord Server nicht gefunden! Exception: #{exception.message}"
+        render :new and return
+      end
+    end
+  end
+
+  def create_community
+    unless @community.nil?
+      @community.reload
+      @community.creator = resource
+      @community.save
+    end
+  end
 
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_sign_up_params

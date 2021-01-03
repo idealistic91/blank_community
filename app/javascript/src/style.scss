@@ -1,18 +1,32 @@
 @import "~bootstrap/scss/bootstrap";
+@import '_custom';
 
 body {
     background-color: #2F3136;
     color: white;
 }
 
+a { color: inherit; } 
+
 #nav-profile-picture {
     height: 40px;
 }
 
 #content {
-    background-color: #36393F;
+      background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
+}
+
+.community-icon {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+#nav-list li{
+  display: flex;
+  align-items: center;
 }
 
 a:visited {
@@ -93,4 +107,136 @@ small {
 #logout svg{
     height: 40px;
     width: 40px;
+}
+
+.member-role-badges {
+    display: inline;
+    
+}
+
+#spinner-container {
+    height: 30px;
+}
+  #kitt {
+    left: 50%;
+    top: 50%;
+    height: 150px;
+    display: none;
+    // margin: -75px 0 0 -620px;
+  }
+  .one, .two, .three, .four, .five, .six, .seven, .eight, .nine, .ten {
+    width: 50px;
+    height: 30px;
+    background: red;
+    margin: 0;
+    display: inline-block;
+    -webkit-box-shadow: 0 0 30px red, inset 0 0 5px rgba(255,255,255, 0.5);
+    border-radius: 5px;
+    -webkit-animation-duration: 0.7s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+  }
+  .one {
+     -webkit-animation-name: first ;
+  }
+  .two {
+    -webkit-animation-name: second ;
+  }
+  .three {
+    -webkit-animation-name: third ;
+  }
+  .four {
+    -webkit-animation-name: fourth ;
+  }
+  .five {
+    -webkit-animation-name: fifth ;
+  }
+  .six {
+    -webkit-animation-name: sixth ;
+  }
+  .seven {
+    -webkit-animation-name: seventh ;
+  }
+  .eight {
+    -webkit-animation-name: eighth ;
+  }
+  .nine {
+    -webkit-animation-name: ninth ;
+  }
+  .ten {
+    -webkit-animation-name: tenth ;
+  }
+  @-webkit-keyframes first {
+    0%   {opacity:0.2;}
+    10%  {opacity:1;}
+    20%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes second {
+    0%   {opacity:0;}
+    10%   {opacity:0.2;}
+    20%  {opacity:1;}
+    30%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes third {
+    0%   {opacity:0;}
+    20%  {opacity:0.2;}
+    30%  {opacity:1;}
+    40%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes fourth {
+    0%   {opacity:0;}
+    30%  {opacity:0.2;}
+    40%  {opacity:1;}
+    50%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes fifth {
+    0%   {opacity:0;}
+    40%  {opacity:0.2;}
+    50%  {opacity:1;}
+    60%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes sixth {
+    0%   {opacity:0;}
+    50%  {opacity:0.2;}
+    60%  {opacity:1;}
+    70%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes seventh {
+    0%   {opacity:0;}
+    60%  {opacity:0.2;}
+    70%  {opacity:1;}
+    80%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes eighth {
+    0%   {opacity:0;}
+    70%  {opacity:0.2;}
+    80%  {opacity:1;}
+    90%  {opacity:0.2;}
+    100% {opacity:0;}
+  }
+  @-webkit-keyframes ninth {
+    0%   {opacity:0;}
+    80%  {opacity:0.2;}
+    90%  {opacity:1;}
+    100% {opacity:0.2;}
+  }
+  @-webkit-keyframes tenth {
+    0%   {opacity:0;}
+    90%  {opacity:0.2;}
+    100%  {opacity:1;}
+  }
+
+.fa-exclamation-triangle {
+  color: orange;
+}
+
+.participant-avatars img{
+  margin-right: -10px;
 }

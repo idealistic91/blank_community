@@ -11,5 +11,5 @@ $(document).on('ajax:success', function(event){
         console.log('Error')
         // show error partial in modal
         $('#error_container').html(data.template)
-    };
+    }
 });

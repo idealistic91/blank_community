@@ -1,21 +1,40 @@
 module Discord
     class Server < Base
-        def self.channels
-            channels = Discordrb::API::Server.channels(BOT_TOKEN, SERVER_ID)
+        
+        attr_accessor :id, :this
+        
+        def initialize(id:, bot: nil)
+            @id = id
+            @this = Discordrb::Server.new(info, bot) if bot
+        end
+        
+        def channels
+            channels = Discordrb::API::Server.channels(BOT_TOKEN, id)
             JSON.parse(channels.to_str)
         end
 
-        def self.members
-            members = Discordrb::API::Server.resolve_members(BOT_TOKEN, SERVER_ID, 100)
+        def download_icon
+            url = this.icon_url
+            image = Net::HTTP.get(URI.parse(url))
+            return image
+        end
+
+        def info
+            info = Discordrb::API::Server.resolve(BOT_TOKEN, id)
+            JSON.parse(info.to_str)
+        end
+
+        def members
+            members = Discordrb::API::Server.resolve_members(BOT_TOKEN, id, 150)
             JSON.parse(members.to_str)
         end
 
-        def self.roles
-            roles = Discordrb::API::Server.roles(BOT_TOKEN, SERVER_ID)
+        def roles
+            roles = Discordrb::API::Server.roles(BOT_TOKEN, id)
             JSON.parse(roles.to_str)
         end
 
-        def self.role(id)
+        def role(id)
             result = roles
             if result.nil?
                 nil
@@ -26,31 +45,28 @@ module Discord
             end
         end
 
-        def self.member_by(value)
-            by_name = value.is_a?(String) ? true : false
-            res = members.select{|m| m['user'][by_name ? 'username' : 'id'] == value.to_s }.first
-            return nil if res.nil?
-            res['role_names'] = res['roles'].map{ |r| role(r) ? role(r)['name'] : '' }
-            res
+        def get_member_by_id(discord_id)
+            begin
+                member = Discordrb::API::Server.resolve_member(BOT_TOKEN, id, discord_id)
+                return JSON.parse(member)
+            rescue RestClient::NotFound => exception
+                return false
+            end
         end
 
-        def member_roles(name)
-            member_by(name)['role_names']
-        end
-
-        def self.text_channels
+        def text_channels
             channels.select do |c|
                 c['type'] == 0 
             end
         end
 
-        def self.voice_channels
+        def voice_channels
             channels.select do |c|
                 c['type'] == 2 
             end
         end
 
-        def self.get_channel_id(name, type = :text)
+        def get_channel_id(name, type = :text)
             channel = self.send("#{type}_channels").select do |c|
                 c['name'] == name
             end

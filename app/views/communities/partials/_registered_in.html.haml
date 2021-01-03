@@ -1,0 +1,4 @@
+.container.py-1
+  .row
+    - @registered_in.each do |c|
+      = render partial: 'communities/partials/item.html.haml', locals: {community: c, join: false, scope: 'registered_in'}

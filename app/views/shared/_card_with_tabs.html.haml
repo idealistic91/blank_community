@@ -1,0 +1,15 @@
+.row
+  .col-md-12
+    .card.text-white.mt-4.bg-dark.mb-3.d-flex{id: "#{controller_name}-#{action_name}-card"}
+      .card-header
+        = render partial: 'shared/tab_nav', locals: { nav_items: nav_items}
+      .card-body{id: "#{controller_name}-#{action_name}-card-body"}
+        .tab-content
+          - nav_items.each do |item|
+            %div{id: "#{item[:key]}", "aria-labelledby" => "#{item[:key]}-tab",
+            :role => "tabpanel", :class => "#{item == nav_items.first ? 'tab-pane fade show active' : 'tab-pane fade'}"}
+              - if item[:partial]
+                = render partial: item[:partial]
+              - else
+                = '...'
+      .card-footer

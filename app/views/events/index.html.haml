@@ -1,13 +1,9 @@
-.container
-  .card.bg-dark
-    .card-header
-      %h1 Events
-    .card-body
-      .row
-        - size = @events.size < 3 ? 6 : 4
-        - @events.each do |event|
-          %div{class: "col-md-#{size}"}
-            = render partial: 'item', locals: { event: event }
-      %br/
+.container#events-container{data: {community: @community.id}}
+  = render partial: 'shared/card_with_tabs',
+  locals: { nav_items: @nav_items }
+
 = action_bar do
-  - link_to 'Erstellen', new_event_path
+  - link_to 'Erstellen', new_community_event_path(@community)
+
+- content_for(:custom_js) do
+  = javascript_pack_tag 'events/index'

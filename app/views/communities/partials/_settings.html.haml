@@ -1,0 +1,9 @@
+= form_with(model: community, method: :patch) do |form|
+    = form.fields_for :settings do |f|
+        .form-group
+            = f.label 'Benachrichtigungs Channel'
+            = f.select :main_channel, channel_collection(community), { include_blank: 'Wähle einen Channel' }, { class: 'custom-select custom-select-sm' }
+        .form-group
+            = f.label 'Öffentlich'
+            = f.check_box :public
+    = form.submit class: "btn btn-primary"

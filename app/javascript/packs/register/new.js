@@ -10,7 +10,10 @@ function findGetParameter(parameterName) {
         });
     return result;
 }
+let form = $('#new_user')
+if(findGetParameter('server_id') != null){
+    let hidden_input = `<input type="hidden" name="server_id" id="server_id" value="${findGetParameter('server_id')}">`
+    form.prepend(hidden_input)
+}
 
-// find param and set it as hidden discord_id value
 $('#user_discord_id').val(findGetParameter('discord_id'))
-

@@ -1,21 +1,22 @@
 class EventsController < ApplicationController
+  before_action :get_community
+  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll]
+  before_action :get_events, only: [:index, :fetch]
+  before_action :get_membership
+  before_action :load_bot, except: [:index, :show, :new]
 
-  include Discord
-
-  before_action :set_event, only: [:show, :edit, :update, :destroy, :join, :leave]
-
-  # GET /events
-  # GET /events.json
   def index
-    @events = Event.including_game
+    @upcoming = @events.including_game.upcoming_events
+    @nav_items = [
+        { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
+        },
+        { key: :past, label: 'Archiv'
+        }
+    ]
   end
 
-  # GET /events/1
-  # GET /events/1.json
-  def show
-  end
+  def show; end
 
-  # GET /events/new
   def new
     @event = Event.new
     @game = Game.new
@@ -27,100 +28,167 @@ class EventsController < ApplicationController
     @game ||= Game.new
   end
 
-  # POST /events
-  # POST /events.json
   def create
     @event = Event.new(event_params)
-    @event.hosting_events << HostingEvent.create(event_id: @event.id, member_id: current_user.member.id)
+    @event.community = @community
     respond_to do |format|
       if @event.save
-        format.html { 
-          inform_discord
-          redirect_to @event, notice: 'Event was successfully created.' 
+        # Todo: Have nested attributes for hosting events
+        @event.add_host(@membership.id)
+        format.html {
+          send_notification(@membership.nickname, @event.event_embed)
+          redirect_to community_event_path(@community, @event), notice: 'Event was successfully created.' 
         }
         format.json { render :show, status: :created, location: @event }
       else
-        format.html { render :new }
+        format.html { 
+          flash[:error] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
+          render :new 
+        }
         format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /events/1
-  # PATCH/PUT /events/1.json
   def update
     respond_to do |format|
       if @event.update(event_params)
-        format.html { redirect_to @event, notice: 'Event was successfully updated.' }
+        format.html { redirect_to community_event_path(@community, @event), notice: 'Event was successfully updated.' }
         format.json { render :show, status: :ok, location: @event }
       else
-        format.html { render :edit }
+        format.html {
+          flash[:error] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
+          render :edit 
+        }
         format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # DELETE /events/1
-  # DELETE /events/1.json
   def destroy
-    destroy_notification
     @event.destroy
+    send_notification(@membership.nickname)
     respond_to do |format|
-      format.html { redirect_to events_url, notice: 'Event was successfully destroyed.' }
+      format.html { redirect_to community_events_path(@community), notice: 'Event was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
-
+  # Todo: Make join/leave one action
   def join
     respond_to do |format|
       format.js {
-        @event.members << current_user.member
-        list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
-        button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html', locals: { name: 'Verlassen',action: :leave, event: @event, style: :danger } 
-        join_notification
-        render json: { list: list, button: button }
+        if @event.join(@membership)
+          flash.now[:success] = 'Erfolgreich beigetreten'
+          render_join_leave
+        else
+          flash.now[:error] = @event.errors.full_messages.join(', ')
+          render_flash_as_json
+        end
       }
     end
+  end
+
+  def public_join
+    if @event.join(@membership)
+      flash[:success] = 'Erfolgreich beigetreten'
+    else
+      flash[:error] = @event.errors.full_messages.join(', ')
+    end
+    redirect_to community_event_path(@community, @event)
   end
 
   def leave
     respond_to do |format|
       format.js {
-        @event.members.delete(current_user.member)
-        list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
-        button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html', locals: { name: 'Teilnehmen', action: :join, event: @event, style: :primary } 
-        leave_notification
-        render json: { list: list, button: button }
+        if @event.hosts.include?(@membership)
+          flash.now[:error] = 'Du bist Host dieses Events und kannst daher das Event nicht verlassen!'
+          render_flash_as_json
+        else
+          @event.members.delete(@membership)
+          flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
+          render_join_leave
+        end
+      }
+    end
+  end
+
+  def send_poll
+    respond_to do |format|
+      format.js {
+        #send_notification(@membership.nickname)
+        render json: { success: "true", message: 'Poll was send to the others' }
+      }
+    end
+  end
+
+  def fetch
+    @past = @events.including_game.past_events
+    element = render_to_string partial: 'events/partials/past', layout: false, format: 'html'
+    respond_to do |format|
+      format.js {
+        render json: {success: "true", result: element}
       }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_event
-      @event = Event.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def event_params
-      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
-      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
-      params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :game_id, :slots)
-    end
+  def render_join_leave
+    list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+    button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html',
+                              locals: { name: action_name == 'join' ? "Verlassen" : "Teilnehmen",
+                                action: action_name == 'join' ? :leave : :join,
+                                event: @event, style: action_name == 'join' ? :danger : :primary }
+    send_notification(@membership.nickname)
+    render json: { success: true, list: list, button: button, flash_box: flash_html } and return
+  end
 
-    def join_notification
-      DISCORD_BOT.send_to_channel('chat', @event.join_notification(current_user.member.nickname))
-    end
+  def event_params
+    params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
+    params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
+    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :game_id, :slots)
+  end
 
-    def leave_notification
-      DISCORD_BOT.send_to_channel('chat', @event.leave_notification(current_user.member.nickname))
+  def get_community
+    if params[:id] || params[:community_id]
+      @community = Community.find_by(id: params[:community_id])
+    else
+      @community = @current_community
     end
+    unless @community
+      flash[:error] = "Community not found!"
+      redirect_back(fallback_location: root_path)
+    end
+  end
 
-    def destroy_notification
-      DISCORD_BOT.send_to_channel('chat', @event.cancel_notification(current_user.member.nickname))
-    end
+  def get_events
+    @events = @community.events
+  end
 
-    def inform_discord
-      DISCORD_BOT.send_to_channel('chat', @event.created_notification(current_user.member.nickname), @event.event_embed)
+  def get_membership
+    @membership = current_user.membership_by_community(@community.id).first
+    unless @membership
+      flash[:error] = "You do not have a membership to this community!"
+      redirect_back(fallback_location: root_path)
     end
+  end
+
+  def get_event
+    @event = @community.events.where(id: params[:id]).first
+    unless @event
+      flash[:error] = "Event not found!"
+      redirect_back(fallback_location: root_path)
+    end
+  end
+
+  def load_bot
+    @bot = Discord::Bot.new(id: @community.server_id)
+  end
+
+  def send_notification(nickname, embed = nil)
+    Thread.new do
+      channel = @community.get_main_channel
+      @bot.send_to_channel(channel[:name], @event.send("#{action_name}_notification", nickname), embed) if channel
+    end
+  end
 end
