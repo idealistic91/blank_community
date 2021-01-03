@@ -24,6 +24,11 @@ a { color: inherit; }
   border-radius: 50%;
 }
 
+#nav-list li{
+  display: flex;
+  align-items: center;
+}
+
 a:visited {
     text-decoration: none;
 }

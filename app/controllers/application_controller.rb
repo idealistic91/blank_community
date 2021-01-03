@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
     @current_community = Community.find_by(id: cookies.signed[:active_community])
     @current_community ||= current_user.memberships.first.try(:community)
     @member = current_user.membership_by_community(@current_community.try(:id)).first
+    @member ||= current_user.memberships.first
   end
 
   def set_active_cookie(id)

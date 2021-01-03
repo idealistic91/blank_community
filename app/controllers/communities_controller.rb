@@ -1,18 +1,20 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role, :set_active, :join]
+  before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role, :set_active,
+       :leave, :join]
   before_action :check_permission
   # GET /communities
   # GET /communities.json
   def index
-    @communities = Community.all
+    @communities = Community.public_communities
     @registered_in = current_user.memberships.map(&:community)
+    @community_ids = @registered_in.map(&:id)
     @my_communities = Community.all.select{|c| c.server.get_member_by_id(current_user.discord_id) }
     @nav_items = [
+        { key: :all, partial: 'communities/partials/all_communities', label: 'Alle'
+        },
         { key: :registered_in, partial: 'communities/partials/registered_in', label: 'Beigetreten'
         },
-        { key: :my_communities, partial: 'communities/partials/my_communities', label: 'Discord'
-        },
-        { key: :all, partial: 'communities/partials/all_communities', label: 'Alle'
+        { key: :my_communities, label: 'Discord', partial: 'communities/partials/my_communities'
         }
     ]
   end
@@ -108,6 +110,34 @@ class CommunitiesController < ApplicationController
     end
   end
 
+  def leave
+    respond_to do |format|
+      @member.destroy
+      set_active_cookie(current_user.memberships.first.try(:id))
+      format.js {
+        flash.now[:success] = "Deine Mitgliedschaft wurde gelöscht!"
+        render_flash_as_json
+      }
+    end
+  end
+
+  def fetch
+    @my_communities = Community.all.select{|c| c.server.get_member_by_id(current_user.discord_id) }
+    @items = []
+    @memberships = current_user.memberships.map(&:community)
+    @my_communities.each do |c|
+      @items << (render_to_string partial: 'communities/partials/item',
+                                  locals: { community: c,
+                                            join: !@memberships.include?(c),
+                                            scope: 'discord' })
+    end
+    respond_to do |format|
+      format.js {
+        render json: { success: true, result: @items }
+      }
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
   def set_community
@@ -148,6 +178,8 @@ class CommunitiesController < ApplicationController
         update: [:owner],
         destroy: [:owner],
         join: [],
+        leave: [:member, :admin],
+        fetch: [],
         assign_role: [:owner],
         unassign_role: [:owner]
     }

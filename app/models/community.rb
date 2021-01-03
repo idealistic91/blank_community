@@ -12,7 +12,15 @@ class Community < ApplicationRecord
     
     after_create :create_discord_roles, :create_owner_member, :create_settings, :set_picture
 
+    delegate :public, to: :settings
+
     scope :discord_roles_by_id, ->(role_ids) { discord_roles.where(discord_id: role_ids) }
+    scope :with_settings, -> { includes(:settings) }
+    scope :is_public, -> { joins(:settings).where(public: true) }
+
+    def self.public_communities
+        all.select(&:public)
+    end
 
     def server
         Discord::Server.new(id: server_id, bot: DISCORD_BOT.bot)

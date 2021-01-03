@@ -3,16 +3,20 @@
   %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
     %span.navbar-toggler-icon
   #navbarSupportedContent.collapse.navbar-collapse
-    %ul.navbar-nav.mr-auto
+    %ul.navbar-nav.mr-auto#nav-list
       - if user_signed_in?
         - if @current_community
           %li.nav-item{class: "events-nav"}
             = link_to 'Events', community_events_path(community_id: @current_community.id), class: "nav-link"
             %span.sr-only (current)
+        %li.nav-item{class: "communities-nav"}
+          = link_to 'Communities', communities_path, class: "nav-link"
+        - if @current_community
           %li.nav-item{class: "communities-nav"}
             = link_to "Community :", community_path(@current_community), class: "nav-link"
           %li.nav-item.dropdown{class: "communities-nav"}
             %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+              = community_icon(@current_community)
               = "#{@current_community.name}"
             .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
               - current_user.memberships.each do |membership|
@@ -21,8 +25,6 @@
                     = community_icon(membership.community)
                   %span.ml-1
                     = membership.community.name
-        %li.nav-item{class: "communities-nav"}
-          = link_to 'Communities', communities_path, class: "nav-link"
     %ul.navbar-nav.ml-auto
       %li.nav-item
       - if user_signed_in?

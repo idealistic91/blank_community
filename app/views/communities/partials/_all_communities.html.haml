@@ -1,4 +1,5 @@
 .container.py-1
   .row
     - @communities.each do |c|
-      = render partial: 'communities/partials/item.html.haml', locals: {community: c}
+      = render partial: 'communities/partials/item.html.haml',
+      locals: {community: c, join: @community_ids.include?(c.id) ? false : true, scope: 'all'}

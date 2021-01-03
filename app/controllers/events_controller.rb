@@ -1,17 +1,16 @@
 class EventsController < ApplicationController
   before_action :get_community
   before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll]
-  before_action :get_events, only: :index
+  before_action :get_events, only: [:index, :fetch]
   before_action :get_membership
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
     @upcoming = @events.including_game.upcoming_events
-    @past = @events.including_game.past_events
     @nav_items = [
         { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
         },
-        { key: :past, partial: 'events/partials/past', label: 'Vergangene'
+        { key: :past, label: 'Archiv'
         }
     ]
   end
@@ -122,6 +121,16 @@ class EventsController < ApplicationController
     end
   end
 
+  def fetch
+    @past = @events.including_game.past_events
+    element = render_to_string partial: 'events/partials/past', layout: false, format: 'html'
+    respond_to do |format|
+      format.js {
+        render json: {success: "true", result: element}
+      }
+    end
+  end
+
   private
 
   def render_join_leave
@@ -141,7 +150,7 @@ class EventsController < ApplicationController
   end
 
   def get_community
-    if params[:id]
+    if params[:id] || params[:community_id]
       @community = Community.find_by(id: params[:community_id])
     else
       @community = @current_community

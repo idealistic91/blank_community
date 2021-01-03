@@ -1,4 +1,4 @@
-.col-md-6.my-2
+.col-md-6.my-2{id: "community-badge-#{community.id}-#{scope}"}
   .community-badge.px-1
     .row
       .col-md-4.p-0.title-container
@@ -12,5 +12,10 @@
             %button.btn.btn-primary.btn-sm.disabled
               %i.fas.fa-user-friends
           %span
-            = link_to join_communities_path(id: community.id), remote: true, method: :post, class: 'btn btn-success btn-sm' do
-              %i.fas.fa-sign-in-alt
+            - if join
+              = link_to join_communities_path(id: community.id), remote: true, method: :post, class: 'btn btn-success btn-sm' do
+                %i.fas.fa-sign-in-alt
+            - else
+              = link_to leave_communities_path(id: community.id), remote: true, method: :post, class: 'btn btn-danger btn-sm' do
+                %i.fas.fa-sign-out-alt
+

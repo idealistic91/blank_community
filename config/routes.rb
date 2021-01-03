@@ -6,12 +6,15 @@ Rails.application.routes.draw do
       post :assign_role
       post :unassign_role
       post :join
+      post :leave
+      post :fetch
     end
     resources :events do
       member do
         post :send_poll
       end
       collection do
+        post :fetch
         post :join
         post :leave
         #post :send_poll

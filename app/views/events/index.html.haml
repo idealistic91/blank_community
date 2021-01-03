@@ -1,6 +1,9 @@
-.container
+.container#events-container{data: {community: @community.id}}
   = render partial: 'shared/card_with_tabs',
   locals: { nav_items: @nav_items }
 
 = action_bar do
   - link_to 'Erstellen', new_community_event_path(@community)
+
+- content_for(:custom_js) do
+  = javascript_pack_tag 'events/index'
