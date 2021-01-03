@@ -31,10 +31,7 @@
         = link_to destroy_user_session_path, class: "nav-link", method: 'delete', id: 'logout' do
           %i.fas.fa-power-off
         = link_to '#', class: 'nav-link' do
-          - if current_user.has_picture?
-            = profile_picture_icon(current_user)
-          - else
-            = current_user.member.nickname
+          = profile_picture_icon(current_user)
       - else    
         = link_to 'Einloggen', new_user_session_path, class: "nav-link"
         = link_to 'Registrieren', new_user_registration_path, class: "nav-link"
