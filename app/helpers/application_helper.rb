@@ -3,7 +3,7 @@ module ApplicationHelper
     if user.has_picture?
       image_tag url_for(user.picture), id: 'nav-profile-picture', class: 'rounded-circle'
     else
-      image_tag image_url('logo.png'), id: 'nav-profile-picture', class: 'rounded-circle'
+      image_tag image_url('profile_picture.png'), id: 'nav-profile-picture', class: 'rounded-circle'
     end
   end
 end
