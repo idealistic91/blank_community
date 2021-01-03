@@ -16,7 +16,8 @@
             = link_to "Community :", community_path(@current_community), class: "nav-link"
           %li.nav-item.dropdown{class: "communities-nav"}
             %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-              = community_icon(@current_community)
+              .mr-2
+                = community_icon(@current_community)
               = "#{@current_community.name}"
             .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
               - current_user.memberships.each do |membership|

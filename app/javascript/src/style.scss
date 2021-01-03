@@ -12,8 +12,13 @@ a { color: inherit; }
     height: 40px;
 }
 
+a#navbarDropdown {
+  display: flex;
+  align-items: center;
+}
+
 #content {
-      background-color: #36393F;
+    background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
 }
