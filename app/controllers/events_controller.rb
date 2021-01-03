@@ -42,7 +42,7 @@ class EventsController < ApplicationController
         format.json { render :show, status: :created, location: @event }
       else
         format.html { 
-          flash[:error] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
+          flash[:alert] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
           render :new 
         }
         format.json { render json: @event.errors, status: :unprocessable_entity }
@@ -57,7 +57,7 @@ class EventsController < ApplicationController
         format.json { render :show, status: :ok, location: @event }
       else
         format.html {
-          flash[:error] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
+          flash[:alert] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
           render :edit 
         }
         format.json { render json: @event.errors, status: :unprocessable_entity }
@@ -92,7 +92,7 @@ class EventsController < ApplicationController
     if @event.join(@membership)
       flash[:success] = 'Erfolgreich beigetreten'
     else
-      flash[:error] = @event.errors.full_messages.join(', ')
+      flash[:alert] = @event.errors.full_messages.join(', ')
     end
     redirect_to community_event_path(@community, @event)
   end
@@ -156,7 +156,7 @@ class EventsController < ApplicationController
       @community = @current_community
     end
     unless @community
-      flash[:error] = "Community not found!"
+      flash[:alert] = "Community not found!"
       redirect_back(fallback_location: root_path)
     end
   end
@@ -168,7 +168,7 @@ class EventsController < ApplicationController
   def get_membership
     @membership = current_user.membership_by_community(@community.id).first
     unless @membership
-      flash[:error] = "You do not have a membership to this community!"
+      flash[:alert] = "You do not have a membership to this community!"
       redirect_back(fallback_location: root_path)
     end
   end
@@ -176,7 +176,7 @@ class EventsController < ApplicationController
   def get_event
     @event = @community.events.where(id: params[:id]).first
     unless @event
-      flash[:error] = "Event not found!"
+      flash[:alert] = "Event not found!"
       redirect_back(fallback_location: root_path)
     end
   end

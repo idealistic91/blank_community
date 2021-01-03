@@ -39,7 +39,7 @@ class GamesController < ApplicationController
         }
       else
         format.js {
-          flash[:error] = @game.errors.full_messages.join(', ') 
+          flash[:alert] = @game.errors.full_messages.join(', ') 
           template = render_to_string partial: 'layouts/flash', content_type: 'text/html', locals: { flash: flash }
           render json: { template: template, success: 'false' } 
         }

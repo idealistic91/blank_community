@@ -13,8 +13,9 @@ class Event < ApplicationRecord
     validates :start_at, presence: true
     validates :ends_at, presence: true
     validates :date, presence: true
+    validates :date, future: true
     validates :title, presence: true
-    validates :slots, inclusion: 3..10
+    validates :slots, inclusion: { in: Proc.new{ |event| event.members.size > 3 ? event.members.size..20 : 3..20 } }
     validate :max_slots_reached, on: :update
 
     before_create :set_end_date
