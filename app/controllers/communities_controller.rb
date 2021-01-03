@@ -72,8 +72,14 @@ class CommunitiesController < ApplicationController
       format.js {
         discord_role = DiscordRole.find_by(id: params[:dc_role_id])
         discord_role.assign_role(params[:role])
-        element = render_to_string partial: 'communities/partials/discord_role_list', locals: { dc_role: discord_role }, layout: false, format: :html
-        render json: { element: element, dc_role_id: discord_role.id }
+        if discord_role.valid?
+          flash.now[:success] = 'Rolle wurde zugewiesen'
+          element = render_to_string partial: 'communities/partials/discord_role_list', locals: { dc_role: discord_role }, layout: false, format: :html
+          render json: { element: element, dc_role_id: discord_role.id, flash_box: flash_html } and return
+        else
+          flash.now[:alert] = 'Rollenzuweisung existiert schon'
+          render_flash_as_json
+        end
       }
     end
   end
@@ -85,7 +91,8 @@ class CommunitiesController < ApplicationController
         assignment = RoleAssignment.find_by(id: params[:assignment_id])
         assignment.destroy
         element = render_to_string partial: 'communities/partials/discord_role_list', locals: { dc_role: discord_role }, layout: false, format: :html
-        render json: { element: element, dc_role_id: discord_role.id }
+        flash.now[:success] = 'Rollenzuweisung entfernt'
+        render json: { element: element, dc_role_id: discord_role.id, flash_box: flash_html }
       }
     end
   end
@@ -143,7 +150,7 @@ class CommunitiesController < ApplicationController
   def set_community
     @community = Community.find_by(id: params[:id])
     unless @community
-      flash[:error] = "Community was not found!"
+      flash[:alert] = "Community was not found!"
       redirect_back(fallback_location: root_path) and return
     end
   end
@@ -154,7 +161,6 @@ class CommunitiesController < ApplicationController
     # Only allow a list of trusted parameters through.
   def community_params
     params.require(:community).permit(settings_attributes: [:public, :main_channel])
-    #params.require(:community, {settings: })
   end
 
   def check_permission

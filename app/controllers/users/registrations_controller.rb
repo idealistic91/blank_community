@@ -49,11 +49,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
         @info = server.info
         @community = Community.new(name: @info['name'], server_id: @info['id'])
         unless @community.save
-          flash[:error] = "Fehler: #{@community.errors.full_messages.join(', ')}"
+          flash[:alert] = "Fehler: #{@community.errors.full_messages.join(', ')}"
           render :new and return
         end
       rescue => exception
-        flash[:error] = "Discord Server nicht gefunden! Exception: #{exception.message}"
+        flash[:alert] = "Discord Server nicht gefunden! Exception: #{exception.message}"
         render :new and return
       end
     end
