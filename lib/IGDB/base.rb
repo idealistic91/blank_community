@@ -1,7 +1,5 @@
 module IGDB
     class Base
-        require 'apicalypse'
-        
         TOKEN_URL = 'https://id.twitch.tv/oauth2/token'
         CLIENT_ID = ENV['IGDB_CLIENT_ID']
         CLIENT_SECRET = ENV['IGDB_CLIENT_SECRET']
@@ -10,33 +8,45 @@ module IGDB
 
         CONFIG = YAML.load_file("#{Rails.root}/lib/IGDB/config.yml")
         BASE_URL = CONFIG['endpoints']['base']
+        GAMES_URL = "#{CONFIG['endpoints']['base']}#{CONFIG['endpoints']['games']}"
         DOMAIN = CONFIG['endpoints']['domain']
 
-        attr_accessor :success, :errors, :response, :token, :headers
+        attr_accessor :success, :errors, :response, :token, :headers, :request
         
         def initialize
             @success = true
             @errors = []
             @token = generate_token
             @headers = set_headers
+            @request = nil
+            @response = nil
         end
 
         def search_game(string, fields: [:name])
-            request = Net::HTTP::Post.new(URI("#{BASE_URL}games"), headers)
-            body = 'fields ' + fields.join(',') + ';search "' + string + '";'
-            request.body = body
-            response = set_http.request(request)
-            JSON.parse(response.body)
+            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            request.body = 'fields ' + fields.join(',') + ';search "' + string + '";'
+            request_and_parse
         end
 
-        def games(limit = 10)
-            request = Net::HTTP::Post.new(URI("#{BASE_URL}games"), headers)
-            request.body = "fields name; limit #{limit};"
-            response = set_http.request(request)
-            JSON.parse(response.body)
+        def games(limit = 10, fields: [:name])
+            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            request.body = "fields #{fields.join(',')}; limit #{limit};"
+            request_and_parse
+        end
+
+        def game(id, fields: [:name])
+            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            request.body = "where id = #{id};fields #{fields.join(',')};"
+            request_and_parse
+        end
+
+        
+
+        def download_cover
+            
         end
         
-        private
+        protected
 
         def generate_token
             params = "client_id=#{CLIENT_ID}&client_secret=#{CLIENT_SECRET}&grant_type=client_credentials"
@@ -54,6 +64,16 @@ module IGDB
             http = Net::HTTP.new(DOMAIN, 443)
             http.use_ssl = true
             http
+        end
+
+        def request_and_parse
+            begin
+                @response = set_http.request(request)
+                JSON.parse(response.body)
+            rescue => exception
+                success = false
+                raise exception
+            end
         end
 
         def set_headers
