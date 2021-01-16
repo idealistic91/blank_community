@@ -1,0 +1,4 @@
+endpoints:
+  domain: 'api.igdb.com'
+  base: 'https://api.igdb.com/v4/'
+  games: 'games'
