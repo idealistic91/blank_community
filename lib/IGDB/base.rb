@@ -40,12 +40,6 @@ module IGDB
             request_and_parse
         end
 
-        
-
-        def download_cover
-            
-        end
-        
         protected
 
         def generate_token
