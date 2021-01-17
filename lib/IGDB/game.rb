@@ -17,7 +17,6 @@ module IGDB
         def download_cover(size = 'thumb')
             return false unless IMAGE_SIZES.include?(size)
             self.cover_url = self.cover_url.gsub('thumb', size) if size != 'thumb'
-            debugger
             http = Net::HTTP.new('images.igdb.com', 443)
             http.use_ssl = true
             request = Net::HTTP::Get.new(URI("https:#{cover_url}"), headers)
