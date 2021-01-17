@@ -1,5 +1,7 @@
 class GamesController < ApplicationController
   before_action :set_game, only: [:show, :edit, :update, :destroy]
+  skip_before_action :verify_authenticity_token
+
 
   require 'json'
 
@@ -68,6 +70,20 @@ class GamesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to games_url, notice: 'Game was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  def search
+    base = IGDB::Base.new
+    response = base.search_game(params[:value])
+    respond_to do |format|
+      format.js {
+        if base.success
+          render json: { success: true, result: response, errors: [] }
+        else
+          render json: { success: false, result: [], errors: base.errors }
+        end
+      }
     end
   end
 
