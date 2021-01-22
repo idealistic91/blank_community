@@ -74,16 +74,17 @@ class GamesController < ApplicationController
   end
 
   def search
-    base = IGDB::Base.new
-    response = base.search_game(params[:value])
-    respond_to do |format|
-      format.js {
-        if base.success
-          render json: { success: true, result: response, errors: [] }
-        else
-          render json: { success: false, result: [], errors: base.errors }
-        end
-      }
+    unless params[:search].nil?
+      response = IGDB_BASE.search_game(params[:search])
+      results = response.map do |game|
+        { id: game['id'], text: game['name'] }
+      end
+     
+      respond_to do |format|
+        format.js {
+            render json: results
+        }
+      end
     end
   end
 

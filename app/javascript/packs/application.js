@@ -34,6 +34,7 @@ $(document).on('turbolinks:load', function(){
     let view = data.view
     $(`li.${controller}-nav`).addClass('active')
     tabNavStyling();
+    $('.js-source-states').select2()
 });
 
 function showSpinner() {

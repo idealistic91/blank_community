@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :games do
     collection do
-      post :search
+      get :search
     end
   end
   resources :communities, only: [:index, :show, :update, :destroy] do
