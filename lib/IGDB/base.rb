@@ -59,12 +59,6 @@ module IGDB
             end
         end
         
-        def game(id, fields: [:name])
-            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
-            request.body = "where id = #{id};fields #{fields.join(',')};"
-            request_and_parse
-        end
-
         def set_http
             http = Net::HTTP.new(DOMAIN, 443)
             http.use_ssl = true
