@@ -1,4 +1,4 @@
-$(document).on('ajax:success', function(event){
+$('#game-create-form').on('ajax:success', function(event){
 
     let data = event.detail[2]
     data = JSON.parse(data.response)
@@ -13,3 +13,24 @@ $(document).on('ajax:success', function(event){
         $('#error_container').html(data.template)
     }
 });
+
+$('#game-search').select2({
+    ajax: {
+      url: '/games/search',
+      type: 'get',
+      dataType: 'json',
+      delay: 250,
+      data: function (params) {
+        let query = {
+          search: params.term,
+          type: 'public'
+        }
+        return query;
+      },
+      processResults: function (data, _params) {
+        return {
+          results: data
+        };
+    }
+    }
+  });

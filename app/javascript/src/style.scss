@@ -12,8 +12,12 @@ a { color: inherit; }
     height: 40px;
 }
 
+.select2-results, .select2-selection__choice, .dropdown-wrapper {
+  color: black;
+}
+
 #content {
-      background-color: #36393F;
+    background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
 }
