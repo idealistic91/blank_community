@@ -22,7 +22,6 @@ module IGDB
 
         def search_game(string, fields: [:name])
             @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
-
             request.body = 'fields ' + fields.join(',') + ';search "' + string + '";'
             request_and_parse
         end

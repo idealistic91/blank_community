@@ -12,7 +12,7 @@ module DiscordNotifications
     end
 
     def event_notification
-        ":hash: `#{id}` :mega: `#{title}` :video_game: `#{game ? game_name : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
+        ":hash: `#{id}` :mega: `#{title}` :video_game: `#{games.any? ? games.map(&:name).join(';') : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
     end
 
     def send_poll_notification(name)
@@ -22,7 +22,7 @@ module DiscordNotifications
     def event_embed
         {
             "title": "Event: #{title}",
-            "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
+            "description": "#{description}\n:video_game:`#{games.any? ? games.map(&:name).join(';') : 'Nicht vorhanden' }`",
             "url": "#{community_event_url(self.community, self)}",
             "color": 15682568,
             "timestamp": "#{Time.now.utc.iso8601}",
@@ -31,7 +31,7 @@ module DiscordNotifications
                 "text": "footer text"
             },
             "thumbnail": {
-                "url": "#{url_for(self.game.index_picture)}"
+                "url": "localhost:3000"
             },
             "author": {
                 "name": "#{self.hosts.first.nickname}",

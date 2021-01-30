@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_03_144815) do
+ActiveRecord::Schema.define(version: 2021_01_23_104850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,13 +61,21 @@ ActiveRecord::Schema.define(version: 2020_12_03_144815) do
     t.index ["community_id"], name: "index_discord_roles_on_community_id"
   end
 
+  create_table "event_games", force: :cascade do |t|
+    t.bigint "game_id"
+    t.bigint "event_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["event_id"], name: "index_event_games_on_event_id"
+    t.index ["game_id"], name: "index_event_games_on_game_id"
+  end
+
   create_table "events", force: :cascade do |t|
     t.string "title"
     t.date "date"
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "game_id"
     t.integer "creator_id"
     t.integer "slots"
     t.datetime "start_at"
@@ -81,6 +89,7 @@ ActiveRecord::Schema.define(version: 2020_12_03_144815) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "igdb_id"
   end
 
   create_table "hosting_events", force: :cascade do |t|
