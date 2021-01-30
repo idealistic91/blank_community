@@ -89,16 +89,11 @@ class GamesController < ApplicationController
   end
 
   def get_igdb_game
-    # Change name
-    # Check if game exist first
     game = Game.where(igdb_id: params[:igdb_id]).first
     unless game
       igdb_game = $igdb_base.game(params[:igdb_id], fields: ['name', 'cover.url']).first
       if igdb_game.nil?
-        igdb_game = $igdb_base.game(params[:igdb_id], fields: ['name', 'cover.url']).first
-      end
-      if igdb_game.nil?
-        flash[:alert] = "Das Spiel konnte nicht hinzugefügt werden ..."
+        flash[:alert] = "Es gab einen Fehler beim Hinzfügen des Spiel's - versuche es erneut!"
         render_flash_as_json
       end
     end

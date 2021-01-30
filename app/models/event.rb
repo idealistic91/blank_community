@@ -23,7 +23,7 @@ class Event < ApplicationRecord
     before_create :set_end_date
     before_update :set_end_date
 
-    scope :include_game_members, -> { includes(:members) }
+    scope :include_game_members, -> { includes(:members, :games) }
     scope :upcoming_events, -> { where('date > ?', DateTime.now) }
     scope :past_events, -> { where('date < ?', DateTime.now) }
 

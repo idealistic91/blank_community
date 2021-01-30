@@ -6,7 +6,7 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @upcoming = @events.upcoming_events
+    @upcoming = @events.include_game_members.upcoming_events
     @nav_items = [
         { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
         },
@@ -201,7 +201,7 @@ class EventsController < ApplicationController
   def update_games(event, params)
     params.each do |key, game_params|
       if game_params['id']
-        if game_params['destroy'] == '1'
+        if game_params['destroy']
           event_game = EventGame.find_by(game_id: game_params['id'], event: event)
           event_game.destroy unless event_game.nil?
         else

@@ -31,7 +31,6 @@ dom.watch()
 $(document).on('turbolinks:load', function(){
     let data = $('#main-container').data();
     let controller = data.controller
-    let view = data.view
     $(`li.${controller}-nav`).addClass('active')
     tabNavStyling();
 });
