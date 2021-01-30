@@ -2,7 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
-  after_action :create_cookies, only: :create
+  after_action :create_cookies, :create_igdb_base, only: :create
 
   # GET /resource/sign_in
   # def new
@@ -41,5 +41,9 @@ class Users::SessionsController < Devise::SessionsController
         roles: membership.roles.map(&:key)
       }
     end
+  end
+
+  def create_igdb_base
+    $igdb_base = IGDB::Base.new
   end
 end

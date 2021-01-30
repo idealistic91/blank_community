@@ -1,6 +1,6 @@
 .container
     %h1 Event bearbeiten
-    = render 'form', event: @event, game: @event.game
+    = render 'form', event: @event
     = render layout: 'layouts/actions' do
         = link_to 'Show', [@community, @event]
         = link_to 'Back', community_events_path(@community)

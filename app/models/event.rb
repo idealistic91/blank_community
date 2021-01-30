@@ -6,8 +6,10 @@ class Event < ApplicationRecord
     has_many :participants, dependent: :destroy
     has_many :members, through: :hosting_events
     has_many :members, through: :participants
+    has_many :event_games, dependent: :destroy
+    has_many :games, through: :event_games
     has_many_attached :images
-    belongs_to :game, optional: true
+    accepts_nested_attributes_for :games
     belongs_to :community
 
     validates :start_at, presence: true
@@ -21,8 +23,7 @@ class Event < ApplicationRecord
     before_create :set_end_date
     before_update :set_end_date
 
-    scope :including_game, -> { includes(:game) }
-    scope :include_game_members, -> { includes(:game, :members) }
+    scope :include_game_members, -> { includes(:members) }
     scope :upcoming_events, -> { where('date > ?', DateTime.now) }
     scope :past_events, -> { where('date < ?', DateTime.now) }
 

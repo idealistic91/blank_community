@@ -1,36 +1,37 @@
 .container
-  .row.pt-4.pb-4{style: "background: url('#{picture_url(event.game, type: :title_picture)}');"}
-    = form_with(model: [@community, event], local: true, class: 'event_form col-md-6') do |form|
-      .form-group.card.bg-dark.p-2.pb-3
-        = form.label 'Titel'
-        = form.text_field :title, class: 'form-control'
-      .form-group.card.bg-dark.p-2
-        = form.label 'Game'
-        #game-collection
-          = render partial: 'game_selection', locals: { form: form }
-        %a{"data-target" => "#game-create-modal", "data-toggle" => "modal", :href => '#'}
-          %small Spiel nicht gefunden?
-      .card.bg-dark.p-2.mb-3
+  = form_with(model: [@community, event], local: true, class: 'event_form') do |form|
+    .row.pt-4.pb-4
+      .col-md-6
+        .form-group.card.bg-dark.p-2.pb-3
+          = form.label 'Titel'
+          = form.text_field :title, class: 'form-control'
         .form-group.card.bg-dark.p-2
-          = form.label 'Plätze'
-          = form.select :slots, ((1..20).map{|i| [i, i] })
-      .card.bg-dark.p-2.mb-3
-        .form-group
-          = form.label 'Datum'
-          = form.date_field :date, class: 'form-control', ignore_time: true
-        .form-group
-          = form.label 'Start'
-          = form.time_select :start_at, class: 'form-control', ignore_date: true
-        .form-group
-          = form.label 'Ende'
-          = form.time_select :ends_at, class: 'form-control', ignore_date: true
-      .form-group.card.bg-dark.p-2
-        = form.label 'Beschreibung'
-        = form.text_area :description, class: 'form-control'
-        
+          = form.label 'Game'
+          #game-collection
+            = render partial: 'game_selection', locals: { form: form }
+        .card.bg-dark.p-2.mb-3
+          .form-group.card.bg-dark.p-2
+            = form.label 'Plätze'
+            = form.select :slots, ((1..20).map{|i| [i, i] })
+        .card.bg-dark.p-2.mb-3
+          .form-group
+            = form.label 'Datum'
+            = form.date_field :date, class: 'form-control', ignore_time: true
+          .form-group
+            = form.label 'Start'
+            = form.time_select :start_at, class: 'form-control', ignore_date: true
+          .form-group
+            = form.label 'Ende'
+            = form.time_select :ends_at, class: 'form-control', ignore_date: true
+        .form-group.card.bg-dark.p-2
+          = form.label 'Beschreibung'
+          = form.text_area :description, class: 'form-control'
+      .col-md-6.card.bg-dark
+        %h2 Games
+        #game-fields-container.row
+          - event.games.each do |game|
+            = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
       = form.submit class: "btn btn-primary"
-
-= render partial: 'game_form', locals: { game: game == event.game ? Game.new : game, event: event }
 
 - content_for(:custom_js) do
   = javascript_pack_tag('events/form')

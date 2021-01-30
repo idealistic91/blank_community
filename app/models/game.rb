@@ -1,10 +1,18 @@
 class Game < ApplicationRecord
-    after_create_commit :convert_image
-    has_many :events
-    has_one_attached :title_picture
-    has_one_attached :index_picture
+    has_many :event_games
+    has_many :events, through: :event_games
+    #after_create_commit :convert_image
+    #has_one_attached :title_picture
     
-    validates :title_picture, presence: true, blob: { content_type: ['image/jpg', 'image/jpeg', 'image/png'], size_range: 1..3.megabytes }
+    #validates :title_picture, presence: true, blob: { content_type: ['image/jpg', 'image/jpeg', 'image/png'], size_range: 1..3.megabytes }
+    validates :igdb_id, uniqueness: true
+
+    def cover_url(format: 'thumb')
+        return false unless IGDB::Game::IMAGE_SIZES.include?(format)
+        game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
+        url = game['cover']['url']
+        url.gsub('thumb', format) unless format == 'thumb'
+    end
 
     def convert_image
         unless title_picture.blob.content_type == 'image/png'
