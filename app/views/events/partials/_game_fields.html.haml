@@ -1,0 +1,13 @@
+.game-fields.col-md-3{id: "game-fields-#{igdb_id}"}
+    .image-container
+        = image_tag image_url, class: 'game-fields-picture'
+        .overlay
+            .text.delete-game{data: {igdb_id: igdb_id}}
+                %i.fas.fa-trash-alt                    
+    %small
+        = name
+    %input{:name => "games[games_attributes][#{igdb_id}][name]", :type => "hidden", id: "games_#{igdb_id}_name", value: name}
+    %input{:name => "games[games_attributes][#{igdb_id}][igdb_id]", :type => "hidden", id: "games_#{igdb_id}_igdb_id", value: igdb_id}
+    %input{:name => "games[games_attributes][#{igdb_id}][destroy]", :type => "hidden", id: "game_#{igdb_id}_destroy", value: 1, disabled: 'disabled'}
+    - unless id.nil?
+        %input{:name => "games[games_attributes][#{igdb_id}][id]", :type => "hidden", id: "games_#{igdb_id}_id", value: id}
