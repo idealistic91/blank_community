@@ -53,8 +53,9 @@ a:link {
     margin: 10px;
 }
 
-.event_card {
+.index-event-card-header {
     width: 100%;
+    background-color: #1C2023 !important;
 }
 
 .card#event-card-show {
@@ -283,4 +284,12 @@ small {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   text-align: center;
+}
+
+.overlap-margin {
+  margin-left: -15px;
+}
+
+.index-event-card-body {
+  background-color: #2F3136;
 }
