@@ -58,6 +58,14 @@ a:link {
     background-color: #1C2023 !important;
 }
 
+.event-header-show, .event-footer-show{
+  background-color: #1C2023 !important;
+}
+
+.event-header-show .nav{
+  background-color: #1C2023 !important;
+}
+
 .card#event-card-show {
     z-index: 3;
     min-height: 400px;
@@ -292,4 +300,16 @@ small {
 
 .index-event-card-body {
   background-color: #2F3136;
+}
+
+#event-body-show {
+  background-color: #2F3136;
+}
+
+#event-body-show .card-body {
+  background-color: #2F3136;
+}
+
+#event-body-show .card-header {
+  background-color: #1C2023 !important;
 }
