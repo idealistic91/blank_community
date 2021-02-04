@@ -1,4 +1,6 @@
-$('#game-search').select2({
+let gameSearchField = $('#game-search')
+
+gameSearchField.select2({
     ajax: {
       url: '/games/search',
       type: 'get',
@@ -43,6 +45,8 @@ function getGameAndAddToDom (params) {
     url: "/games/get_igdb_game",
     data: params,
     success: (data) => {
+      gameSearchField.prop('disabled', false);
+      $('#game-loading').hide();
       if($(`#game-fields-${params.igdb_id}`).length === 1) {
         $(`#game-fields-${params.igdb_id}`).show();
         $(`#game_${igdb_id}_destroy`).prop('disabled', true)
@@ -50,7 +54,12 @@ function getGameAndAddToDom (params) {
         gameFieldContainer.append(data.fields)
       }
       assignDeleteEvents();
+    },
+    beforeSend: () => {
+      gameSearchField.prop('disabled', true);
+      $('#game-loading').show();
     }
+
   });
   return ajax
 }

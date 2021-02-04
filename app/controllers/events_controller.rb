@@ -194,7 +194,8 @@ class EventsController < ApplicationController
   def send_notification(nickname, embed = nil)
     Thread.new do
       channel = @community.get_main_channel
-      @bot.send_to_channel(channel[:name], @event.send("#{action_name}_notification", nickname), embed) if channel
+      res = @bot.send_to_channel(channel[:name], @event.send("#{action_name}_notification", nickname), embed) if channel
+      debugger
     end
   end
 
