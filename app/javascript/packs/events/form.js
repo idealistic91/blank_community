@@ -39,7 +39,7 @@ function assignDeleteEvents() {
 }
 
 function getGameAndAddToDom (params) {
-  let ajax = $.ajax({
+  $.ajax({
     method: "POST",
     dataType: "json",
     url: "/games/get_igdb_game",
@@ -59,9 +59,7 @@ function getGameAndAddToDom (params) {
       gameSearchField.prop('disabled', true);
       $('#game-loading').show();
     }
-
   });
-  return ajax
 }
 
 $('#game-search').on('select2:select', function (e) {
