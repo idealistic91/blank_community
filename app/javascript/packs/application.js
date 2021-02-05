@@ -16,6 +16,9 @@ window.$ = window.JQuery = JQuery;
 import "../src/style.scss";
 import "../src/community.scss";
 
+import 'select2'
+import 'select2/dist/css/select2.css'
+
 import { library, dom } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { faTwitter } from '@fortawesome/free-brands-svg-icons'
@@ -28,10 +31,13 @@ dom.watch()
 $(document).on('turbolinks:load', function(){
     let data = $('#main-container').data();
     let controller = data.controller
-    let view = data.view
     $(`li.${controller}-nav`).addClass('active')
     tabNavStyling();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
 });
+
 
 function showSpinner() {
     $('#kitt').css('display', 'block');

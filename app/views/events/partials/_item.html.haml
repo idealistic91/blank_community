@@ -1,25 +1,30 @@
-%a.card.text-white.bg-dark.event_card.mb-4.d-flex{href: "#{community_event_path(@community, event)}", style: "background: url('#{picture_url(event.game, type: :index_picture)}');"}
+%a.card.text-white.bg-dark.index-event-card-header.mb-4.d-flex{href: "#{community_event_path(@community, event)}"}
   .card-header.event-header
     .row
       .col-md-6
-        = event.game_name
-        - if event.game
-          = index_picture(event.game, class: 'event-picture', hidden: 'true')
+        = event.title
       .col-md-6
         .float-right.participant-avatars
           - event.members.map do |m|
             = profile_picture_icon(m.user)
-  .card-body
-    %h5.card-title= event.title
-    %p.card-text= truncate(event.description, length: 100, omission: '... (continued)')
-    .item-date
-      %i.fas.fa-calendar-day
-      %small= l(event.date)
-    .item-time
-      %i.fas.fa-clock
-      %small= l(event.start_at.to_time)
-      %i.fas.fa-clock{style: 'color: #2F3136'}
-      %small= l(event.ends_at.to_time)
+  .card-body.index-event-card-body
+    .row
+      .col-md-6
+        %p.card-text= truncate(event.description, length: 100, omission: '... (continued)')
+        .item-date
+          %i.fas.fa-calendar-day
+          %small= l(event.date)
+        .item-time
+          %i.fas.fa-clock
+          %small= l(event.start_at.to_time)
+          %i.fas.fa-clock{style: 'color: #2F3136'}
+          %small= l(event.ends_at.to_time)
+      .col-md-6
+        .row
+          - event.games.each do |game|
+            - klass = event.games.size > 2 ? "col-md-4 overlap-margin" : "col-md-6"
+            %div{class: klass}
+              = image_tag game.cover_url(format: 'cover_small')
 
 
   .card-footer

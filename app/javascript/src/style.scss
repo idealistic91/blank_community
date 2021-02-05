@@ -12,8 +12,12 @@ a { color: inherit; }
     height: 40px;
 }
 
+.select2-results, .select2-selection__choice, .dropdown-wrapper {
+  color: black;
+}
+
 #content {
-      background-color: #36393F;
+    background-color: #36393F;
     min-height: 100vh;
     margin-top: 20px;
 }
@@ -49,8 +53,17 @@ a:link {
     margin: 10px;
 }
 
-.event_card {
+.index-event-card-header {
     width: 100%;
+    background-color: #1C2023 !important;
+}
+
+.event-header-show, .event-footer-show{
+  background-color: #1C2023 !important;
+}
+
+.event-header-show .nav{
+  background-color: #1C2023 !important;
 }
 
 .card#event-card-show {
@@ -239,4 +252,64 @@ small {
 
 .participant-avatars img{
   margin-right: -10px;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+}
+
+.game-fields-picture {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+  background-color: #2F3136;
+}
+
+.image-container:hover .overlay {
+  opacity: 1;
+}
+
+.text {
+  color: white;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.overlap-margin {
+  margin-left: -15px;
+}
+
+.index-event-card-body {
+  background-color: #2F3136;
+}
+
+#event-body-show {
+  background-color: #2F3136;
+}
+
+#event-body-show .card-body {
+  background-color: #2F3136;
+}
+
+#event-body-show .card-header {
+  background-color: #1C2023 !important;
 }

@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  resources :games
+  resources :games do
+    collection do
+      get :search
+      post :get_igdb_game
+    end
+  end
   resources :communities, only: [:index, :show, :update, :destroy] do
     collection do
       post :set_active

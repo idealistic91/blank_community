@@ -12,7 +12,7 @@ module DiscordNotifications
     end
 
     def event_notification
-        ":hash: `#{id}` :mega: `#{title}` :video_game: `#{game ? game_name : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
+        ":hash: `#{id}` :mega: `#{title}` :video_game: `#{games.any? ? games.map(&:name).join(';') : 'Nicht vorhanden' }` :date: `#{I18n.l(date)}` :clock4: `#{I18n.l(start_at)}` :clock11: `#{I18n.l(ends_at)}`"
     end
 
     def send_poll_notification(name)
@@ -20,18 +20,15 @@ module DiscordNotifications
     end
 
     def event_embed
-        {
+        embed = {
             "title": "Event: #{title}",
-            "description": "#{description}\n:video_game:`#{game ? game_name : 'Nicht vorhanden' }`",
+            "description": "#{description}\n:video_game:`#{games.any? ? games.map(&:name).join(',') : 'Nicht vorhanden' }`",
             "url": "#{community_event_url(self.community, self)}",
             "color": 15682568,
             "timestamp": "#{Time.now.utc.iso8601}",
             "footer": {
                 "icon_url": "#{self.hosts.first.discord_avatar}",
                 "text": "footer text"
-            },
-            "thumbnail": {
-                "url": "#{url_for(self.game.index_picture)}"
             },
             "author": {
                 "name": "#{self.hosts.first.nickname}",
@@ -59,6 +56,12 @@ module DiscordNotifications
                     }
                 ]
         }
+        if games.any?
+            embed["thumbnail"] = {
+                "url": "https:#{games.first.cover_url(format: 'cover_small')}"
+            }
+        end
+        embed
     end
 
     def destroy_notification(name)

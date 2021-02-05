@@ -1,10 +1,13 @@
 .row.mb-1
-    .col-md-10
+    .col-md-8
         %h3.card-title= event.title
-    .col-md-2
-        %h3.card-title.ml-auto
+    .col-md-4
+        %h3.card-title.ml-auto.float-right
             %i.fas.fa-user-friends
             = "#{event.members.size}/#{event.slots}"
+.mb-2
+    - event.games.each do |game|
+        = image_tag game.cover_url(format: 'cover_small'), { class: 'test', data: {toggle: 'tooltip', placement: 'bottom'}, title: game.name }
 .row
     .col-md-4
         .card.bg-dark.text-white.d-flex.event-details

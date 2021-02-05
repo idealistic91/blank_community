@@ -6,7 +6,7 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @upcoming = @events.including_game.upcoming_events
+    @upcoming = @events.include_game_members.upcoming_events
     @nav_items = [
         { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
         },
@@ -19,7 +19,6 @@ class EventsController < ApplicationController
 
   def new
     @event = Event.new
-    @game = Game.new
   end
 
   # GET /events/1/edit
@@ -33,6 +32,8 @@ class EventsController < ApplicationController
     @event.community = @community
     respond_to do |format|
       if @event.save
+        # Save games
+        save_games(@event, games_params['games_attributes'])
         # Todo: Have nested attributes for hosting events
         @event.add_host(@membership.id)
         format.html {
@@ -53,6 +54,7 @@ class EventsController < ApplicationController
   def update
     respond_to do |format|
       if @event.update(event_params)
+        update_games(@event, games_params['games_attributes'])
         format.html { redirect_to community_event_path(@community, @event), notice: 'Event was successfully updated.' }
         format.json { render :show, status: :ok, location: @event }
       else
@@ -122,7 +124,7 @@ class EventsController < ApplicationController
   end
 
   def fetch
-    @past = @events.including_game.past_events
+    @past = @events.past_events
     element = render_to_string partial: 'events/partials/past', layout: false, format: 'html'
     respond_to do |format|
       format.js {
@@ -146,7 +148,11 @@ class EventsController < ApplicationController
   def event_params
     params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
     params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
-    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :game_id, :slots)
+    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots, games_attributes: [:igdb_id, :id, :name])
+  end
+
+  def games_params
+    params.require(:games).permit(games_attributes: [:igdb_id, :name, :id, :destroy])
   end
 
   def get_community
@@ -189,6 +195,33 @@ class EventsController < ApplicationController
     Thread.new do
       channel = @community.get_main_channel
       @bot.send_to_channel(channel[:name], @event.send("#{action_name}_notification", nickname), embed) if channel
+    end
+  end
+
+  def update_games(event, params)
+    params.each do |key, game_params|
+      if game_params['id']
+        if game_params['destroy']
+          event_game = EventGame.find_by(game_id: game_params['id'], event: event)
+          event_game.destroy unless event_game.nil?
+        else
+          event.games << Game.find_by(id: game_params['id']) unless event.game_ids.include?(game_params['id'].to_i)
+        end
+      else
+        game = Game.new(game_params)
+        event.games << game
+      end
+    end
+  end
+
+  def save_games(event, params)
+    params.each do |key, game_params|
+      if game_params['id']
+        event.games << Game.find_by(id: game_params['id']) unless event.game_ids.include?(game_params['id'].to_i)
+      else
+        game = Game.new(game_params)
+        event.games << game
+      end
     end
   end
 end
