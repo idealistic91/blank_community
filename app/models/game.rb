@@ -1,10 +1,6 @@
 class Game < ApplicationRecord
     has_many :event_games
     has_many :events, through: :event_games
-    #after_create_commit :convert_image
-    #has_one_attached :title_picture
-    
-    #validates :title_picture, presence: true, blob: { content_type: ['image/jpg', 'image/jpeg', 'image/png'], size_range: 1..3.megabytes }
     validates :igdb_id, uniqueness: true
 
     def cover_url(format: 'thumb')
