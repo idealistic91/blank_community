@@ -5,10 +5,11 @@
         .form-group.card.bg-dark.p-2.pb-3
           = form.label 'Titel'
           = form.text_field :title, class: 'form-control'
-        .form-group.card.bg-dark.p-2
+        #game-card.form-group.card.bg-dark.p-2
           = form.label 'Game'
           #game-collection
             = render partial: 'game_selection', locals: { form: form }
+          %small#game-loading{style: "display:none;"}= 'Loading ...'
         .card.bg-dark.p-2.mb-3
           .form-group.card.bg-dark.p-2
             = form.label 'Plätze'

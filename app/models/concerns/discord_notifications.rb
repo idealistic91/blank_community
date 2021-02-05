@@ -20,18 +20,15 @@ module DiscordNotifications
     end
 
     def event_embed
-        {
+        embed = {
             "title": "Event: #{title}",
-            "description": "#{description}\n:video_game:`#{games.any? ? games.map(&:name).join(';') : 'Nicht vorhanden' }`",
+            "description": "#{description}\n:video_game:`#{games.any? ? games.map(&:name).join(',') : 'Nicht vorhanden' }`",
             "url": "#{community_event_url(self.community, self)}",
             "color": 15682568,
             "timestamp": "#{Time.now.utc.iso8601}",
             "footer": {
                 "icon_url": "#{self.hosts.first.discord_avatar}",
                 "text": "footer text"
-            },
-            "thumbnail": {
-                "url": "localhost:3000"
             },
             "author": {
                 "name": "#{self.hosts.first.nickname}",
@@ -59,6 +56,12 @@ module DiscordNotifications
                     }
                 ]
         }
+        if games.any?
+            embed["thumbnail"] = {
+                "url": "https:#{games.first.cover_url(format: 'cover_small')}"
+            }
+        end
+        embed
     end
 
     def destroy_notification(name)

@@ -12,7 +12,7 @@
               = render partial: 'participants_list', locals: { event: @event }
             #tools.tab-pane.fade{"aria-labelledby" => "tools-tab", :role => "tabpanel"}
               = render partial: 'events/partials/tools'
-        .card-footer
+        .card-footer.event-footer-show
           .row
             .col-md-2
               %small= l(@event.date, format: :long)

@@ -33,7 +33,11 @@ $(document).on('turbolinks:load', function(){
     let controller = data.controller
     $(`li.${controller}-nav`).addClass('active')
     tabNavStyling();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
 });
+
 
 function showSpinner() {
     $('#kitt').css('display', 'block');
