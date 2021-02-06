@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     begin
       bot = Discord::Bot.new(id: ENV['dev_server_id'])
       bot.send_to_channel(ENV['dev_server_channel'], "#{message}#{backtrace}")
-    rescue => StandardError
+    rescue
       flash[:alert] = message
     end
     flash[:alert] = "Es gab einen Fehler bei deiner Anfrage. Das Dev-team is informiert!"
