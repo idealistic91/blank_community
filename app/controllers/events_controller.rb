@@ -146,9 +146,17 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
-    params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
-    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots, games_attributes: [:igdb_id, :id, :name])
+    if params[:event][:date].blank?
+      [4, 5].each do |n|
+        params[:event].delete("start_at(#{n}i)")
+        params[:event].delete("ends_at(#{n}i)")
+      end
+    else
+      # adds date to start_at & ends_at params
+      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
+      params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
+    end
+    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots)
   end
 
   def games_params

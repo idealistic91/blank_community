@@ -9,7 +9,6 @@ class Event < ApplicationRecord
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
     has_many_attached :images
-    accepts_nested_attributes_for :games
     belongs_to :community
 
     validates :start_at, presence: true
