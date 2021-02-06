@@ -21,10 +21,16 @@
           %small= l(event.ends_at.to_time)
       .col-md-6
         .row
-          - event.games.each do |game|
-            - klass = event.games.size > 2 ? "col-md-4 overlap-margin" : "col-md-6"
+          - games_size = event.games.size
+          - klass = games_size > 2 ? "col-md-4 overlap-margin" : "col-md-6"
+          - event.games.first(3).each do |game|
             %div{class: klass}
               = image_tag game.cover_url(format: 'cover_small')
+        - if games_size > 3
+          .row
+            .col-md-4.overlap-margin
+              %b.badge.badge-warning{ data: {toggle: 'tooltip', placement: 'bottom'}, title: event.games.last(games_size - 3).map(&:name).join(', ') }
+                = "+#{games_size - 3}" 
 
 
   .card-footer

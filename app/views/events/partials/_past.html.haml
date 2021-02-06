@@ -1,6 +1,5 @@
 .row
-  - size = @past.size < 3 ? 6 : 4
   - @past.each do |event|
-    %div{class: "col-md-#{size}"}
+    %div{class: "col-md-6"}
       = render partial: 'events/partials/item', locals: { event: event }
   %br/
