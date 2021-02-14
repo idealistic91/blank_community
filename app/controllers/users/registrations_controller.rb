@@ -48,12 +48,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       begin
         @info = server.info
         @community = Community.new(name: @info['name'], server_id: @info['id'])
-        unless @community.save
-          flash[:alert] = "Fehler: #{@community.errors.full_messages.join(', ')}"
-          render :new and return
-        end
-      rescue => exception
-        flash[:alert] = "Discord Server nicht gefunden! Exception: #{exception.message}"
+      rescue StandardError => e
+        flash[:alert] = "Discord Server nicht gefunden! Exception: #{e.message}"
         render :new and return
       end
     end
@@ -61,9 +57,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create_community
     unless @community.nil?
-      @community.reload
       @community.creator = resource
-      @community.save
+      unless @community.save
+        flash[:alert] = "Fehler: #{@community.errors.full_messages.join(', ')}"
+        render :new and return
+      end
     end
   end
 

@@ -1,7 +1,8 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role, :set_active,
+  before_action :set_community, only: [:show, :edit, :update, :destroy, :assign_role, :unassign_role,
        :leave, :join]
-  before_action :check_permission
+  before_action :check_permission, except: :set_active
+  skip_before_action :current_community, only: :set_active
   # GET /communities
   # GET /communities.json
   def index
@@ -155,9 +156,6 @@ class CommunitiesController < ApplicationController
     end
   end
 
-  def set_member
-    @member = current_user.membership_by_community(@community.id).first
-  end
     # Only allow a list of trusted parameters through.
   def community_params
     params.require(:community).permit(settings_attributes: [:public, :main_channel])
