@@ -1,5 +1,5 @@
 class Event < ApplicationRecord
-
+    include AASM
     include DiscordNotifications
 
     has_many :hosting_events
@@ -25,6 +25,10 @@ class Event < ApplicationRecord
     scope :include_game_members, -> { includes(:members, :games) }
     scope :upcoming_events, -> { where('date > ?', DateTime.now) }
     scope :past_events, -> { where('date < ?', DateTime.now) }
+
+    aasm column: 'state' do
+        
+    end
 
     def game_name
         game ? game.name : nil
