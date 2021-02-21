@@ -136,13 +136,7 @@ module Discord
                     event.respond "Nur Besitzer können den Server registrieren!"
                 end
             end
-            
-            if Rails.env.production?
-                DISCORD_BOT_SYNC.bot.run :asnyc
-                system('bundle exec sidekiq')
-            else
-                DISCORD_BOT_SYNC.bot.run
-            end
+            DISCORD_BOT_SYNC.bot.run
         end
 
         def self.authorize(event)
