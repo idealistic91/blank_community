@@ -13,7 +13,7 @@ module Discord
         end
 
         def send_to_channel(name, content = nil, embed = nil, tts = false)
-            channel_id = Server.new(id: id).get_channel_id(name)
+            channel_id = Server.new(id: id, bot: bot).get_channel_id(name)
             if embed
                 self.bot.send_message(channel_id, content, tts, embed)
             else

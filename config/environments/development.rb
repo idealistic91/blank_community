@@ -12,6 +12,7 @@ Rails.application.configure do
   #config.webpacker.check_yarn_integrity = false
   # Show full error reports.
   config.consider_all_requests_local = true
+  config.active_job.queue_adapter = :async
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
