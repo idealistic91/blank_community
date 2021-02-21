@@ -136,7 +136,11 @@ module Discord
                     event.respond "Nur Besitzer können den Server registrieren!"
                 end
             end
-            DISCORD_BOT_SYNC.bot.run
+            if Rails.env.production?
+                DISCORD_BOT_SYNC.bot.run :asnyc
+            else
+                DISCORD_BOT_SYNC.bot.run
+            end
         end
 
         def self.authorize(event)
@@ -189,9 +193,9 @@ module Discord
                 event.respond "Dieser Server ist noch nicht mit der App verbunden\nTippe als Besitzer `register:server`"
             end
         end
-        
-        if Rails.env.production?
-            rescue_exception with: :notifiy_dev_team
-        end
+        # needs fixing
+        # if Rails.env.production?
+        #     rescue_exception with: :notifiy_dev_team
+        # end
     end
 end
