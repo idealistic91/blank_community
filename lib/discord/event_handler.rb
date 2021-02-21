@@ -146,7 +146,6 @@ module Discord
         end
 
         def self.authorize(event)
-            raise StandardError
             user = user(event)
             if user
                 yield(user)

@@ -14,6 +14,10 @@ module Discord
             JSON.parse(channels.to_str)
         end
 
+        def system_channel
+            this.system_channel
+        end
+
         def create_channel(name, type = :text, parent = nil)
             type_id = {
                 text: 0,
@@ -39,10 +43,6 @@ module Discord
         def members
             members = Discordrb::API::Server.resolve_members(BOT_TOKEN, id, 150)
             JSON.parse(members.to_str)
-        end
-
-        def users
-            
         end
 
         def roles

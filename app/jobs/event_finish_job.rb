@@ -1,4 +1,5 @@
 class EventFinishJob < ApplicationJob
+    queue_as :default
     discard_on ActiveRecord::RecordNotFound
     discard_on AASM::InvalidTransition
     retry_on VoiceChannelUsedException, wait: 2.minutes

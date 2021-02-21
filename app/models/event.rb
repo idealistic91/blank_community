@@ -114,7 +114,7 @@ class Event < ApplicationRecord
         bot = Discord::Bot.new(id: community.server_id)
         main_channel = community.get_main_channel
         if main_channel
-            bot.send_to_channel(main_channel[:name], message)
+            bot.send_to_channel(main_channel, message)
         end
     end
 
@@ -153,7 +153,7 @@ class Event < ApplicationRecord
         bot = Discord::Bot.new(id: community.server_id)
         main_channel = community.get_main_channel
         if main_channel
-            bot.send_to_channel(main_channel[:name], "Ich habe euch zwei Channel für das Event **#{title}** erstellt.")
+            bot.send_to_channel(main_channel, "Ich habe euch zwei Channel für das Event **#{title}** erstellt.")
         end
     end
 

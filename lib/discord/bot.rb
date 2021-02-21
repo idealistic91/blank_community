@@ -13,11 +13,15 @@ module Discord
         end
 
         def send_to_channel(name, content = nil, embed = nil, tts = false)
-            channel_id = Server.new(id: id, bot: bot).get_channel_id(name)
-            if embed
-                self.bot.send_message(channel_id, content, tts, embed)
+            if name.is_a?(Discordrb::Channel)
+                channel = name
             else
-                self.bot.send_message(channel_id, content)
+                channel = Server.new(id: id, bot: bot).get_channel_id(name)
+            end
+            if embed
+                self.bot.send_message(channel, content, tts, embed)
+            else
+                self.bot.send_message(channel, content)
             end
         end
 
