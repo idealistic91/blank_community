@@ -104,14 +104,14 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.4.4)
-    discordrb (3.4.2)
-      discordrb-webhooks (~> 3.4.2)
+    discordrb (3.4.0)
+      discordrb-webhooks (~> 3.3.0)
       ffi (>= 1.9.24)
       opus-ruby
       rest-client (>= 2.0.0)
       websocket-client-simple (>= 0.3.0)
-    discordrb-webhooks (3.4.2)
-      rest-client (>= 2.0.0)
+    discordrb-webhooks (3.3.0)
+      rest-client (>= 2.1.0.rc1)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
@@ -325,7 +325,7 @@ DEPENDENCIES
   capybara (~> 3.33)
   database_cleaner (~> 1.8, >= 1.8.5)
   devise (~> 4.2)
-  discordrb (~> 3.4)
+  discordrb (= 3.4)
   dotenv-rails
   factory_bot_rails (~> 6.1)
   faker (~> 2.14)
