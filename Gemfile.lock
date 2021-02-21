@@ -321,7 +321,7 @@ DEPENDENCIES
   capybara (~> 3.33)
   database_cleaner (~> 1.8, >= 1.8.5)
   devise (~> 4.2)
-  discordrb (~> 3.4.0)
+  discordrb
   dotenv-rails
   factory_bot_rails (~> 6.1)
   faker (~> 2.14)
