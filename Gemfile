@@ -21,7 +21,7 @@ gem 'jbuilder', '~> 2.7'
 gem 'rack-cors'
 
 gem 'haml', '~> 5.1', '>= 5.1.2'
-gem 'discordrb', '~> 3.2', '>= 3.2.1'
+gem 'discordrb', '~> 3.4', '>= 3.4.2'
 # sudo apt-get install libmagickwand-dev (needs this library to work!!)
 gem 'rmagick', '~> 2.15', '>= 2.15.4'
 # Use Redis adapter to run Action Cable in production
@@ -30,6 +30,8 @@ gem 'rmagick', '~> 2.15', '>= 2.15.4'
 gem 'bcrypt', '~> 3.1.7'
 
 gem 'sidekiq'
+# AASM State machine
+gem 'aasm', '~> 5.1.1'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'

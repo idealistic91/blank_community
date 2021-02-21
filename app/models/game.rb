@@ -5,7 +5,12 @@ class Game < ApplicationRecord
 
     def cover_url(format: 'thumb')
         return false unless IGDB::Game::IMAGE_SIZES.include?(format)
-        game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
+        begin
+            game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
+        rescue NoMethodError
+            $igdb_base = IGDB::Base.new
+            game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
+        end
         url = game['cover']['url']
         url.gsub('thumb', format) unless format == 'thumb'
     end

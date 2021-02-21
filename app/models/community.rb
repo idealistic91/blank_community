@@ -39,10 +39,11 @@ class Community < ApplicationRecord
 
     def get_main_channel
         begin
-            text_channels.detect { |channel| channel[:id] == settings.main_channel }
+            server.find_channel_by_id(settings.main_channel)
         rescue => exception
-            nil
+            channel = nil
         end
+        channel ||= server.system_channel
     end
 
     def add_picture

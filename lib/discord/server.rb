@@ -1,16 +1,32 @@
 module Discord
     class Server < Base
         
-        attr_accessor :id, :this
+        attr_accessor :id, :this, :bot
         
         def initialize(id:, bot: nil)
             @id = id
-            @this = Discordrb::Server.new(info, bot) if bot
+            @bot = bot || DISCORD_BOT.bot
+            @this = Discordrb::Server.new(info, bot)
         end
         
         def channels
             channels = Discordrb::API::Server.channels(BOT_TOKEN, id)
             JSON.parse(channels.to_str)
+        end
+
+        def system_channel
+            this.system_channel
+        end
+
+        def create_channel(name, type = :text, parent = nil)
+            type_id = {
+                text: 0,
+                voice: 2,
+                category: 4,
+                news: 5,
+                store: 6
+            }[type]
+            this.create_channel(name, type_id, topic: nil, bitrate: nil, user_limit: nil, permission_overwrites: nil, parent: parent, nsfw: false, rate_limit_per_user: nil, position: nil, reason: nil)
         end
 
         def download_icon
@@ -72,6 +88,22 @@ module Discord
             end
             return nil unless channel.any?
             channel.first['id']
+        end
+
+        def find_channel_by_id(id)
+            data = self.channels.select do |c|
+                c['id'] == id
+            end
+            return nil unless data.any?
+            Discordrb::Channel.new(data, bot)
+        end
+
+        def get_channel(name, type = :text)
+            data = self.send("#{type}_channels").select do |c|
+                c['name'] == name
+            end
+            return nil unless data.any?
+            Discordrb::Channel.new(data, bot)
         end
     end
 end

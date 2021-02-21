@@ -1,15 +1,15 @@
 module Discord
     class EventHandler < Base
         def self.run
-            DISCORD_BOT.bot.message(with_text: 'Ping!') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'Ping!') do |event|
                 authorize(event) do
                     event.respond 'Pong!!'
                 end
             end
             
-            DISCORD_BOT.bot.message(with_text: 'events:all') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'events:all') do |event|
                 find_community(event) do |community, user|
-                    events = community.events.include_game_members.upcoming_events
+                    events = community.events.upcoming_events
                     if events.any?
                         event.respond 'Gib mir einen Moment!'
                         embeded_events = events.map(&:event_notification)
@@ -23,10 +23,10 @@ module Discord
                 end
             end
             
-            DISCORD_BOT.bot.message(with_text: /event:\d*/) do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: /event:\d*/) do |event|
                 find_community(event) do |community, user|
                     id = event.message.content.gsub('event:', '')
-                    e = community.events.include_game_members.find_by(id: id)
+                    e = community.events.find_by(id: id)
                     if e
                         event.respond nil, false, e.event_embed
                     else
@@ -34,14 +34,46 @@ module Discord
                     end
                 end
             end
+
+            DISCORD_BOT_SYNC.bot.message(with_text: /event:\d*:start/) do |event|
+                find_community(event) do |community, user, membership|
+                    id = event.message.content.gsub('event:', '').gsub(':start', '')
+                    e = community.events.find_by(id: id)
+                    if e && e.hosts.include?(membership)
+                        begin
+                            e.start!
+                        rescue StandardError => e
+                            event.respond "Fehler: #{e.message}"
+                        end
+                    else
+                        event.respond 'Du bist kein Host für dieses Event oder das Event wurde nicht gefunden!' 
+                    end
+                end
+            end
+
+            DISCORD_BOT_SYNC.bot.message(with_text: /event:\d*:finish/) do |event|
+                find_community(event) do |community, user, membership|
+                    id = event.message.content.gsub('event:', '').gsub(':finish', '')
+                    e = community.events.find_by(id: id)
+                    if e && e.hosts.include?(membership)
+                        begin
+                            e.finish!
+                        rescue StandardError => e
+                            event.respond "Fehler: #{e.message}"
+                        end
+                    else
+                        event.respond 'Du bist kein Host für dieses Event oder das Event wurde nicht gefunden!' 
+                    end
+                end
+            end
             
-            DISCORD_BOT.bot.message(with_text: 'git-repo!') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'git-repo!') do |event|
                 event.respond ENV["git_repo"]
             end
             
-            DISCORD_BOT.bot.message(with_text: 'event:last') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'event:last') do |event|
                 find_community(event) do |community, _user|
-                    e = community.events.include_game_members.last
+                    e = community.events.last
                     if e
                         event.respond nil, false, e.event_embed
                     else
@@ -50,7 +82,7 @@ module Discord
                 end
             end
             
-            DISCORD_BOT.bot.message(with_text: 'events:mine') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'events:mine') do |event|
                 find_community(event) do |community, user, membership|
                     if membership.hosting_events.any?
                         event.respond 'Gib mir einen Moment!'
@@ -65,14 +97,14 @@ module Discord
                 end
             end
             
-            DISCORD_BOT.bot.message(with_text: 'register:me') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'register:me') do |event|
                 find_community(event, false) do |community|
                     user = user(event)
                     if user
                         result = user.create_membership(community)
                         if result[:success]
                             event.message.author.pm("Du bist jetzt Mitglied der #{community.name} Community!")
-                            event.message.author.pm("Hier geht es zur Community: #{DISCORD_BOT.build_community_config_link(community.id)}")
+                            event.message.author.pm("Hier geht es zur Community: #{DISCORD_BOT_SYNC.build_community_config_link(community.id)}")
                         else
                             event.message.author.pm("Fehler beim Erstellen der Mitgliedschaft: #{result[:message]}")
                         end
@@ -82,7 +114,7 @@ module Discord
                 end
             end
             
-            DISCORD_BOT.bot.message(with_text: 'register:server') do |event|
+            DISCORD_BOT_SYNC.bot.message(with_text: 'register:server') do |event|
                 if author_is_owner?(event) 
                     author_user = user(event)
                     if author_user
@@ -104,8 +136,13 @@ module Discord
                     event.respond "Nur Besitzer können den Server registrieren!"
                 end
             end
-
-            DISCORD_BOT.bot.run
+            
+            if Rails.env.production?
+                DISCORD_BOT_SYNC.bot.run :asnyc
+                system('bundle exec sidekiq')
+            else
+                DISCORD_BOT_SYNC.bot.run
+            end
         end
 
         def self.authorize(event)
@@ -127,16 +164,16 @@ module Discord
 
         def self.respond_with_register_link(event, with_community = false)
             if with_community
-                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich und deine Community hier:**\n#{DISCORD_BOT.build_registration_link(event.message.author.id, event.message.author.server.id)}")
+                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich und deine Community hier:**\n#{DISCORD_BOT_SYNC.build_registration_link(event.message.author.id, event.message.author.server.id)}")
             else
-                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich hier:**\n#{DISCORD_BOT.build_registration_link(event.message.author.id)}")
+                event.message.author.pm("Hallo #{event.message.author.display_name}\n**Registriere dich hier:**\n#{DISCORD_BOT_SYNC.build_registration_link(event.message.author.id)}")
             end
             event.respond "@#{event.message.author.display_name}\nIn deinem Postfach findest du einen Registrierungslink\nTeile diesen mit niemanden!"
         end
 
         def self.respond_with_community_link(event, community)
             event.respond "#{community.name} wurde erfolgreich angelegt!\nIch habe dir einen link zu deiner Community via PM zugestellt."
-            event.message.author.pm("Hier der Link zu deinen #{community.name}-community settings.\n#{DISCORD_BOT.build_community_config_link(community.id)}")            
+            event.message.author.pm("Hier der Link zu deinen #{community.name}-community settings.\n#{DISCORD_BOT_SYNC.build_community_config_link(community.id)}")            
         end
 
         def self.find_community(event, authorize = true)
@@ -157,6 +194,10 @@ module Discord
             else
                 event.respond "Dieser Server ist noch nicht mit der App verbunden\nTippe als Besitzer `register:server`"
             end
+        end
+        
+        if Rails.env.production?
+            rescue_exception with: :notifiy_dev_team
         end
     end
 end

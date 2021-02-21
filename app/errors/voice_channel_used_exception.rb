@@ -1,0 +1,2 @@
+class VoiceChannelUsedException < StandardError
+end

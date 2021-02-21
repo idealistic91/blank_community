@@ -30,6 +30,10 @@ class Member < ApplicationRecord
     end
   end
 
+  def send_message(message)
+    discord_user&.pm(message)
+  end
+
   def server_roles
     community.server.get_member_by_id(user.discord_id)["roles"]
   end
@@ -96,7 +100,7 @@ class Member < ApplicationRecord
       assign_roles
       Thread.new do
         channel = community.get_main_channel
-        bot.send_to_channel(channel[:name], "**#{nickname}** ist der #{community.name}-community beigetreten") if channel
+        bot.send_to_channel(channel, "**#{nickname}** ist der #{community.name}-community beigetreten") if channel
       end
       self.save
     end

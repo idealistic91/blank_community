@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_23_104850) do
+ActiveRecord::Schema.define(version: 2021_02_15_192646) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,8 @@ ActiveRecord::Schema.define(version: 2021_01_23_104850) do
     t.datetime "start_at"
     t.datetime "ends_at"
     t.bigint "community_id"
+    t.string "state"
+    t.string "channel_id"
     t.index ["community_id"], name: "index_events_on_community_id"
   end
 
