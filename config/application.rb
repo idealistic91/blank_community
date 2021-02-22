@@ -14,6 +14,10 @@ module BlankApp
 
     config.time_zone='Berlin'
 
+    config.after_initialize do
+      Discord::EventHandler.run if (defined? Rails::Server)
+    end
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
