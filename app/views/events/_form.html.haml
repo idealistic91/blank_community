@@ -32,6 +32,9 @@
         #game-fields-container.row
           - event.games.each do |game|
             = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
+          - @games.each do |game|
+            = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
+
       = form.submit class: "btn btn-primary"
 
 - content_for(:custom_js) do
