@@ -44,6 +44,7 @@ class EventsController < ApplicationController
       else
         format.html { 
           flash[:alert] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
+          @games = find_or_create_games(games_params['games_attributes'])
           render :new 
         }
         format.json { render json: @event.errors, status: :unprocessable_entity }
@@ -231,5 +232,18 @@ class EventsController < ApplicationController
         event.games << game
       end
     end
+  end
+
+  def find_or_create_games(params)
+    games = []
+    params.each do |key, game_params|
+      if game_params['id']
+        games << Game.find_by(id: game_params['id'])
+      else
+        game = Game.new(game_params)
+        games << game
+      end
+    end
+    games
   end
 end
