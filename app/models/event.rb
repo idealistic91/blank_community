@@ -1,10 +1,11 @@
 class Event < ApplicationRecord
     include AASM
     include DiscordNotifications
-
+    require 'sidekiq/api'
     # Todo: Move this to event settings model
     MIN_SLOTS = 3
     MAX_SLOTS = 20
+    EVENT_JOBS = %w(EventFinishJob EventStartJob)
 
     has_many :hosting_events, dependent: :destroy
     has_many :participants, dependent: :destroy
@@ -28,6 +29,7 @@ class Event < ApplicationRecord
     before_create :set_end_date
     before_update :set_end_date
     after_create_commit :initialize_jobs
+    after_destroy :destroy_jobs, if: Rails.env.production?
 
     scope :include_game_members, -> { includes(:members, :games) }
     scope :upcoming_events, -> { where('start_at > ?', DateTime.now) }
@@ -218,5 +220,16 @@ class Event < ApplicationRecord
     def initialize_jobs
         EventStartJob.set(wait_until: start_at).perform_later(id)
         EventFinishJob.set(wait_until: ends_at).perform_later(id)
+    end
+
+    def destroy_jobs
+        queues = Sidekiq::ScheduledSet.new
+        sidekiq_entries = queues.select do |sorted_entry|
+            job_data = sorted_entry.args.first
+            return false unless EVENT_JOBS.include?(job_data['job_class'])
+            return true if job_data['arguments'].include?(id)
+            return false
+        end
+        sidekiq_entries.map(&:delete)
     end
 end
