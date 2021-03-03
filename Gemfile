@@ -23,7 +23,7 @@ gem 'rack-cors'
 gem 'haml', '~> 5.1', '>= 5.1.2'
 gem 'discordrb', '= 3.4'
 # sudo apt-get install libmagickwand-dev (needs this library to work!!)
-gem 'rmagick', '~> 2.15', '>= 2.15.4'
+gem 'rmagick', '~> 4.2'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
