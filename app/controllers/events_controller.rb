@@ -84,7 +84,7 @@ class EventsController < ApplicationController
           flash.now[:success] = 'Erfolgreich beigetreten'
           render_join_leave
         else
-          flash.now[:error] = @event.errors.full_messages.join(', ')
+          flash.now[:alert] = @event.errors.full_messages.join(', ')
           render_flash_as_json
         end
       }
@@ -104,11 +104,11 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.js {
         if @event.hosts.include?(@membership)
-          flash.now[:error] = 'Du bist Host dieses Events und kannst daher das Event nicht verlassen!'
+          flash.now[:alert] = 'Du bist Host dieses Events und kannst daher das Event nicht verlassen!'
           render_flash_as_json
         else
-          @event.members.delete(@membership)
-          flash.now[:success] = "Du hast <strong>#{@event.title}</strong> verlassen".html_safe
+          flash_msg = @event.leave(@membership) ? "Du hast <strong>#{@event.title}</strong> verlassen".html_safe : @event.errors.full_messages.join(', ')
+          flash.now[@event.errors.any? ? :alert : :success] = flash_msg
           render_join_leave
         end
       }

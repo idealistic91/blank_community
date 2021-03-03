@@ -2,6 +2,10 @@ class Event < ApplicationRecord
     include AASM
     include DiscordNotifications
 
+    # Todo: Move this to event settings model
+    MIN_SLOTS = 3
+    MAX_SLOTS = 20
+
     has_many :hosting_events, dependent: :destroy
     has_many :participants, dependent: :destroy
     has_many :members, through: :hosting_events
@@ -17,7 +21,8 @@ class Event < ApplicationRecord
     validates :ends_at, future: true, on: :create
     validates :date, presence: true
     validates :title, presence: true
-    validates :slots, inclusion: { in: Proc.new{ |event| event.members.size > 3 ? event.members.size..20 : 3..20 } }
+    validates :slots, inclusion: { in: Proc.new{ |event| event.slot_range } }
+    validate :check_state, on: :update
     validate :max_slots_reached, on: :update
 
     before_create :set_end_date
@@ -51,6 +56,10 @@ class Event < ApplicationRecord
         game ? game.name : nil
     end
 
+    def slot_range
+        members.size > MIN_SLOTS ? (members.size..MAX_SLOTS) : (MIN_SLOTS..MAX_SLOTS)
+    end
+
     def hosts
         hosting_events.includes(:member).map(&:member)
     end
@@ -74,6 +83,15 @@ class Event < ApplicationRecord
         end
     end
 
+    def leave(member)
+        unless started? || finished?
+            members.delete(member)
+            return true
+        end
+        errors.add(:base, "Event mit dem Status #{state} können nicht verlassen werden.")
+        return false
+    end
+
     def voice_channel_empty?
         !voice_channel.users.any?
     end
@@ -85,12 +103,25 @@ class Event < ApplicationRecord
     private
 
     def event_upcoming?
-        finished = date < DateTime.now
+        finished = start_at < DateTime.now
         if finished
             errors.add(:base, 'Event liegt in der Vergangenheit!')
             return false
         end
         true
+    end
+
+    def locked?
+        self.started? || self.finished?
+    end
+
+    def check_state
+        if locked?
+            unless self.changed.include?('state')
+                errors.add(:base, 'Das Event kann nicht mehr bearbeitet werden.')
+                return false
+            end
+        end
     end
 
     def max_slots_reached
