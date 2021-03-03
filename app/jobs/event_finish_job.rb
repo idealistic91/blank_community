@@ -6,6 +6,7 @@ class EventFinishJob < ApplicationJob
 
     def perform(event_id)
         event = Event.find(event_id)
+        return false if event.finished?
         if event.voice_channel_empty?
             event.finish!
         else
