@@ -29,7 +29,7 @@ class Event < ApplicationRecord
     before_create :set_end_date
     before_update :set_end_date
     after_create_commit :initialize_jobs
-    after_destroy :destroy_jobs, if: Rails.env.production?
+    after_destroy :delete_jobs
 
     scope :include_game_members, -> { includes(:members, :games) }
     scope :upcoming_events, -> { where('start_at > ?', DateTime.now) }
@@ -222,7 +222,8 @@ class Event < ApplicationRecord
         EventFinishJob.set(wait_until: ends_at).perform_later(id)
     end
 
-    def destroy_jobs
+    def delete_jobs
+        return true unless Rails.env.production?
         queues = Sidekiq::ScheduledSet.new
         sidekiq_entries = queues.select do |sorted_entry|
             job_data = sorted_entry.args.first
