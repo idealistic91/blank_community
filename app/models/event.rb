@@ -32,6 +32,7 @@ class Event < ApplicationRecord
     scope :include_game_members, -> { includes(:members, :games) }
     scope :upcoming_events, -> { where('start_at > ?', DateTime.now) }
     scope :past_events, -> { where('ends_at < ?', DateTime.now) }
+    scope :live_events, -> { where(state: 'started') }
 
     aasm column: 'state', no_direct_assignment: true do
         state :ready, initial: true

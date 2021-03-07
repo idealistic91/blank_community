@@ -1,0 +1,5 @@
+.row
+  - @live.each do |event|
+    %div{class: "col-md-6"}
+      = render partial: 'events/partials/item', locals: { event: event }
+  %br/

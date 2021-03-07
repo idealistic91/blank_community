@@ -7,7 +7,10 @@ class EventsController < ApplicationController
 
   def index
     @upcoming = @events.include_game_members.upcoming_events
+    @live = @events.include_game_members.live_events
     @nav_items = [
+        { key: :live, partial: 'events/partials/live', label: 'Live'
+        },
         { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
         },
         { key: :past, label: 'Archiv'
