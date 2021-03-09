@@ -7,9 +7,9 @@
         .tab-content
           - nav_items.each do |item|
             %div{id: "#{item[:key]}", "aria-labelledby" => "#{item[:key]}-tab",
-            :role => "tabpanel", :class => "#{item == nav_items.first ? 'tab-pane fade show active' : 'tab-pane fade'}"}
+            :role => "tabpanel", :class => "#{item[:active] ? 'tab-pane fade show active' : 'tab-pane fade'}"}
               - if item[:partial]
-                = render partial: item[:partial]
+                = render partial: item[:partial], locals: item[:locals]
               - else
                 = '...'
       .card-footer
