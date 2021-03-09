@@ -6,13 +6,18 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @upcoming = @events.include_game_members.upcoming_events
+    @scope = params[:scope] if scope_set_and_valid?
+    @scope ||= :live
+    @result = @events.include_game_members.send("#{@scope}_events")
     @nav_items = [
-        { key: :upcoming, partial: 'events/partials/upcoming', label: 'Bevorstehend'
-        },
-        { key: :past, label: 'Archiv'
-        }
+        { key: :live, partial: nil, label: 'Live', locals: { events: nil } },
+        { key: :upcoming, partial: nil, label: 'Bevorstehend', locals: { events: nil } },
+        { key: :past, partial: nil, label: 'Archiv', locals: { events: nil } }
     ]
+    active_item_index = @nav_items.index{ |item| item[:key] == @scope.to_sym }
+    @nav_items[active_item_index][:locals][:events] = @result
+    @nav_items[active_item_index][:partial] = 'events/partials/list'
+    @nav_items[active_item_index][:active] = true
   end
 
   def show; end
@@ -125,11 +130,13 @@ class EventsController < ApplicationController
   end
 
   def fetch
-    @past = @events.past_events
-    element = render_to_string partial: 'events/partials/past', layout: false, format: 'html'
+    scope = params[:scope]
+    return unless allowed_fetch_params.include?(scope)
+    @fetched_events = @events.include_game_members.send("#{scope}_events")
+    element = render_to_string partial: 'events/partials/list', locals: {events: @fetched_events }, layout: false
     respond_to do |format|
       format.js {
-        render json: {success: "true", result: element}
+        render json: {success: true, result: element}
       }
     end
   end
@@ -245,5 +252,13 @@ class EventsController < ApplicationController
       end
     end
     games
+  end
+
+  def allowed_fetch_params
+    %w(past upcoming live)
+  end
+
+  def scope_set_and_valid?
+    params[:scope] && allowed_fetch_params.include?(params[:scope])
   end
 end
