@@ -24,12 +24,11 @@ class EventsController < ApplicationController
 
   def new
     @event = Event.new
+    @event.build_event_settings
   end
 
-  # GET /events/1/edit
   def edit
-    @game = @event.try(:game)
-    @game ||= Game.new
+    @event.build_event_settings if @event.event_settings.nil?
   end
 
   def create
@@ -164,7 +163,8 @@ class EventsController < ApplicationController
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
     end
-    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots)
+    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots,
+      event_settings_attributes: [:event_type, :create_channel, :notify_participants, :remind_server, :restricted])
   end
 
   def games_params

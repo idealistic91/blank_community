@@ -3,38 +3,60 @@
     .row.pt-4.pb-4
       .col-md-6
         .form-group.card.bg-dark.p-2.pb-3
-          = form.label 'Titel'
+          = form.label :title, 'Titel'
           = form.text_field :title, class: 'form-control'
         #game-card.form-group.card.bg-dark.p-2
-          = form.label 'Game'
+          = 'Game'
           #game-collection
             = render partial: 'game_selection', locals: { form: form }
           %small#game-loading{style: "display:none;"}= 'Loading ...'
         .card.bg-dark.p-2.mb-3
           .form-group.card.bg-dark.p-2
-            = form.label 'Plätze'
+            = form.label :slots, 'Plätze'
             = form.select :slots, ((event.slot_range).map{|i| [i, i] })
         .card.bg-dark.p-2.mb-3
           .form-group
-            = form.label 'Datum'
+            = form.label :date, 'Datum'
             = form.date_field :date, class: 'form-control', ignore_time: true, value: I18n.l(Date.today, locale: :en)
           .form-group
-            = form.label 'Start'
+            = form.label :start_at, 'Start'
             = form.time_select :start_at, class: 'form-control', ignore_date: true
           .form-group
-            = form.label 'Ende'
+            = form.label :ends_at, 'Ende'
             = form.time_select :ends_at, class: 'form-control', ignore_date: true
         .form-group.card.bg-dark.p-2
-          = form.label 'Beschreibung'
+          = form.label :description, 'Beschreibung'
           = form.text_area :description, class: 'form-control'
       .col-md-6.card.bg-dark
-        %h2 Games
-        #game-fields-container.row
-          - event.games.each do |game|
-            = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
-          - unless @games.nil?
-            - @games.each do |game|
+        #event-form-games-selection
+          %h2 Games
+          #game-fields-container.row
+            - event.games.each do |game|
               = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
+            - unless @games.nil?
+              - @games.each do |game|
+                = render partial: 'events/partials/game_fields', locals: {image_url: game.cover_url(format: 'cover_small'), igdb_id: game.igdb_id, name: game.name, id: game.id }
+        #event-form-settings
+          %h2 Settings
+          = form.fields_for :event_settings do |settings|
+            .form-group
+              = settings.label :event_type, 'Type'
+              = settings.select :event_type, event_type_collection
+            .form-group
+              .form-check
+                = settings.check_box :create_channel, { class:"form-check-input", type: "checkbox", id: 'create-channel-checkbox' }, true, false
+                = settings.label :create_channel, 'Erstelle Channel bei Start', class: "form-check-label"
+            .form-group
+              .form-check
+                = settings.check_box :restricted, { class: "form-check-input", type: "checkbox", disabled: 'disabled', id: 'restricted-checkbox'}, true, false
+                = settings.label :restricted, 'Nur Teilnehmer können Channel beitreten', class: "form-check-label"
+            .form-group
+              .form-check
+                = settings.check_box :remind_server, { class: "form-check-input", type:" checkbox" }, true, false
+                = settings.label :remind_server, 'Sende Server Erinnerung', class: "form-check-label"
+            .form-group
+              = settings.label :notify_participants, 'Benachrichtige Teilnehmer'
+              = settings.select :notify_participants, notify_participants_collection
 
       = form.submit class: "btn btn-primary"
 
