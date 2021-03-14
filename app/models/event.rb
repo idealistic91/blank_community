@@ -122,7 +122,7 @@ class Event < ApplicationRecord
         # Slots filled? Teams full? Teams fair? Event ready?
         message = ""
         if ready?
-            message += "Das Event ist geplant und bereit"
+            message += "Das Event ist geplant"
         elsif being_planned?
             message += "Das Event befindet sich noch Planung"
         elsif started?
