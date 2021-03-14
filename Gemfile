@@ -65,7 +65,7 @@ group :test do
   gem 'database_cleaner', '~> 2.0'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
-  gem 'webmock', '~> 3.8', '>= 3.8.3'
+  gem 'webmock', '~> 3.12'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
