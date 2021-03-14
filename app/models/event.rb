@@ -136,6 +136,10 @@ class Event < ApplicationRecord
         message
     end
 
+    def locked?
+        self.started? || self.finished?
+    end
+
     private
 
     def event_upcoming?
@@ -145,10 +149,6 @@ class Event < ApplicationRecord
             return false
         end
         true
-    end
-
-    def locked?
-        self.started? || self.finished?
     end
 
     def check_state
