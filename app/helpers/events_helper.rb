@@ -16,4 +16,13 @@ module EventsHelper
             nil
         end
     end
+
+    def notify_participants_collection
+        [['Keine', :dont], ['5 Minuten vorher', :five_min_before],
+        ['15 Minuten vorher', :fiveteen_min_before], ['30 Minuten vorher', :half_an_hour_before], ['1 Stunde vorher', :hour_before]]
+    end
+
+    def event_type_collection
+        EventSettings::EVENT_TYPES.map{|key, value| [value, key]}
+    end
 end

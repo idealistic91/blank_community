@@ -26,6 +26,12 @@ class Community < ApplicationRecord
         Discord::Server.new(id: server_id, bot: DISCORD_BOT.bot)
     end
 
+    def send_to_main_channel(message, embed)
+        if get_main_channel
+            get_main_channel.send_message(message, false, embed)
+        end
+    end
+
     def text_channels
         begin
             response = server.text_channels

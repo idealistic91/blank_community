@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_15_192646) do
+ActiveRecord::Schema.define(version: 2021_03_09_184841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,18 @@ ActiveRecord::Schema.define(version: 2021_02_15_192646) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["event_id"], name: "index_event_games_on_event_id"
     t.index ["game_id"], name: "index_event_games_on_game_id"
+  end
+
+  create_table "event_settings", force: :cascade do |t|
+    t.bigint "event_id"
+    t.string "event_type", default: "default"
+    t.boolean "create_channel", default: false
+    t.string "notify_participants", default: "dont"
+    t.boolean "remind_server", default: true
+    t.boolean "restricted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["event_id"], name: "index_event_settings_on_event_id", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -180,6 +192,7 @@ ActiveRecord::Schema.define(version: 2021_02_15_192646) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "discord_roles", "communities"
+  add_foreign_key "event_settings", "events"
   add_foreign_key "events", "communities"
   add_foreign_key "members", "communities"
 end

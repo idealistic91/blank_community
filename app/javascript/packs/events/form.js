@@ -69,3 +69,15 @@ $('#game-search').on('select2:select', function (e) {
 });
 
 assignDeleteEvents();
+
+let createChannelCheckBox = $('#create-channel-checkbox')
+let restrictedCheckBox = $('#restricted-checkbox')
+
+createChannelCheckBox.on('change', function(){
+  if(this.checked) {
+    restrictedCheckBox.prop('disabled', false)
+  } else {
+    restrictedCheckBox.prop('disabled', true)
+    restrictedCheckBox.prop('checked', false)
+  }
+})

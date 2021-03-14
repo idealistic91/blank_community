@@ -5,7 +5,8 @@ class Event < ApplicationRecord
     # Todo: Move this to event settings model
     MIN_SLOTS = 3
     MAX_SLOTS = 20
-    EVENT_JOBS = %w(EventFinishJob EventStartJob)
+    # TODO: Move jobs to event folder and get file names dynamically
+    EVENT_JOBS = %w(EventFinishJob EventStartJob EventNotificationJob EventServerReminderJob)
 
     has_many :hosting_events, dependent: :destroy
     has_many :participants, dependent: :destroy
@@ -13,6 +14,8 @@ class Event < ApplicationRecord
     has_many :members, through: :participants
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
+    has_one :event_settings, dependent: :destroy
+    accepts_nested_attributes_for :event_settings
     has_many_attached :images
     belongs_to :community
 
@@ -103,6 +106,36 @@ class Event < ApplicationRecord
         text_channel.send_message(message)
     end
 
+    def start_message
+        "Das Event **#{id}##{title}** ist gestartet!\n Bitte begib dich in den Event-Channel um deine Anwesenheit zu zeigen."
+    end
+
+    def notifiy_message
+        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now)}"
+    end
+
+    def participants_missing?
+        missing_participants > 0
+    end
+
+    def state_report
+        # Slots filled? Teams full? Teams fair? Event ready?
+        message = ""
+        if ready?
+            message += "Das Event ist geplant"
+        elsif being_planned?
+            message += "Das Event befindet sich noch Planung"
+        elsif started?
+            message += "Das Event ist gestartet"
+        elsif finished?
+            message += "Das Event wurde beendet"
+        end
+        if (ready? || being_planned?) && missing_participants > 0
+            message += " #{ready? ? 'aber es' : 'außerdem'} fehlen noch #{missing_participants} Teilnehmer."
+        end
+        message
+    end
+
     private
 
     def event_upcoming?
@@ -152,9 +185,19 @@ class Event < ApplicationRecord
         end
     end
 
-    def notify_participants
+    def notify_participants(message)
         members.each do |m|
-            m.send_message("Das Event **#{id}##{title}** ist gestartet!\n Bitte begib dich in den Event-Channel um deine Anwesenheit zu zeigen.")
+            m.send_message(message)
+        end
+    end
+
+    def missing_participants
+        slots - members.size
+    end
+
+    def remind_at
+        unless event_settings.dont_notify?
+            start_at - EventSettings::NOTIFY_PARTICIPANTS[event_settings.notify_participants.to_sym]
         end
     end
 
@@ -166,8 +209,12 @@ class Event < ApplicationRecord
         notify_discord("Das Event **#{id}##{title}** startet bald!")
 
         # create channels (text channel and voice channel)
-        create_channels
-        notify_participants
+        create_channels if create_channel?
+        notify_participants(start_message)
+    end
+
+    def create_channel?
+        event_settings.create_channel
     end
 
     def event_finished_actions
@@ -217,10 +264,29 @@ class Event < ApplicationRecord
             channel_wrapper.delete
         end
     end
+
+    def one_week_before_event
+        start_at - 1.week
+    end
+
+    def two_days_before_event
+        start_at - 2.days
+    end
+
+    def create_server_reminder_jobs
+        unless one_week_before_event < Time.zone.now
+            EventServerReminderJob.set(wait_until: one_week_before_event).perform_later(id)
+        end
+        unless two_days_before_event < Time.zone.now
+            EventServerReminderJob.set(wait_until: two_days_before_event).perform_later(id)
+        end
+    end
     
     def initialize_jobs
         EventStartJob.set(wait_until: start_at).perform_later(id)
         EventFinishJob.set(wait_until: ends_at).perform_later(id)
+        EventNotificationJob.set(wait_until: remind_at).perform_later(id) unless event_settings.dont_notify? 
+        create_server_reminder_jobs if event_settings.remind_server
     end
 
     def delete_jobs
