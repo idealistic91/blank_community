@@ -15,6 +15,7 @@
       .p-2#alert-container
         = render partial: 'layouts/flash', locales: { flash: flash }
       = yield(:actions)
+      #app
       #content
         = yield
   = yield(:custom_js)

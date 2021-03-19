@@ -6,18 +6,26 @@ class EventsController < ApplicationController
   before_action :load_bot, except: [:index, :show, :new]
 
   def index
-    @scope = params[:scope] if scope_set_and_valid?
-    @scope ||= :live
-    @result = @events.include_game_members.send("#{@scope}_events")
-    @nav_items = [
-        { key: :live, partial: nil, label: 'Live', locals: { events: nil } },
-        { key: :upcoming, partial: nil, label: 'Bevorstehend', locals: { events: nil } },
-        { key: :past, partial: nil, label: 'Archiv', locals: { events: nil } }
-    ]
-    active_item_index = @nav_items.index{ |item| item[:key] == @scope.to_sym }
-    @nav_items[active_item_index][:locals][:events] = @result
-    @nav_items[active_item_index][:partial] = 'events/partials/list'
-    @nav_items[active_item_index][:active] = true
+    respond_to do |format|
+      format.json {
+        render json: Event.all and return
+      }
+      format.html {
+        @scope = params[:scope] if scope_set_and_valid?
+        @scope ||= :live
+        @result = @events.include_game_members.send("#{@scope}_events")
+        @nav_items = [
+            { key: :live, partial: nil, label: 'Live', locals: { events: nil } },
+            { key: :upcoming, partial: nil, label: 'Bevorstehend', locals: { events: nil } },
+            { key: :past, partial: nil, label: 'Archiv', locals: { events: nil } }
+        ]
+        active_item_index = @nav_items.index{ |item| item[:key] == @scope.to_sym }
+        @nav_items[active_item_index][:locals][:events] = @result
+        @nav_items[active_item_index][:partial] = 'events/partials/list'
+        @nav_items[active_item_index][:active] = true
+      }
+    end
+    
   end
 
   def show; end
