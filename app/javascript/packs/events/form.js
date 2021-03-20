@@ -81,3 +81,16 @@ createChannelCheckBox.on('change', function(){
     restrictedCheckBox.prop('checked', false)
   }
 })
+
+let slotsLabel = $('#slots-label')
+let defaultSlotLabel = slotsLabel.text()
+let versusSlotLabel = slotsLabel.data('versus-label')
+let eventTypeSelection = $('#event_event_settings_attributes_event_type')
+
+eventTypeSelection.on('change', function(){
+  if($(this).val() == 'versus') {
+    slotsLabel.text(versusSlotLabel)
+  } else {
+    slotsLabel.text(defaultSlotLabel)
+  }
+})

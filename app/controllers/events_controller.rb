@@ -39,7 +39,6 @@ class EventsController < ApplicationController
         # Save games
         save_games(@event, games_params['games_attributes'])
         # Todo: Have nested attributes for hosting events
-        @event.add_host(@membership.id)
         format.html {
           send_notification(@membership.nickname, @event.event_embed)
           redirect_to community_event_path(@community, @event), notice: 'Event was successfully created.' 
@@ -163,7 +162,7 @@ class EventsController < ApplicationController
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
     end
-    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots,
+    params.require(:event).permit(:created_by, :title, :start_at, :ends_at, :date, :description, :title_picture, :slots,
       event_settings_attributes: [:event_type, :create_channel, :notify_participants, :remind_server, :restricted])
   end
 

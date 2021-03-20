@@ -2,7 +2,6 @@ class Event < ApplicationRecord
     include AASM
     include DiscordNotifications
     require 'sidekiq/api'
-    # Todo: Move this to event settings model
     MIN_SLOTS = 3
     MAX_SLOTS = 20
     # TODO: Move jobs to event folder and get file names dynamically
@@ -15,9 +14,11 @@ class Event < ApplicationRecord
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
     has_one :event_settings, dependent: :destroy
+    belongs_to :owner, class_name: 'Member', foreign_key: 'created_by'
     accepts_nested_attributes_for :event_settings
     has_many_attached :images
     belongs_to :community
+    has_many :teams
 
     validates :start_at, presence: true, on: :create
     validates :start_at, future: true, on: :create
@@ -31,7 +32,9 @@ class Event < ApplicationRecord
 
     before_create :set_end_date
     before_update :set_end_date
+    after_create :add_host
     after_create_commit :initialize_jobs
+    after_create_commit :create_teams, if: :is_versus?
     after_destroy :delete_jobs
 
     scope :include_game_members, -> { includes(:members, :games) }
@@ -70,8 +73,8 @@ class Event < ApplicationRecord
         hosting_events.includes(:member).map(&:member)
     end
 
-    def add_host(member_id)
-        self.hosting_events << HostingEvent.create(event_id: id, member_id: member_id)
+    def add_host
+        self.hosting_events << HostingEvent.create(event_id: id, member_id: self.owner.id)
         self.save
         host_join_event
     end
@@ -138,6 +141,20 @@ class Event < ApplicationRecord
 
     def locked?
         self.started? || self.finished?
+    end
+
+    def is_versus?
+        event_settings.event_type == 'versus'
+    end
+
+    def create_teams
+        2.times do
+            Team.create(slots: slots, name: 'Team', event: self)
+        end
+        participant = owner.participants.find_by(event_id: id)
+        teams.first.join_team(participant)
+        self.slots = self.slots * 2
+        self.save
     end
 
     private
@@ -229,7 +246,12 @@ class Event < ApplicationRecord
     def create_channels
         category_channel = community_server.create_channel("Event: #{title}", :category)
         community_server.create_channel("event-chat", :text, category_channel)
-        community_server.create_channel("event-voice", :voice, category_channel)
+        if event_settings.event_type == 'default'
+            community_server.create_channel("event-voice", :voice, category_channel)
+        else
+            community_server.create_channel("Team A", :voice, category_channel)
+            community_server.create_channel("Team B", :voice, category_channel)
+        end
         update_attribute(:channel_id, category_channel.id.to_s)
         bot = Discord::Bot.new(id: community.server_id)
         main_channel = community.get_main_channel
