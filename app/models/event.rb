@@ -30,8 +30,8 @@ class Event < ApplicationRecord
     validate :check_state, on: :update
     validate :max_slots_reached, on: :update
 
-    before_create :set_end_date
-    before_update :set_end_date
+    before_validation :set_end_date
+    #before_update :set_end_date
     after_create :add_host
     after_create_commit :initialize_jobs
     after_create_commit :create_teams, if: :is_versus?
@@ -140,16 +140,20 @@ class Event < ApplicationRecord
     end
 
     def locked?
-        self.started? || self.finished?
+        self.started? || self.finished? || self.in_the_past?
     end
 
     def is_versus?
         event_settings.event_type == 'versus'
     end
 
+    def in_the_past?
+        ends_at < DateTime.now
+    end
+
     def create_teams
-        2.times do
-            Team.create(slots: slots, name: 'Team', event: self)
+        2.times do |i|
+            Team.create(slots: slots, name: "Team #{i + 1}", event: self)
         end
         participant = owner.participants.find_by(event_id: id)
         teams.first.join_team(participant)
@@ -249,8 +253,9 @@ class Event < ApplicationRecord
         if event_settings.event_type == 'default'
             community_server.create_channel("event-voice", :voice, category_channel)
         else
-            community_server.create_channel("Team A", :voice, category_channel)
-            community_server.create_channel("Team B", :voice, category_channel)
+            self.teams.each do |team|
+                community_server.create_channel(team.name, :voice, category_channel)
+            end
         end
         update_attribute(:channel_id, category_channel.id.to_s)
         bot = Discord::Bot.new(id: community.server_id)

@@ -1,0 +1,60 @@
+.container
+    .row.mb-2 
+        - event.teams.each do |team|
+            .col-md-5
+                .row
+                    .col-md-8.team-name{id: "team-id-#{team.id}"}
+                        %h4{id: "team-header-#{team.id}"}= team.name
+                        %input.form-control{"aria-label" => "Teamname", placeholder: team.name, type: "hidden", class: 'team-name-input', id: "team-#{team.id}"}
+                    .col-md-4{id: "team-controls-wrapper-#{team.id}"}
+                        .float-right
+                            - if (team == participant.team) && !event.locked?
+                                - if participant == team.captain
+                                    %button.btn.btn-primary#edit-team-btn{data: {team_id: team.id}}
+                                        %i.fas.fa-edit
+                                    .team-name-controls{id: "team-name-controls-#{team.id}", style: "display: none;"}
+                                        %button.btn.btn-success{id: "team-name-save-btn", data: {team_id: team.id, path: update_team_community_events_path}}
+                                            %i.fas.fa-save
+                                        %button.btn.btn-danger{id: "team-name-abort-btn"}
+                                            %i.fas.fa-times
+                                - if participant == team.captain
+                                    %button{class: 'btn btn-danger', id: "team-unassign-captain", data: {team_id: team.id, path: assign_captain_community_events_path}}
+                                        %i.fas.fa-crown
+                                - else
+                                    - if team.captain.nil? 
+                                        %button{class: 'btn btn-primary', id: "team-assign-captain", data: {team_id: team.id, path: assign_captain_community_events_path}}
+                                            %i.fas.fa-crown
+            .col-md-2
+                        
+    .row
+        - event.teams.each do |team|
+            .col-md-5{id: "team-#{team.id}", data: { team_id: team.id }}
+                - team.participants.each do |p|
+                    .slot-container
+                        .event-slot.p-2
+                            .card.bg-dark.mb-2.participant-slot
+                                .row.align-items-center
+                                    .col-md-8
+                                        %span
+                                            - if p.member.user.picture.attached?
+                                                = image_tag url_for(p.member.user.picture), id: 'profile_picture', class: 'mr-4'
+                                            - else
+                                                .img-placeholder
+                                            = p.member.nickname
+                                    .col-md-4
+                                        .float-right.mr-2
+                                            - if team.captain == p
+                                                %i.fas.fa-crown
+                - empty_spaces = team.slots - team.participants.size
+                - (empty_spaces).times do |i|
+                    .slot-container
+                        .event-slot.p-2
+                            - if i == 0
+                                - unless participant.team == team || event.locked?
+                                    .join-team
+                                        = link_to join_team_community_events_path(id: event.id, team_id: team.id), method: :post, remote: true, class: 'btn btn-primary join-team-btn' do
+                                            %i.fas.fa-sign-in-alt
+            - if team == event.teams.first
+                .col-md-2#team-divider
+                    %h4= "vs"
+                

@@ -1,4 +1,4 @@
-.container
+.container#event-container{data: {community_id: @community.id, event_id: @event.id}}
   .row
     .col-md-12
       .card.text-white.mt-4.bg-dark.mb-3.d-flex#event-card-show
@@ -9,7 +9,10 @@
             #details.tab-pane.fade.show.active{"aria-labelledby" => "details-tab", :role => "tabpanel"}
               = render partial: 'details', locals: { event: @event }
             #participants.tab-pane.fade{"aria-labelledby" => "participants-tab", :role => "tabpanel"}
-              = render partial: 'participants_list', locals: { event: @event }
+              - if @event.is_versus? && @participant
+                = render partial: 'team_list', locals: { event: @event, participant: @participant }
+              - else
+                = render partial: 'participants_list', locals: { event: @event }
             #tools.tab-pane.fade{"aria-labelledby" => "tools-tab", :role => "tabpanel"}
               = render partial: 'events/partials/tools'
         .card-footer.event-footer-show
