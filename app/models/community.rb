@@ -45,7 +45,7 @@ class Community < ApplicationRecord
 
     def get_main_channel
         begin
-            server.find_channel_by_id(settings.main_channel)
+            channel = server.find_channel_by_id(settings.main_channel)
         rescue => exception
             channel = nil
         end
