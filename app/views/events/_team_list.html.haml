@@ -57,4 +57,8 @@
             - if team == event.teams.first
                 .col-md-2#team-divider
                     %h4= "vs"
+    .row 
+        .participant-avatars
+            - event.participants.select{ |p| p.team.nil? }.each do |p|
+                = profile_picture_icon(p.member.user)
                 

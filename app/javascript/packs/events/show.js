@@ -3,6 +3,7 @@ import Poll from "../poll/main";
 let token = $('meta[name=csrf-token]').attr('content')
 let eventId = $('#event-container').data('eventId')
 let communityId = $('#event-container').data('communityId')
+let spinner = $('<div class="lds-dual-ring"></div>')
 let teamId = undefined
 
 function clickEvents() {
@@ -11,6 +12,7 @@ function clickEvents() {
         $(`#team-${teamId}`).attr('type', 'text')
         $(`#team-name-controls-${teamId}`).css('display', 'block')
         $(this).hide();
+        $('#team-unassign-captain').hide();
         $(`#team-header-${teamId}`).hide();
     })
 
@@ -19,6 +21,7 @@ function clickEvents() {
         $(`#team-name-controls-${teamId}`).css('display', 'none')
         $('#edit-team-btn').show()
         $(`#team-header-${teamId}`).show()
+        $('#team-unassign-captain').show()
     })
     
     $("#team-name-save-btn").on('click', function(){
@@ -26,7 +29,6 @@ function clickEvents() {
         let teamId = $(this).data('teamId')
         let name = $(`#team-${teamId}`).val()
         let controlsWrapper = $(`#team-controls-wrapper-${teamId}`)
-        let spinner = $('<div class="lds-dual-ring"></div>')
         $.ajax({
             method: "POST",
             dataType: "json",
@@ -46,9 +48,27 @@ function clickEvents() {
         })
     })
 
-    $('#team-assign-captain').on('click', function(){
+    $('#team-unassign-captain, #team-assign-captain').on('click', function(){
         let path = $(this).data('path')
         let teamId = $(this).data('teamId')
+        let controlsWrapper = $(`#team-controls-wrapper-${teamId}`)
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: path,
+            data: {community_id: communityId, id: eventId, team_id: teamId, authenticity_token: token},
+            success: (data) => {
+                if(data.success){
+                    $('#participants').html(data.list)
+                }
+                clickEvents();
+            },
+            beforeSend: () => {
+                controlsWrapper.addClass('d-flex')
+                controlsWrapper.addClass('justify-content-center')
+                controlsWrapper.html(spinner)
+            }
+        })
     })
 
 }

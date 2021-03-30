@@ -1,6 +1,6 @@
 class Team < ApplicationRecord
     belongs_to :event
-    has_one :captain, class_name: 'Participant'
+    belongs_to :captain, class_name: 'Participant', optional: true
     has_many :participants
 
     def join_team(participant)
@@ -9,6 +9,11 @@ class Team < ApplicationRecord
 
     def assign_captain(participant)
         self.captain = participant
+        self.save
+    end
+
+    def unassign_captain
+        self.captain = nil
         self.save
     end
 end

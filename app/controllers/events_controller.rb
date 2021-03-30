@@ -1,10 +1,10 @@
 class EventsController < ApplicationController
   before_action :get_community
-  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll, :join_team, :update_team]
+  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll, :join_team, :update_team, :assign_captain]
   before_action :get_events, only: [:index, :fetch]
   before_action :get_membership
   before_action :load_bot, except: [:index, :show, :new, :update_team]
-  before_action :get_participant, only: [:show, :join_team, :join, :leave, :update_team]
+  before_action :get_participant, only: [:show, :join_team, :join, :leave, :update_team, :assign_captain]
 
   def index
     @scope = params[:scope] if scope_set_and_valid?
@@ -145,6 +145,10 @@ class EventsController < ApplicationController
     @team = Team.find_by(id: params[:team_id])
     if @participant && @team
       @participant.update_attribute(:team_id, @team.id)
+      @event.teams.where(captain_id: @participant.id).each do |team|
+        team.unassign_captain
+      end
+      @event.reload
       team_list = render_to_string partial: 'events/team_list', locals: { event: @event, participant: @participant }, layout: false
       render json: { success: true, list: team_list } and return
     else
@@ -164,6 +168,14 @@ class EventsController < ApplicationController
 
   def assign_captain
     @team = Team.find_by(id: params[:team_id])
+    if @team.captain == @participant
+      @team.captain = nil
+      @team.save
+    else
+      @team.assign_captain(@participant)
+    end
+    team_list = render_to_string partial: 'events/team_list', locals: { event: @event, participant: @participant }, layout: false
+    render json: { success: true, list: team_list } and return
   end
 
   private
