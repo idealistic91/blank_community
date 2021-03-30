@@ -111,7 +111,7 @@ class Event < ApplicationRecord
     end
 
     def notifiy_message
-        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now)}"
+        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now).inspect}"
     end
 
     def participants_missing?
