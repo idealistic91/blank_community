@@ -10,8 +10,8 @@
               = render partial: 'details', locals: { event: @event }
             #participants.tab-pane.fade{"aria-labelledby" => "participants-tab", :role => "tabpanel"}
               = render partial: 'participants_list', locals: { event: @event }
-            #tools.tab-pane.fade{"aria-labelledby" => "tools-tab", :role => "tabpanel"}
-              = render partial: 'events/partials/tools'
+            -# #tools.tab-pane.fade{"aria-labelledby" => "tools-tab", :role => "tabpanel"}
+            -#   = render partial: 'events/partials/tools'
         .card-footer.event-footer-show
           .row
             .col-md-2
