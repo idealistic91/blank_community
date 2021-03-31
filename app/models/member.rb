@@ -96,7 +96,6 @@ class Member < ApplicationRecord
       self.nickname = dc_user.username
       set_picture(dc_user.avatar_url('png'))
       # for some reason we need to set the picture again..
-      update_picture
       bot = Discord::Bot.new(id: community.server_id)
       assign_roles
       Thread.new do
