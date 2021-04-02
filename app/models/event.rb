@@ -114,7 +114,7 @@ class Event < ApplicationRecord
     end
 
     def notifiy_message
-        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now)}"
+        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now).inspect}"
     end
 
     def participants_missing?
@@ -161,6 +161,12 @@ class Event < ApplicationRecord
         self.save
     end
 
+    def notify_participants(message)
+        members.each do |m|
+            m.send_message(message)
+        end
+    end
+
     private
 
     def event_upcoming?
@@ -203,12 +209,6 @@ class Event < ApplicationRecord
         main_channel = community.get_main_channel
         if main_channel
             bot.send_to_channel(main_channel, message)
-        end
-    end
-
-    def notify_participants(message)
-        members.each do |m|
-            m.send_message(message)
         end
     end
 

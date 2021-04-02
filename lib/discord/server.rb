@@ -6,7 +6,7 @@ module Discord
         def initialize(id:, bot: nil)
             @id = id
             @bot = bot || DISCORD_BOT.bot
-            @this = Discordrb::Server.new(info, bot)
+            @this = Discordrb::Server.new(info, self.bot)
         end
         
         def channels

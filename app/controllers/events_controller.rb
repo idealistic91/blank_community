@@ -38,7 +38,9 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.save
         # Save games
-        save_games(@event, games_params['games_attributes'])
+        if params[:games]
+          save_games(@event, games_params['games_attributes'])
+        end
         # Todo: Have nested attributes for hosting events
         format.html {
           send_notification(@membership.nickname, @event.event_embed)
@@ -59,7 +61,7 @@ class EventsController < ApplicationController
   def update
     respond_to do |format|
       if @event.update(event_params)
-        update_games(@event, games_params['games_attributes'])
+        update_games(@event, games_params['games_attributes']) if params[:games]
         format.html { redirect_to community_event_path(@community, @event), notice: 'Event was successfully updated.' }
         format.json { render :show, status: :ok, location: @event }
       else
