@@ -31,7 +31,6 @@ class Event < ApplicationRecord
     validate :max_slots_reached, on: :update
 
     before_validation :set_end_date
-    #before_update :set_end_date
     after_create :add_host
     after_create_commit :initialize_jobs
     after_create_commit :create_teams, if: :is_versus?
