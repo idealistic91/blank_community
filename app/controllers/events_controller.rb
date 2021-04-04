@@ -116,6 +116,7 @@ class EventsController < ApplicationController
         else
           flash_msg = @event.leave(@membership) ? "Du hast <strong>#{@event.title}</strong> verlassen".html_safe : @event.errors.full_messages.join(', ')
           flash.now[@event.errors.any? ? :alert : :success] = flash_msg
+          get_participant
           render_join_leave
         end
       }

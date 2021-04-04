@@ -6,7 +6,7 @@ let communityId = $('#event-container').data('communityId')
 let spinner = $('<div class="lds-dual-ring"></div>')
 let teamId = undefined
 
-function clickEvents() {
+function assignEventListeners() {
     $('#edit-team-btn').on('click', function(){
         teamId = $(this).data('teamId')
         $(`#team-${teamId}`).attr('type', 'text')
@@ -38,7 +38,7 @@ function clickEvents() {
                 if(data.success){
                     $('#participants').html(data.list)
                 }
-                clickEvents();
+                assignEventListeners();
             },
             beforeSend: () => {
                 controlsWrapper.addClass('d-flex')
@@ -61,7 +61,7 @@ function clickEvents() {
                 if(data.success){
                     $('#participants').html(data.list)
                 }
-                clickEvents();
+                assignEventListeners();
             },
             beforeSend: () => {
                 controlsWrapper.addClass('d-flex')
@@ -71,26 +71,27 @@ function clickEvents() {
         })
     })
 
+    $('#join-leave-button').on('ajax:success', function(event){
+        let data = event.detail[2]
+        data = JSON.parse(data.response)
+        if(data.success){
+            $('#participants').html(data.list)
+            $('#join-leave-btn').html(data.button)
+            $('#participants-tab').tab('show')
+            assignEventListeners();
+        }
+    });
+
+    $('#participants').on('ajax:success', function(event){
+        let data = event.detail[2]
+        data = JSON.parse(data.response)
+        if(data.success) {
+            $('#participants').html(data.list)
+            assignEventListeners();
+        }
+    });
+
 }
-clickEvents();
-
-$('#join-leave-button').on('ajax:success', function(event){
-    let data = event.detail[2]
-    data = JSON.parse(data.response)
-    if(data.success){
-        $('#participants').html(data.list)
-        $('#join-leave-btn').html(data.button)
-        $('#participants-tab').tab('show')
-    }
-});
-
-$('#participants').on('ajax:success', function(event){
-    let data = event.detail[2]
-    data = JSON.parse(data.response)
-    if(data.success) {
-        $('#participants').html(data.list)
-        clickEvents();
-    }
-});
+assignEventListeners();
 
 let poll = new Poll('#tool-modal-body')
