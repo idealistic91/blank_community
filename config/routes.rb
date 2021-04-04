@@ -24,6 +24,9 @@ Rails.application.routes.draw do
         post :leave
         #post :send_poll
         get :public_join
+        post :join_team
+        post :update_team
+        post :assign_captain
       end
     end  
   end

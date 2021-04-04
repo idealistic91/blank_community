@@ -1,5 +1,6 @@
 .container
   = form_with(model: [@community, event], local: true, class: 'event_form') do |form|
+    = form.hidden_field :created_by, value: @membership.id
     .row.pt-4.pb-4
       .col-md-6
         .form-group.card.bg-dark.p-2.pb-3
@@ -12,7 +13,7 @@
           %small#game-loading{style: "display:none;"}= 'Loading ...'
         .card.bg-dark.p-2.mb-3
           .form-group.card.bg-dark.p-2
-            = form.label :slots, 'Plätze'
+            = form.label :slots, 'Plätze', id: 'slots-label', data: { versus_label: 'Teamgröße' }
             = form.select :slots, ((event.slot_range).map{|i| [i, i] }), {}, {class: 'form-control'}
         .card.bg-dark.p-2.mb-3
           .form-group

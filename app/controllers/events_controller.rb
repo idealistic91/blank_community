@@ -1,9 +1,10 @@
 class EventsController < ApplicationController
   before_action :get_community
-  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll]
+  before_action :get_event, only: [:show, :edit, :update, :destroy, :join, :leave, :public_join, :send_poll, :join_team, :update_team, :assign_captain]
   before_action :get_events, only: [:index, :fetch]
   before_action :get_membership
   before_action :load_bot, except: [:index, :show, :new]
+  before_action :get_participant, only: [:show, :join_team, :join, :leave, :update_team, :assign_captain]
 
   def index
     @scope = params[:scope] if scope_set_and_valid?
@@ -41,7 +42,6 @@ class EventsController < ApplicationController
           save_games(@event, games_params['games_attributes'])
         end
         # Todo: Have nested attributes for hosting events
-        @event.add_host(@membership.id)
         format.html {
           send_notification(@membership.nickname, @event.event_embed)
           redirect_to community_event_path(@community, @event), notice: 'Event was successfully created.' 
@@ -87,6 +87,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.js {
         if @event.join(@membership)
+          get_participant
           flash.now[:success] = 'Erfolgreich beigetreten'
           render_join_leave
         else
@@ -115,6 +116,7 @@ class EventsController < ApplicationController
         else
           flash_msg = @event.leave(@membership) ? "Du hast <strong>#{@event.title}</strong> verlassen".html_safe : @event.errors.full_messages.join(', ')
           flash.now[@event.errors.any? ? :alert : :success] = flash_msg
+          get_participant
           render_join_leave
         end
       }
@@ -142,10 +144,48 @@ class EventsController < ApplicationController
     end
   end
 
+  def join_team
+    @team = Team.find_by(id: params[:team_id])
+    if @participant && @team
+      @participant.update_attribute(:team_id, @team.id)
+      @event.teams.where(captain_id: @participant.id).each { |team| team.unassign_captain }
+      @event.reload
+      team_list = render_to_string partial: 'events/team_list', locals: { event: @event, participant: @participant }, layout: false
+      render json: { success: true, list: team_list } and return
+    else
+      render json: { success: false, message: 'Team oder Teilnehmer nicht gefunden' } and return
+    end
+  end
+
+  def update_team
+    @team = Team.find_by(id: params[:team_id])
+    if @team.update(team_params)
+      team_list = render_to_string partial: 'events/team_list', locals: { event: @event, participant: @participant }, layout: false
+      render json: { success: true, list: team_list } and return
+    else
+      render json: { success: false, message: "Nope" } and return
+    end
+  end
+
+  def assign_captain
+    @team = Team.find_by(id: params[:team_id])
+    if @team.captain == @participant
+      @team.unassign_captain
+    else
+      @team.assign_captain(@participant)
+    end
+    team_list = render_to_string partial: 'events/team_list', locals: { event: @event, participant: @participant }, layout: false
+    render json: { success: true, list: team_list } and return
+  end
+
   private
 
   def render_join_leave
-    list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+    if @event.is_versus? && @participant
+      list = render_to_string partial: 'events/team_list', content_type: 'text/html', locals: { event: @event, participant: @participant }
+    else
+      list = render_to_string partial: 'events/participants_list', content_type: 'text/html', locals: { event: @event }
+    end
     button = render_to_string partial: 'events/partials/join_leave_button', content_type: 'text/html',
                               locals: { name: action_name == 'join' ? "Verlassen" : "Teilnehmen",
                                 action: action_name == 'join' ? :leave : :join,
@@ -165,8 +205,12 @@ class EventsController < ApplicationController
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["start_at(#{i+1}i)"] = el }
       params[:event][:date].split('-').each_with_index {|el, i| params[:event]["ends_at(#{i+1}i)"] = el }
     end
-    params.require(:event).permit(:title, :start_at, :ends_at, :date, :description, :title_picture, :slots,
+    params.require(:event).permit(:created_by, :title, :start_at, :ends_at, :date, :description, :title_picture, :slots,
       event_settings_attributes: [:event_type, :create_channel, :notify_participants, :remind_server, :restricted])
+  end
+
+  def team_params
+    params.require(:team).permit(:name)
   end
 
   def games_params
@@ -203,6 +247,10 @@ class EventsController < ApplicationController
       flash[:alert] = "Event not found!"
       redirect_back(fallback_location: root_path)
     end
+  end
+
+  def get_participant
+    @participant = Participant.find_by(member_id: @membership.id, event_id: @event.id)
   end
 
   def load_bot
