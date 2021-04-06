@@ -18,7 +18,8 @@
         .card.bg-dark.p-2.mb-3
           .form-group
             = form.label :date, 'Datum'
-            = form.date_field :date, class: 'form-control', ignore_time: true, value: I18n.l(Date.today, locale: :en)
+            = form.date_field :date, class: 'form-control', ignore_time: true,
+            value: event.date ? I18n.l(event.date, locale: :en) : I18n.l(Date.today, locale: :en)
           .form-group
             = form.label :start_at, 'Start'
             = form.time_select :start_at, class: 'form-control', ignore_date: true
