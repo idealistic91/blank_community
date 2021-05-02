@@ -34,7 +34,7 @@ class Event < ApplicationRecord
     after_create :add_host
     after_create_commit :initialize_jobs
     after_create_commit :create_teams, if: :is_versus?
-    after_update_commit :reinitialize_jobs
+    after_update_commit :reinitialize_jobs, if: :times_have_changed?
     after_destroy :delete_jobs
 
     scope :include_game_members, -> { includes(:members, :games) }
@@ -172,7 +172,7 @@ class Event < ApplicationRecord
     end
 
     def sheduled_jobs
-        return [] unless Rails.env.production?
+        #return [] unless Rails.env.production?
         queues = Sidekiq::ScheduledSet.new
         sidekiq_entries = queues.select do |sorted_entry|
             job_data = sorted_entry.args.first
@@ -180,6 +180,11 @@ class Event < ApplicationRecord
             job_data['arguments'].include?(id)
         end
         sidekiq_entries
+    end
+
+    def reinitialize_jobs
+        delete_jobs
+        initialize_jobs
     end
 
     private
@@ -331,15 +336,7 @@ class Event < ApplicationRecord
         create_server_reminder_jobs if event_settings.remind_server
     end
 
-    def reinitialize_jobs
-        if times_have_changed?
-            delete_jobs
-            initialize_jobs
-        end
-    end
-
     def delete_jobs
-        return true unless Rails.env.production?
         sidekiq_entries = sheduled_jobs
         sidekiq_entries.map(&:delete)
     end
