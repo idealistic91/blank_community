@@ -2,7 +2,12 @@ class GamesController < ApplicationController
   
   def search
     unless params[:search].nil?
-      response = $igdb_base.search_game(params[:search])
+      begin
+        response = $igdb_base.search_game(params[:search])
+      rescue StandardError
+        $igdb_base = IGDB::Base.new
+        response = $igdb_base.search_game(params[:search])
+      end
       results = response.map do |game|
         { id: game['id'], text: game['name'] }
       end
