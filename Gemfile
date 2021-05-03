@@ -31,7 +31,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'sidekiq'
 # AASM State machine
-gem 'aasm', '~> 5.1.1'
+gem 'aasm', '~> 5.2.0'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
