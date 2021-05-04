@@ -14,4 +14,13 @@ module CustomRescue
           end
         end
     end
+
+    def rescue_igdb_base
+      begin
+        yield
+      rescue NoMethodError
+        $igdb_base = IGDB::Base.new
+        yield
+      end
+    end
 end

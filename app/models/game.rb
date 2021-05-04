@@ -1,15 +1,13 @@
 class Game < ApplicationRecord
+    include CustomRescue
     has_many :event_games
     has_many :events, through: :event_games
     validates :igdb_id, uniqueness: true
 
     def cover_url(format: 'thumb')
         return false unless IGDB::Game::IMAGE_SIZES.include?(format)
-        begin
-            game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
-        rescue NoMethodError
-            $igdb_base = IGDB::Base.new
-            game = $igdb_base.game(igdb_id, fields: ['cover.url']).first
+        game = rescue_igdb_base do
+            $igdb_base.game(igdb_id, fields: ['cover.url']).first
         end
         url = game['cover']['url']
         url.gsub('thumb', format) unless format == 'thumb'

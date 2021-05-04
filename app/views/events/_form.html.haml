@@ -46,15 +46,15 @@
               = settings.select :event_type, event_type_collection, {}, {class: 'form-control'}
             .form-group
               .form-check
-                = settings.check_box :create_channel, { class:"form-check-input", type: "checkbox", id: 'create-channel-checkbox' }, true, false
+                = settings.check_box :create_channel, { class:"form-check-input", type: "checkbox", id: 'create-channel-checkbox' }, "true", "false"
                 = settings.label :create_channel, 'Erstelle Channel bei Start', class: "form-check-label"
             .form-group
               .form-check
-                = settings.check_box :restricted, { class: "form-check-input", type: "checkbox", disabled: 'disabled', id: 'restricted-checkbox'}, true, false
+                = settings.check_box :restricted, { class: "form-check-input", type: "checkbox", disabled: 'disabled', id: 'restricted-checkbox'}, "true", "false"
                 = settings.label :restricted, 'Nur Teilnehmer können Channel beitreten', class: "form-check-label"
             .form-group
               .form-check
-                = settings.check_box :remind_server, { class: "form-check-input", type:" checkbox" }, true, false
+                = settings.check_box :remind_server, { class: "form-check-input", type: "checkbox" }, "true", "false"
                 = settings.label :remind_server, 'Sende Server Erinnerung', class: "form-check-label"
             .form-group
               = settings.label :notify_participants, 'Benachrichtige Teilnehmer'
