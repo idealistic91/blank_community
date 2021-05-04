@@ -106,7 +106,19 @@ class Event < ApplicationRecord
     end
 
     def times_have_changed?
-        !(self.start_at == self.start_at_before_last_save) || !(self.ends_at == self.ends_at_before_last_save) || !(self.date == date_before_last_save)
+        start_at_changed? || ends_at_changed? || date_changed?
+    end
+
+    def start_at_changed?
+        !(start_at == start_at_before_last_save)
+    end
+
+    def ends_at_changed?
+        !(ends_at == ends_at_before_last_save)
+    end
+
+    def date_changed?
+        !(date == date_before_last_save)
     end
 
     def send_to_event_channel(message)
