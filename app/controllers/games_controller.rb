@@ -1,12 +1,10 @@
 class GamesController < ApplicationController
+  include CustomRescue
   
   def search
     unless params[:search].nil?
-      begin
-        response = $igdb_base.search_game(params[:search])
-      rescue StandardError
-        $igdb_base = IGDB::Base.new
-        response = $igdb_base.search_game(params[:search])
+      response = rescue_igdb_base do
+        $igdb_base.search_game(params[:search])
       end
       results = response.map do |game|
         { id: game['id'], text: game['name'] }

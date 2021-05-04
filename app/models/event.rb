@@ -179,7 +179,6 @@ class Event < ApplicationRecord
             return false unless EVENT_JOBS.include?(job_data['job_class'])
             job_data['arguments'].include?(id)
         end
-        sidekiq_entries
     end
 
     def reinitialize_jobs
