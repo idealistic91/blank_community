@@ -348,7 +348,6 @@ class Event < ApplicationRecord
     end
 
     def delete_jobs
-        sidekiq_entries = sheduled_jobs
-        sidekiq_entries.map(&:delete)
+        sheduled_jobs.map(&:delete)
     end
 end
