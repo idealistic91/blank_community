@@ -6,6 +6,17 @@ module Discord
                     event.respond 'Pong!!'
                 end
             end
+
+            DISCORD_BOT_SYNC.bot.message(with_text: '!help') do |event|
+                if Rails.env.development?
+                    begin
+                        throw :abort unless event.author.server.id.to_s == ENV['dev_server_id']
+                    rescue
+                        return false
+                    end
+                end
+                event.respond "**register:me** - Registriere dich\n**register:server** - Registriere den Server als Besitzer\n**events:all** - Rufe alle bevorstehenden Events auf\n**event:<id>** - Rufe ein bestimmtes Event auf\n**events:mine** - Liste meine Events auf\n**event:<id>:start** - Starte ein Event manuell\n**event:<id>:finish** - Beende ein Event manuell\n**event:last** - Rufe das zuletzt erstelle Event auf"
+            end
             
             DISCORD_BOT_SYNC.bot.message(with_text: 'events:all') do |event|
                 find_community(event) do |community, user|
@@ -16,7 +27,7 @@ module Discord
                         embeded_events.each do |message|
                             event.respond message
                         end
-                        event.respond "Tippe 'event:<id>' für mehr Informationen."    
+                        event.respond "Tippe **event:<id>** für mehr Informationen."    
                     else
                         event.respond "Es stehen keine Events an"
                     end
@@ -171,6 +182,13 @@ module Discord
         end
 
         def self.find_community(event, authorize = true)
+            if Rails.env.development?
+                begin
+                    throw :abort unless event.author.server.id.to_s == ENV['dev_server_id']
+                rescue
+                    return false
+                end
+            end
             community = Community.find_by(server_id: event.author.server.id)
             if community
                 if authorize

@@ -95,8 +95,8 @@ class Member < ApplicationRecord
       dc_user = discord_user
       self.nickname = dc_user.username
       set_picture(dc_user.avatar_url('png'))
+      # for some reason we need to set the picture again..
       bot = Discord::Bot.new(id: community.server_id)
-      # Todo: Send to main channel set in the community settings
       assign_roles
       Thread.new do
         channel = community.get_main_channel

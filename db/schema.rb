@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_14_140153) do
+ActiveRecord::Schema.define(version: 2021_03_21_141923) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 2021_03_14_140153) do
     t.bigint "community_id"
     t.string "state"
     t.string "channel_id"
+    t.integer "created_by"
     t.index ["community_id"], name: "index_events_on_community_id"
   end
 
@@ -147,8 +148,10 @@ ActiveRecord::Schema.define(version: 2021_03_14_140153) do
     t.bigint "member_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "team_id"
     t.index ["event_id"], name: "index_participants_on_event_id"
     t.index ["member_id"], name: "index_participants_on_member_id"
+    t.index ["team_id"], name: "index_participants_on_team_id"
   end
 
   create_table "positions", force: :cascade do |t|
@@ -184,6 +187,16 @@ ActiveRecord::Schema.define(version: 2021_03_14_140153) do
     t.index ["community_id"], name: "index_settings_on_community_id"
   end
 
+  create_table "teams", force: :cascade do |t|
+    t.string "name"
+    t.integer "slots"
+    t.bigint "event_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "captain_id"
+    t.index ["event_id"], name: "index_teams_on_event_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -203,4 +216,5 @@ ActiveRecord::Schema.define(version: 2021_03_14_140153) do
   add_foreign_key "event_settings", "events"
   add_foreign_key "events", "communities"
   add_foreign_key "members", "communities"
+  add_foreign_key "participants", "teams"
 end

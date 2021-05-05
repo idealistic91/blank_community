@@ -2,7 +2,6 @@ class Event < ApplicationRecord
     include AASM
     include DiscordNotifications
     require 'sidekiq/api'
-    # Todo: Move this to event settings model
     MIN_SLOTS = 3
     MAX_SLOTS = 20
     # TODO: Move jobs to event folder and get file names dynamically
@@ -15,9 +14,11 @@ class Event < ApplicationRecord
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
     has_one :event_settings, dependent: :destroy
+    belongs_to :owner, class_name: 'Member', foreign_key: 'created_by'
     accepts_nested_attributes_for :event_settings
     has_many_attached :images
     belongs_to :community
+    has_many :teams
 
     validates :start_at, presence: true, on: :create
     validates :start_at, future: true, on: :create
@@ -29,9 +30,11 @@ class Event < ApplicationRecord
     validate :check_state, on: :update
     validate :max_slots_reached, on: :update
 
-    before_create :set_end_date
-    before_update :set_end_date
+    before_validation :set_end_date
+    after_create :add_host
     after_create_commit :initialize_jobs
+    after_create_commit :create_teams, if: :is_versus?
+    after_update_commit :reinitialize_jobs, if: :times_have_changed?
     after_destroy :delete_jobs
 
     scope :include_game_members, -> { includes(:members, :games) }
@@ -70,8 +73,8 @@ class Event < ApplicationRecord
         hosting_events.includes(:member).map(&:member)
     end
 
-    def add_host(member_id)
-        self.hosting_events << HostingEvent.create(event_id: id, member_id: member_id)
+    def add_host
+        self.hosting_events << HostingEvent.create(event_id: id, member_id: self.owner.id)
         self.save
         host_join_event
     end
@@ -102,6 +105,22 @@ class Event < ApplicationRecord
         !voice_channel.users.any?
     end
 
+    def times_have_changed?
+        start_at_changed? || ends_at_changed? || date_changed?
+    end
+
+    def start_at_changed?
+        !(start_at == start_at_before_last_save)
+    end
+
+    def ends_at_changed?
+        !(ends_at == ends_at_before_last_save)
+    end
+
+    def date_changed?
+        !(date == date_before_last_save)
+    end
+
     def send_to_event_channel(message)
         text_channel.send_message(message)
     end
@@ -111,7 +130,7 @@ class Event < ApplicationRecord
     end
 
     def notifiy_message
-        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now)}"
+        "Das Event **#{id}##{title}** startet in #{ActiveSupport::Duration.build(start_at - Time.zone.now).inspect}"
     end
 
     def participants_missing?
@@ -137,7 +156,46 @@ class Event < ApplicationRecord
     end
 
     def locked?
-        self.started? || self.finished?
+        self.started? || self.finished? || self.in_the_past?
+    end
+
+    def is_versus?
+        event_settings.event_type == 'versus'
+    end
+
+    def in_the_past?
+        ends_at < DateTime.now
+    end
+
+    def create_teams
+        2.times do |i|
+            Team.create(slots: slots, name: "Team #{i + 1}", event: self)
+        end
+        participant = owner.participants.find_by(event_id: id)
+        teams.first.join_team(participant)
+        self.slots = self.slots * 2
+        self.save
+    end
+
+    def notify_participants(message)
+        members.each do |m|
+            m.send_message(message)
+        end
+    end
+
+    def sheduled_jobs
+        #return [] unless Rails.env.production?
+        queues = Sidekiq::ScheduledSet.new
+        sidekiq_entries = queues.select do |sorted_entry|
+            job_data = sorted_entry.args.first
+            return false unless EVENT_JOBS.include?(job_data['job_class'])
+            job_data['arguments'].include?(id)
+        end
+    end
+
+    def reinitialize_jobs
+        delete_jobs
+        initialize_jobs
     end
 
     private
@@ -185,12 +243,6 @@ class Event < ApplicationRecord
         end
     end
 
-    def notify_participants(message)
-        members.each do |m|
-            m.send_message(message)
-        end
-    end
-
     def missing_participants
         slots - members.size
     end
@@ -229,7 +281,13 @@ class Event < ApplicationRecord
     def create_channels
         category_channel = community_server.create_channel("Event: #{title}", :category)
         community_server.create_channel("event-chat", :text, category_channel)
-        community_server.create_channel("event-voice", :voice, category_channel)
+        if event_settings.event_type == 'default'
+            community_server.create_channel("event-voice", :voice, category_channel)
+        else
+            self.teams.each do |team|
+                community_server.create_channel(team.name, :voice, category_channel)
+            end
+        end
         update_attribute(:channel_id, category_channel.id.to_s)
         bot = Discord::Bot.new(id: community.server_id)
         main_channel = community.get_main_channel
@@ -290,14 +348,6 @@ class Event < ApplicationRecord
     end
 
     def delete_jobs
-        return true unless Rails.env.production?
-        queues = Sidekiq::ScheduledSet.new
-        sidekiq_entries = queues.select do |sorted_entry|
-            job_data = sorted_entry.args.first
-            return false unless EVENT_JOBS.include?(job_data['job_class'])
-            return true if job_data['arguments'].include?(id)
-            return false
-        end
-        sidekiq_entries.map(&:delete)
+        sheduled_jobs.map(&:delete)
     end
 end

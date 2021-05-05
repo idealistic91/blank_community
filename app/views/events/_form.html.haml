@@ -1,5 +1,6 @@
 .container
   = form_with(model: [@community, event], local: true, class: 'event_form') do |form|
+    = form.hidden_field :created_by, value: @membership.id
     .row.pt-4.pb-4
       .col-md-6
         .form-group.card.bg-dark.p-2.pb-3
@@ -12,12 +13,13 @@
           %small#game-loading{style: "display:none;"}= 'Loading ...'
         .card.bg-dark.p-2.mb-3
           .form-group.card.bg-dark.p-2
-            = form.label :slots, 'Plätze'
+            = form.label :slots, 'Plätze', id: 'slots-label', data: { versus_label: 'Teamgröße' }
             = form.select :slots, ((event.slot_range).map{|i| [i, i] }), {}, {class: 'form-control'}
         .card.bg-dark.p-2.mb-3
           .form-group
             = form.label :date, 'Datum'
-            = form.date_field :date, class: 'form-control', ignore_time: true, value: I18n.l(Date.today, locale: :en)
+            = form.date_field :date, class: 'form-control', ignore_time: true,
+            value: event.date ? I18n.l(event.date, locale: :en) : I18n.l(Date.today, locale: :en)
           .form-group
             = form.label :start_at, 'Start'
             = form.time_select :start_at, class: 'form-control', ignore_date: true
@@ -44,15 +46,15 @@
               = settings.select :event_type, event_type_collection, {}, {class: 'form-control'}
             .form-group
               .form-check
-                = settings.check_box :create_channel, { class:"form-check-input", type: "checkbox", id: 'create-channel-checkbox' }, true, false
+                = settings.check_box :create_channel, { class:"form-check-input", type: "checkbox", id: 'create-channel-checkbox' }, "true", "false"
                 = settings.label :create_channel, 'Erstelle Channel bei Start', class: "form-check-label"
             .form-group
               .form-check
-                = settings.check_box :restricted, { class: "form-check-input", type: "checkbox", disabled: 'disabled', id: 'restricted-checkbox'}, true, false
+                = settings.check_box :restricted, { class: "form-check-input", type: "checkbox", disabled: 'disabled', id: 'restricted-checkbox'}, "true", "false"
                 = settings.label :restricted, 'Nur Teilnehmer können Channel beitreten', class: "form-check-label"
             .form-group
               .form-check
-                = settings.check_box :remind_server, { class: "form-check-input", type:" checkbox" }, true, false
+                = settings.check_box :remind_server, { class: "form-check-input", type: "checkbox" }, "true", "false"
                 = settings.label :remind_server, 'Sende Server Erinnerung', class: "form-check-label"
             .form-group
               = settings.label :notify_participants, 'Benachrichtige Teilnehmer'
