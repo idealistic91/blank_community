@@ -7,6 +7,10 @@ ruby '2.7.1'
 gem 'rails', '~> 6.1.3.1'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
+# API framework
+gem 'grape'
+gem 'grape-active_model_serializers'
+gem 'grape-entity'
 # Use Puma as the app server
 gem 'puma', '~> 5.2'
 # Use SCSS for stylesheets

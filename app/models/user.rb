@@ -1,8 +1,13 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable,
+    :registerable,
+    :recoverable,
+    :rememberable,
+    :trackable,
+    :validatable
+
   has_many :communities, foreign_key: :owner_id
   has_many :memberships, class_name: 'Member', foreign_key: :user_id, dependent: :destroy
   has_one_attached :picture
@@ -12,6 +17,7 @@ class User < ApplicationRecord
   validates :discord_id, presence: true
 
   after_create :create_memberships
+  before_save :ensure_authentication_token
 
   scope :membership_by_community, ->(id) { memberships.by_community(id) }
   scope :memberships, -> { memberships.by_user_id(id) }
@@ -51,6 +57,10 @@ class User < ApplicationRecord
     end
   end
 
+  def ensure_authentication_token
+    self.authentication_token ||= generate_authentication_token
+  end
+
   private 
 
   def discord_id_check
@@ -62,6 +72,13 @@ class User < ApplicationRecord
   def create_memberships
     Community.all.each do |c|
       create_membership(c)
+    end
+  end
+
+  def generate_authentication_token
+    loop do
+      token = Devise.friendly_token
+      break token unless User.where(authentication_token: token).first
     end
   end
 end

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount API::Base, at: "/"
   resources :games do
     collection do
       get :search

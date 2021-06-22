@@ -10,9 +10,12 @@ module BlankApp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
-    config.eager_load_paths += %W(#{config.root}/lib)
+    config.eager_load_paths += %W(#{config.root}/lib #{config.root}/presenters)
 
     config.time_zone='Berlin'
+
+    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
+    config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
