@@ -9,7 +9,7 @@ class Event < ApplicationRecord
 
     has_many :hosting_events, dependent: :destroy
     has_many :participants, dependent: :destroy
-    has_many :members, through: :hosting_events
+    has_many :hosts, through: :hosting_events, source: :member
     has_many :members, through: :participants
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
@@ -67,10 +67,6 @@ class Event < ApplicationRecord
 
     def slot_range
         members.size > MIN_SLOTS ? (members.size..MAX_SLOTS) : (MIN_SLOTS..MAX_SLOTS)
-    end
-
-    def hosts
-        hosting_events.includes(:member).map(&:member)
     end
 
     def add_host

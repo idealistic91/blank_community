@@ -33,10 +33,11 @@ module API
             desc 'Events of communities'
             params do
                 requires :id, type: String, desc: "ID of the community"
+                requires :scope, type: String, values: ['upcoming_events', 'past_events', 'live_events'], desc: "Type of Events"
             end
             get '/:id/events' do
                 community = Community.where(id: permitted_params[:id]).first!
-                community.events.includes(:games)
+                community.events.send(permitted_params[:scope]).includes(:games, members: [:user], hosts: [:user])
             end
         end
     end
