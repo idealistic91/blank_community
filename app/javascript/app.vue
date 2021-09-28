@@ -16,7 +16,6 @@
 </template>
 
 <script>
-
 import Layout from './src/views/layouts/mainLayout'
 import TheNav from './src/components/TheNav'
 

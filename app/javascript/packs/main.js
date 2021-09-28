@@ -13,8 +13,7 @@ import Routes from '../src/config/routes'
 
 Vue.use(VueRouter)
 
-
-const router = new VueRouter({Routes})
+const router = new VueRouter(Routes)
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
