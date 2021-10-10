@@ -7,10 +7,11 @@
       <v-btn color="primary" to="/events">Events</v-btn>
     </template>
     <template v-slot:content>
-      <router-view></router-view>
+      <v-container>
+        <router-view></router-view>
+      </v-container>
     </template>
     <template v-slot:footer>
-      
     </template>
   </Layout>
 </template>
@@ -39,6 +40,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  .v-toolbar__title {
+     font-family: 'Press Start 2P', cursive !important;
+  }
 </style>
