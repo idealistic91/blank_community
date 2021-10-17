@@ -9,19 +9,40 @@ class EventsController < ApplicationController
   def index
     @scope = params[:scope] if scope_set_and_valid?
     @scope ||= :live
-    @result = @events.include_game_members.send("#{@scope}_events")
-    @nav_items = [
-        { key: :live, partial: nil, label: 'Live', locals: { events: nil } },
-        { key: :upcoming, partial: nil, label: 'Bevorstehend', locals: { events: nil } },
-        { key: :past, partial: nil, label: 'Archiv', locals: { events: nil } }
-    ]
-    active_item_index = @nav_items.index{ |item| item[:key] == @scope.to_sym }
-    @nav_items[active_item_index][:locals][:events] = @result
-    @nav_items[active_item_index][:partial] = 'events/partials/list'
-    @nav_items[active_item_index][:active] = true
+    respond_to do |format|
+      format.html {
+        @result = @events.include_game_members.send("#{@scope}_events")
+        @nav_items = [
+            { key: :live, partial: nil, label: 'Live', locals: { events: nil } },
+            { key: :upcoming, partial: nil, label: 'Bevorstehend', locals: { events: nil } },
+            { key: :past, partial: nil, label: 'Archiv', locals: { events: nil } }
+        ]
+        active_item_index = @nav_items.index{ |item| item[:key] == @scope.to_sym }
+        @nav_items[active_item_index][:locals][:events] = @result
+        @nav_items[active_item_index][:partial] = 'events/partials/list'
+        @nav_items[active_item_index][:active] = true
+      }
+      format.json {
+        @result = @community.events.pluck(:id)
+        render json: { events: @result, success: true } and return
+      }
+    end
   end
 
-  def show; end
+  def show
+    gamecover_urls = @event.games.map do |game|
+      { 
+        igdbId: game.igdb_id,
+        cover:  game.cover_url(format: '720p'),
+        name: game.name
+      }
+    end
+    respond_to do |format|
+      format.json {
+        render json: { event: @event, games: gamecover_urls, success: @event.nil? ? false : true } and return
+      }
+    end  
+  end
 
   def new
     @event = Event.new
@@ -46,14 +67,12 @@ class EventsController < ApplicationController
           send_notification(@membership.nickname, @event.event_embed)
           redirect_to community_event_path(@community, @event), notice: 'Event was successfully created.' 
         }
-        format.json { render :show, status: :created, location: @event }
       else
         format.html { 
           flash[:alert] = "Event konnte nicht gespeichert werden. #{@event.errors.full_messages.join(', ')}"
           @games = find_or_create_games(games_params['games_attributes'])
           render :new 
         }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -243,10 +262,6 @@ class EventsController < ApplicationController
 
   def get_event
     @event = @community.events.where(id: params[:id]).first
-    unless @event
-      flash[:alert] = "Event not found!"
-      redirect_back(fallback_location: root_path)
-    end
   end
 
   def get_participant

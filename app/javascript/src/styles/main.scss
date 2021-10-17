@@ -4,7 +4,8 @@
 
 #content-card {
     background-color: #36393F;
-    height: 80vh;
+    height: 90vh;
+    overflow: auto;
 }
 
 #nav-bar .v-toolbar__content {
@@ -12,5 +13,9 @@
 }
 
 * {
+    color: white !important;
+}
+
+.theme--light.v-application .text--primary {
     color: white !important;
 }

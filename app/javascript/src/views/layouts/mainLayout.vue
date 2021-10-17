@@ -12,9 +12,9 @@
             </v-card>
         </v-container>
       </v-main>
-      <v-footer>
+      <!-- <v-footer>
           <slot name="footer"></slot>
-      </v-footer>
+      </v-footer> -->
     </v-app>
 </template>
 <script>

@@ -1,48 +1,77 @@
 <template>
     <div id="events-index">
-        <h1>Events</h1>
         <div id="event-container" v-if="!loading">
-            <div id="events" v-for="event in events" :key="event.id">
-                {{ event.title }}
+            <div class="scope-display">
+                <span class="text-subtitle-1">Next week <b>({{ count }})</b></span>
+                <hr/>
             </div>
+            <v-row>
+                <v-col class="event" v-for="event in events" :key="event.id">
+                    <Event :eventId="event"/>
+                </v-col>
+                </v-row>
         </div>
-        <div v-else>
-            Loading ...
-        </div>
+        <v-overlay :value="true" v-else>
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 </template>
+<style>
+    .scope-display {
+        margin-bottom: 20px;
+        display: flex;
+    }
+    .scope-display span {
+        background: #36393F;
+        z-index: 2;
+    }
+    .scope-display hr {
+        margin-right: 20px;
+        margin-left: 20px;
+        margin-top: 14px;
+        width: 100%;
+        z-index: 1;
+        right: 0;
+        position: absolute;
+    }
+    .text--primary {
+        color: white;
+    }
+</style>
 <script>
+
+import Event from '../components/event'
+
  export default {
      data() {
          return {
             loading: true,
-            events: []
+            events: [],
+            count: 0,
          }
+     },
+     components: {
+        Event
      },
      methods: {
          getEvents: function(){
-             this.events = [{
-                id: 216,
-                title: "Daddeln mit den Boys",
-                date: "2021-05-14",
-                description: "dwadawd",
-                created_at: "2021-05-02 13:42:12.771956000 +0200",
-                updated_at: "2021-05-02 13:42:12.771956000 +0200",
-                creator: "Bob",
-                slots: 8,
-                start_at: "2021-05-14 13:41:00.000000000 +0200",
-                ends_at: "2021-05-14 13:56:00.000000000 +0200",
-                community_id: 22,
-                state: "ready",
-                created_by: 86
-            }]
+
             setTimeout(() =>{
                 this.loading = false
-            }, 5000)
+            }, 2000)
+            let self = this
+            this.$http.get('/communities/22/events?format=json').then(function(res){
+                self.events = res.data.events
+                self.count = self.events.length
+            })
             // Get events from api, later from axios request (api branch needs to be merged)
          }
      },
      mounted(){
+         this.$emit('updateTitle', 'Events', 'mdi-calendar-heart')
          this.getEvents()
      }
  }

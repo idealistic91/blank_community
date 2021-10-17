@@ -12,11 +12,14 @@ import Routes from '../src/config/routes'
 
 Vue.use(VueRouter)
 
-Vue.prototype.$http = axios
-
 const router = new VueRouter(Routes)
 
 document.addEventListener('DOMContentLoaded', () => {
+  const csrfToken = document.querySelector("meta[name=csrf-token]").content
+  axios.defaults.headers.common['X-CSRF-Token'] = csrfToken
+
+  Vue.prototype.$http = axios
+
   const app = new Vue({
     router,
     vuetify,

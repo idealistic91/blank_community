@@ -7,8 +7,20 @@
       <v-btn color="primary" to="/events">Events</v-btn>
     </template>
     <template v-slot:content>
-      <v-container>
-        <router-view></router-view>
+      <div>
+          <v-system-bar
+            window
+            dark
+          >
+            <v-icon>{{ titleIcon }}</v-icon>
+            <span>{{ title }}</span>
+            <v-spacer></v-spacer>
+            <v-icon>mdi-refresh</v-icon>
+            <v-icon>mdi-plus-circle</v-icon>
+          </v-system-bar>
+        </div>    
+      <v-container>    
+        <router-view @updateTitle="updateTitle"></router-view>
       </v-container>
     </template>
     <template v-slot:footer>
@@ -25,13 +37,19 @@ export default {
     return {
       message: "Hello Vue!",
       group: 'group',
-      drawer: false
+      drawer: false,
+      title: 'Home',
+      titleIcon: ''
     }
   },
   methods: {
     toggleSidebar: function (val) {
       this.drawer = val
     },
+    updateTitle: function(title, icon) {
+      this.title = title;
+      this.titleIcon = icon;
+    }
   },
   components: {
     Layout,
@@ -44,5 +62,8 @@ export default {
    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
   .v-toolbar__title {
      font-family: 'Press Start 2P', cursive !important;
+  }
+  html {
+    overflow-y: auto !important
   }
 </style>
