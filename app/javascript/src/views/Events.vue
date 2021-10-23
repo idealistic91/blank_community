@@ -1,23 +1,17 @@
-<template>
-    <div id="events-index">
-        <div id="event-container" v-if="!loading">
-            <div class="scope-display">
-                <span class="text-subtitle-1">Next week <b>({{ count }})</b></span>
-                <hr/>
-            </div>
-            <v-row>
-                <v-col class="event" v-for="event in events" :key="event.id">
-                    <Event :eventId="event"/>
-                </v-col>
-                </v-row>
-        </div>
-        <v-overlay :value="true" v-else>
-            <v-progress-circular
-                indeterminate
-                size="64"
-            ></v-progress-circular>
-        </v-overlay>
-    </div>
+<template lang="pug">
+    #events-index
+        #event-container(v-if='!loading')
+            .event-scope(v-for="scope in events" v-show="scope.items.length > 0")
+                .scope-display
+                    span.text-subtitle-1
+                        | {{ scope.label }}
+                        b  ({{ scope.items.length }})
+                    hr
+                v-row
+                    v-col(md="3").event(v-for='event in scope.items' :key='event.id')
+                        Event(:eventId='event')
+        v-overlay(:value='true' v-else)
+            v-progress-circular(indeterminate size='64')
 </template>
 <style>
     .scope-display {
@@ -25,6 +19,8 @@
         display: flex;
     }
     .scope-display span {
+        padding-left: 10px;
+        padding-right: 10px;
         background: #36393F;
         z-index: 2;
     }
@@ -40,6 +36,9 @@
     .text--primary {
         color: white;
     }
+    .event-scope {
+        margin-bottom: 20px;
+    }
 </style>
 <script>
 
@@ -50,7 +49,6 @@ import Event from '../components/event'
          return {
             loading: true,
             events: [],
-            count: 0,
          }
      },
      components: {
@@ -58,14 +56,12 @@ import Event from '../components/event'
      },
      methods: {
          getEvents: function(){
-
             setTimeout(() =>{
                 this.loading = false
             }, 2000)
             let self = this
             this.$http.get('/communities/22/events?format=json').then(function(res){
                 self.events = res.data.events
-                self.count = self.events.length
             })
             // Get events from api, later from axios request (api branch needs to be merged)
          }

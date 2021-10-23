@@ -23,8 +23,16 @@ class EventsController < ApplicationController
         @nav_items[active_item_index][:active] = true
       }
       format.json {
-        @result = @community.events.pluck(:id)
-        render json: { events: @result, success: true } and return
+        @upcoming = @community.events.upcoming_events.pluck(:id)
+        @past = @community.events.past_events.pluck(:id)
+        @live = @community.events.live_events.pluck(:id)
+        render json: {
+          events: [ 
+                    { items: @live, label: 'Live' },
+                    { items: @upcoming, label: 'Bevorstehend' },
+                    { items: @past, label: 'Vergangen' }
+            ], success: true
+          } and return
       }
     end
   end
