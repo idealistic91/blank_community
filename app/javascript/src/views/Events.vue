@@ -1,7 +1,7 @@
 <template lang="pug">
     #events-index
         #event-container(v-if='!loading')
-            .event-scope(v-for="scope in events" v-show="scope.items.length > 0")
+            .event-scope(v-for="scope in events" v-show="scope.items.length > 0" :id="scope.label")
                 .scope-display
                     span.text-subtitle-1
                         | {{ scope.label }}

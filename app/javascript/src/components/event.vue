@@ -1,86 +1,31 @@
-<template>
-   <div>
-    <v-card
-        class="mx-auto event-card"
-        max-width="400"
-        max-height="400"
-        v-if="!loading"
-    >
-    <v-img
-      class="white--text align-end"
-      height="200px"
-      gradient="to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
-      :src="firstGame.cover"
-    >
-        <div class="date">
-            <span class="day">12</span>
-            <span class="month">Aug</span>
-            <span class="year">2016</span>
-        </div>
-      <v-card-title>
-          {{ event.title }}
-      </v-card-title>
-    </v-img>
-    <v-card-subtitle class="pb-0">
-        Bob
-         <v-btn
-            class="join-btn"
-            fab
-            dark
-            small
-            color="primary"
-         >
-            <v-icon dark>
-               mdi-dots-vertical
-            </v-icon>
-        </v-btn>   
-    </v-card-subtitle>
+<template lang="pug">
+  div
+    v-card.mx-auto.event-card(max-width='400' max-height='400' v-if='!loading')
+      v-img.white--text.align-end(height='200px' gradient='to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)' :src='firstGame.cover')
+        .date
+          span.day 12
+          span.month Aug
+          span.year 2016
+        v-card-title
+          | {{ event.title }}
+      v-card-subtitle.pb-0
+        | Bob
+        v-btn.join-btn(fab dark small color='primary')
+          v-icon(dark)
+            | mdi-dots-vertical
+      v-card-text.text--primary 
+        | {{ event.description }}
+      v-card-actions
+        v-btn(color='orange' text)
+          | Share
+        v-btn(color='orange' text)
+          | Explore
+    v-card.event-card(max-width='400' max-height='400' v-else)
+      v-img.white--text.align-end(height='200px')
+        template(v-slot:placeholder)
+          v-row.fill-height.ma-0(align='center' justify='center')
+            v-progress-circular(indeterminate color='lighten-5')
 
-    <v-card-text class="text--primary">
-        {{ event.description }}
-    </v-card-text>
-
-    <v-card-actions>
-      <v-btn
-        color="orange"
-        text
-      >
-        Share
-      </v-btn>
-
-      <v-btn
-        color="orange"
-        text
-      >
-        Explore
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-  <v-card
-        max-width="400"
-        max-height="400"
-        class="event-card"
-  v-else>
-         <v-img
-            class="white--text align-end"
-            height="200px"
-        >
-            <template v-slot:placeholder>
-                <v-row
-                class="fill-height ma-0"
-                align="center"
-                justify="center"
-                >
-                    <v-progress-circular
-                        indeterminate
-                        color="lighten-5"
-                    ></v-progress-circular>
-                </v-row>
-            </template>
-        </v-img>
-  </v-card>
-</div>
-     
 </template>
 <style scoped>
     .bottom-gradient {
