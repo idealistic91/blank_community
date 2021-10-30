@@ -61,7 +61,7 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver'
-  gem 'shoulda-matchers', '~> 4.3', require: false
+  gem 'shoulda-matchers', '~> 5.0', require: false
   gem 'database_cleaner', '~> 2.0'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
