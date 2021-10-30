@@ -20,7 +20,7 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.7'
 gem 'rack-cors'
 
-gem 'haml', '~> 5.1', '>= 5.1.2'
+gem 'haml', '~> 5.2'
 gem 'discordrb', '= 3.4'
 # sudo apt-get install libmagickwand-dev (needs this library to work!!)
 gem 'rmagick', '~> 4.2'
@@ -51,7 +51,7 @@ end
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
-  gem 'listen', '~> 3.2'
+  gem 'listen', '~> 3.7'
   gem 'faker', '~> 2.19'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
