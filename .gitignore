@@ -41,3 +41,5 @@ heroku/*
 Dockerfile
 docker-compose.yml
 entrypoint.sh
+
+dev_log/*

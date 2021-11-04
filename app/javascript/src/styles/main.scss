@@ -1,0 +1,21 @@
+.v-main {
+    background-color: #2F3136;
+}
+
+#content-card {
+    background-color: #36393F;
+    height: 90vh;
+    overflow: auto;
+}
+
+#nav-bar .v-toolbar__content {
+    border-bottom: 5px solid #ff6f00;
+}
+
+* {
+    color: white !important;
+}
+
+.theme--light.v-application .text--primary {
+    color: white !important;
+}

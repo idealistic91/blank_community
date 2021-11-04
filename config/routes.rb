@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       post :get_igdb_game
     end
   end
+  get '/start', to: "start#index"
   resources :communities, only: [:index, :show, :update, :destroy] do
     collection do
       post :set_active
