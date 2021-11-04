@@ -1,40 +1,22 @@
-<template>
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      temporary
-    >
-      <v-list
-        nav
-        dense
-      >
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Account</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
+<template lang="pug">
+  v-navigation-drawer(v-model='value' absolute temporary dark)
+    v-list(nav dense)
+      v-list-item-group(v-model='group' active-class='deep-orange--text text--accent-4')
+        v-list-item(to="/events")
+          v-list-item-icon
+            v-icon mdi-calendar
+          v-list-item-title Events
+        v-list-item(to="/communities")
+          v-list-item-icon
+            v-icon mdi-account-group
+          v-list-item-title Communities
 </template>
 <script>
     export default {
         props: {
-            drawer: {
-                type: Boolean,
-                default: false
+            value: {
+              type: Boolean,
+              required: true
             }
         },
         data() {
