@@ -2,6 +2,7 @@ class Event < ApplicationRecord
     include AASM
     include DiscordNotifications
     require 'sidekiq/api'
+
     MIN_SLOTS = 3
     MAX_SLOTS = 20
     # TODO: Move jobs to event folder and get file names dynamically
@@ -59,10 +60,6 @@ class Event < ApplicationRecord
         event :finish, after_commit: :event_finished_actions do
             transitions from: :started, to: :finished
         end
-    end
-
-    def game_name
-        game ? game.name : nil
     end
 
     def slot_range
