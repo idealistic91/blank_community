@@ -41,3 +41,6 @@ heroku/*
 Dockerfile
 docker-compose.yml
 entrypoint.sh
+.DS_Store
+*.DS_Store
+**/.DS_Store
