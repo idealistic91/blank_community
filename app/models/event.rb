@@ -1,24 +1,29 @@
 class Event < ApplicationRecord
+    require 'sidekiq/api'
+
     include AASM
     include DiscordNotifications
-    require 'sidekiq/api'
+    
     MIN_SLOTS = 3
     MAX_SLOTS = 20
     # TODO: Move jobs to event folder and get file names dynamically
     EVENT_JOBS = %w(EventFinishJob EventStartJob EventNotificationJob EventServerReminderJob)
 
+    belongs_to :community
+    belongs_to :owner, class_name: 'Member', foreign_key: 'created_by'
+    
+    has_many_attached :images
     has_many :hosting_events, dependent: :destroy
     has_many :participants, dependent: :destroy
     has_many :members, through: :hosting_events
     has_many :members, through: :participants
     has_many :event_games, dependent: :destroy
     has_many :games, through: :event_games
-    has_one :event_settings, dependent: :destroy
-    belongs_to :owner, class_name: 'Member', foreign_key: 'created_by'
-    accepts_nested_attributes_for :event_settings
-    has_many_attached :images
-    belongs_to :community
     has_many :teams
+    
+    has_one :event_settings, dependent: :destroy
+    
+    accepts_nested_attributes_for :event_settings
 
     validates :start_at, presence: true, on: :create
     validates :start_at, future: true, on: :create
@@ -184,7 +189,7 @@ class Event < ApplicationRecord
     end
 
     def sheduled_jobs
-        #return [] unless Rails.env.production?
+        return [] unless Rails.env.production?
         queues = Sidekiq::ScheduledSet.new
         sidekiq_entries = queues.select do |sorted_entry|
             job_data = sorted_entry.args.first

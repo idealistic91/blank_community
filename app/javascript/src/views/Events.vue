@@ -7,13 +7,20 @@
                         | {{ scope.label }}
                         b  ({{ scope.items.length }})
                     hr
-                v-row
-                    v-col(md="3").event(v-for='event in scope.items' :key='event.id')
+                v-row.event-row
+                    .event.v-col(md="12" lg="3" cols="12" v-for='event in scope.items' :key='event.id')
                         Event(:eventId='event')
         v-overlay(:value='true' v-else)
             v-progress-circular(indeterminate size='64')
 </template>
 <style>
+    .event-row {
+        margin-bottom: 40px;
+    }
+    .event {
+        height: 400px;
+        padding: 15px;
+    }
     .scope-display {
         margin-bottom: 20px;
         display: flex;
@@ -48,6 +55,7 @@ import Event from '../components/event'
      data() {
          return {
             loading: true,
+            community: undefined,
             events: [],
          }
      },

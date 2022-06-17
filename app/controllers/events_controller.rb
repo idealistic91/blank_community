@@ -38,16 +38,19 @@ class EventsController < ApplicationController
   end
 
   def show
-    gamecover_urls = @event.games.map do |game|
-      { 
-        igdbId: game.igdb_id,
-        cover:  game.cover_url(format: '720p'),
-        name: game.name
-      }
-    end
     respond_to do |format|
       format.json {
+        gamecover_urls = @event.games.map do |game|
+          { 
+            igdbId: game.igdb_id,
+            cover:  game.cover_url(format: 'screenshot_med'),
+            name: game.name
+          }
+        end
         render json: { event: @event, games: gamecover_urls, success: @event.nil? ? false : true } and return
+      }
+      format.html {
+        render :show
       }
     end  
   end

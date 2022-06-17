@@ -1,25 +1,27 @@
 <template lang="pug">
   div
-    v-card.mx-auto.event-card(max-width='400' max-height='400' v-if='!loading')
+    v-card.mx-auto.event-card(max-width='400' max-height='400' v-if='!loading' :style='{height: `${height}px`}')
       v-img.white--text.align-end(height='200px' gradient='to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)' :src='firstGame.cover')
         .date
-          span.day 12
-          span.month Aug
-          span.year 2016
+          span.day    {{ day }}
+          span.month  {{ month }}
+          span.year   {{ year }}
         v-card-title
           | {{ event.title }}
       v-card-subtitle.pb-0
-        | Bob
+        | {{ event.title }}
         v-btn.join-btn(fab dark small color='primary')
           v-icon(dark)
             | mdi-dots-vertical
       v-card-text.text--primary 
         | {{ event.description }}
       v-card-actions
-        v-btn(color='orange' text)
-          | Share
-        v-btn(color='orange' text)
-          | Explore
+        v-btn(color='secondary' text)
+          v-icon
+            | mdi-share-circle
+        v-btn(color="secondary" text)
+          v-icon
+            | mdi-play
     v-card.event-card(max-width='400' max-height='400' v-else)
       v-img.white--text.align-end(height='200px')
         template(v-slot:placeholder)
@@ -66,7 +68,8 @@
   
 </style>
 <script>
-
+  import moment from 'moment'
+  
   export default {
       data() {
           return {
@@ -79,12 +82,10 @@
           getEvent: function () {
             let self = this;
             this.$http.get(`/communities/22/events/${self.eventId}?format=json`).then(function(res){
-                console.log(res)
                 self.event = res.data.event
                 self.games = res.data.games
-                 setTimeout(() =>{
-                    self.loading = false
-                }, 2000)
+
+                self.loading = false
             })
           },
       },
@@ -92,11 +93,30 @@
         eventId: {
             type: Number,
             required: true
+        },
+        height: {
+          type: Number,
+          default: 400
         }
     },
     computed: {
         firstGame: function() {
             if(this.games.length > 0) { return this.games[0] }
+        },
+        day: function() {
+            if(this.event !== undefined && !this.loading) {
+              return moment(this.event.date).format('D')
+            }
+        },
+        month: function() {
+          if(this.event !== undefined && !this.loading) {
+              return moment(this.event.date).format('MMM')
+            }
+        },
+         year: function() {
+          if(this.event !== undefined && !this.loading) {
+              return moment(this.event.date).format('YY')
+            }
         }
     },
     mounted: function () {

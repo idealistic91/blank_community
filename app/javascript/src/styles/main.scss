@@ -19,3 +19,13 @@
 .theme--light.v-application .text--primary {
     color: white !important;
 }
+
+#content-card {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll; 
+}
+
+#content-card::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+}
