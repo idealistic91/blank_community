@@ -17,7 +17,7 @@ gem 'devise', '~> 4.8'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+gem 'jbuilder', '~> 2.11'
 gem 'rack-cors'
 
 gem 'haml', '~> 5.2'
