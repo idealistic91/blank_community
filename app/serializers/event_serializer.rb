@@ -1,6 +1,8 @@
 class EventSerializer < ActiveModel::Serializer
     include Rails.application.routes.url_helpers
+    
     attributes :id, :title, :description, :date, :start_at, :ends_at, :state, :games, :members, :hosts
+    
     def games
         self.object.games.map do |game|
             begin

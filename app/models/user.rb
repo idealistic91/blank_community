@@ -57,6 +57,11 @@ class User < ApplicationRecord
     self.authentication_token ||= generate_authentication_token
   end
 
+  def reset_authentication_token
+    token = generate_authentication_token
+    update(authentication_token: token)
+  end
+
   private 
 
   def discord_id_check

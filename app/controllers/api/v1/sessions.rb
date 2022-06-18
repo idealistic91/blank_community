@@ -5,9 +5,7 @@ module API
         format :json
         prefix :api
     
-        resource :sessions do
-    
-            ##<$ User Sign In API $>##
+        resource :sessions do 
             desc 'Authenticate user and return user object / access token'
     
             params do
@@ -20,7 +18,7 @@ module API
                 password = params[:password]
         
                 if email.nil? or password.nil?
-                    error!({error_code: 404, error_message: 'Invalid Email or Password.'}, 401)
+                    error!({error_code: 404, error_message: 'Invalid Email or Password missing.'}, 401)
                     return
                 end
         
@@ -50,11 +48,13 @@ module API
             delete ':auth_token' do
                 auth_token = params[:auth_token]
                 user = User.where(authentication_token: auth_token).first
+                
                 if user.nil?
                     error!({error_code: 404, error_message: 'Invalid access token.'}, 401)
                     return
                 else
-                    user.reset_authentication_token
+                    user.reset_authentication_token if Rails.env.production?
+                    
                     {status: 'ok'}
                 end
             end

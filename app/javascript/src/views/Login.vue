@@ -22,7 +22,7 @@
 </template>
 <script>
 
-//import sessionService from '../services/session'
+import { login } from '../services/sessionService'
 
 export default ({
   data: function () {
@@ -44,7 +44,25 @@ export default ({
   },
   methods: {
     login: function() {
-      this.$store.commit('toggleLogin')
+      login(this.csrfToken, this.email, this.password).then(res => {
+        if(res.success) {
+          this.$store.commit('setUser', res.user)
+          this.$store.commit('login')
+        } else {
+
+        }
+      })
+
+      // Send login
+      // Check if successfull
+      // commit login to store and save user data
+      
+      
+    }
+  },
+  computed: {
+    csrfToken: function() {
+      return this.$store.getters.csrfToken
     }
   }
 })

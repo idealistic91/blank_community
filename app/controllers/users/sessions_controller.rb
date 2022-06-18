@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
+  respond_to :html, :json
+
   # before_action :configure_sign_in_params, only: [:create]
   after_action :create_cookies, :create_igdb_base, only: :create
 
@@ -11,7 +13,22 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    super
+    respond_to do |format|
+      format.html {
+        super
+      }
+      format.json {
+        resource = User.find_for_database_authentication(email: params[:user][:email])
+        return invalid_login_attempt unless resource
+    
+        if resource.valid_password?(params[:user][:password])
+          sign_in :user, resource
+          render json: { success: true, user: resource }, status: 200 and return
+        end
+    
+        invalid_login_attempt
+      }
+    end
   end
 
   # DELETE /resource/sign_out
@@ -20,6 +37,11 @@ class Users::SessionsController < Devise::SessionsController
   end
   
   protected
+
+  def invalid_login_attempt
+    set_flash_message(:alert, :invalid)
+    render json: flash[:alert], status: 401
+  end
   
   def create_cookies
     cookies.signed[:communities] = {

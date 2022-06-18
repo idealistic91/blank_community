@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     store: vuexStore,
     router,
     vuetify,
-    render: h => h(App)
+    render: h => h(App),
+    mounted: function () { this.$store.commit('setCsrfToken', csrfToken) }
   }).$mount('#vue-app')
   
 })

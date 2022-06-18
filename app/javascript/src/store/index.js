@@ -1,5 +1,6 @@
 export default {
   state: {
+    csrfToken: undefined,
     loggedIn: false,
     drawerState: false,
     community: undefined,
@@ -15,15 +16,25 @@ export default {
     community: state => {
       return state.community
     },
-    drawerState: (state) => state.drawerState
+    drawerState: (state) => state.drawerState,
+    csrfToken: (state) => state.csrfToken
   },
   mutations: {
+    setCsrfToken (state, token) {
+      state.csrfToken = token
+    },
     toggleDrawerState (state, data) {
       state.drawerState = data
     },
     setUser (state, user) {
       state.user = user
       state.loggedIn = true
+    },
+    login (state) {
+      state.loggedIn = true
+    },
+    logout (state) {
+      state.loggedIn = false
     },
     toggleLogin (state) {
       state.loggedIn = !state.loggedIn

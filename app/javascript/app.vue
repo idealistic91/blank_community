@@ -34,7 +34,6 @@ import Sidebar from './src/components/TheSidebar'
 export default {
   data: function () {
     return {
-      loggedIn: loggedIn,
       title: 'Home',
       titleIcon: ''
     }
@@ -44,7 +43,7 @@ export default {
       return this.$store.commit('toggleDrawerState', !this.drawerState)
     },
     logout: function () {
-      this.$store.commit('toggleLogin')
+      this.$store.commit('logout')
     },
     refresh: function () {
       this.$router.go()
