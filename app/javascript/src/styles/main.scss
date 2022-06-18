@@ -1,0 +1,31 @@
+.v-main {
+    background-color: #2F3136;
+}
+
+#content-card {
+    background-color: #36393F;
+    height: 90vh;
+    overflow: auto;
+}
+
+#nav-bar .v-toolbar__content {
+    border-bottom: 5px solid #ff6f00;
+}
+
+* {
+    color: white !important;
+}
+
+.theme--light.v-application .text--primary {
+    color: white !important;
+}
+
+#content-card {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll; 
+}
+
+#content-card::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+}

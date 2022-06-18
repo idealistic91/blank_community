@@ -21,24 +21,28 @@ module IGDB
         end
 
         def search_game(string, fields: [:name])
-            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            base_request
             request.body = 'fields ' + fields.join(',') + ';search "' + string + '";'
             request_and_parse
         end
 
         def games(limit = 10, fields: [:name])
-            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            base_request
             request.body = "fields #{fields.join(',')}; limit #{limit};"
             request_and_parse
         end
 
         def game(id, fields: [:name])
-            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+            base_request
             request.body = "where id = #{id};fields #{fields.join(',')};"
             request_and_parse
         end
 
         protected
+
+        def base_request
+            @request = Net::HTTP::Post.new(URI("#{GAMES_URL}"), headers)
+        end
 
         def generate_token
             params = "client_id=#{CLIENT_ID}&client_secret=#{CLIENT_SECRET}&grant_type=client_credentials"
