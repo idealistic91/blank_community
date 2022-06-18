@@ -1,13 +1,19 @@
 <template lang="pug">
   div
     v-card.mx-auto.event-card(max-width='400' max-height='400' v-if='!loading' :style='{height: `${height}px`}')
-      v-img.white--text.align-end(height='200px' gradient='to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)' :src='firstGame.cover')
-        .date
+      v-img.white--text.align-end(height='200px'
+          @mouseover="gamePreviewView(true)"
+          @mouseleave="gamePreviewView(false)"
+          :gradient='gradient'
+          :src='firstGame.cover')
+        .date(v-if='!hover')
           span.day    {{ day }}
           span.month  {{ month }}
           span.year   {{ year }}
-        v-card-title
+        v-card-title(v-if='!hover')
           | {{ event.title }}
+        v-card-title(v-else)
+          | {{ '' }}
       v-card-subtitle.pb-0
         | {{ event.title }}
         v-btn.join-btn(fab dark small color='primary')
@@ -15,13 +21,13 @@
             | mdi-dots-vertical
       v-card-text.text--primary 
         | {{ event.description }}
-      v-card-actions
-        v-btn(color='secondary' text)
-          v-icon
-            | mdi-share-circle
-        v-btn(color="secondary" text)
-          v-icon
-            | mdi-play
+      //- v-card-actions
+      //-   v-btn(color='primary')
+      //-     v-icon
+      //-       | mdi-share-circle
+      //-   v-btn(color="primary")
+      //-     v-icon
+      //-       | mdi-play
     v-card.event-card(max-width='400' max-height='400' v-else)
       v-img.white--text.align-end(height='200px')
         template(v-slot:placeholder)
@@ -30,13 +36,23 @@
 
 </template>
 <style scoped>
+    .v-card__text {
+      height: 90px;
+      overflow: hidden;
+    }
+    .v-card__actions {
+      position: absolute;
+      padding-left: 16px;
+      bottom: 10px;
+    }
     .bottom-gradient {
         background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 72px);
     }
     .join-btn {
-        margin-top: -45px;
-        margin-left: 80%;
-    }
+      position: absolute;
+      right: 30px;
+      top: 180px;
+    }   
     .event-card {
         background-color: black;
     }
@@ -68,24 +84,36 @@
   
 </style>
 <script>
+  import { getEvent } from '../services/eventService'
   import moment from 'moment'
   
   export default {
       data() {
           return {
+            defaultGradient: 'to top right, rgba(100,115,201,.80), rgba(25,32,72,.7)',
+            gradient: 'to top right, rgba(100,115,201,.80), rgba(25,32,72,.7)',
+            hover: false,
             loading: true,
             event: undefined,
             games: []
           }
       },
       methods: {
-          getEvent: function () {
-            let self = this;
-            this.$http.get(`/communities/22/events/${self.eventId}?format=json`).then(function(res){
-                self.event = res.data.event
-                self.games = res.data.games
+          gamePreviewView: function (onOff = true) {
+            this.hover = onOff
+            if(this.hover) {
+              this.gradient = ''
+            } else {
+              this.gradient = this.defaultGradient
+            }
+          },
+          getEvent: function () {          
+            getEvent(22, this.eventId).then(response => {
+              this.event = response.event
+              this.games = response.games
+              this.event.description = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
 
-                self.loading = false
+              this.loading = false
             })
           },
       },

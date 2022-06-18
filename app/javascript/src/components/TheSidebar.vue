@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-navigation-drawer(v-model='value' absolute temporary dark)
+  v-navigation-drawer(v-model='drawerState' absolute temporary dark)
     v-list(nav dense)
       v-list-item-group(v-model='group' active-class='deep-orange--text text--accent-4')
         v-list-item(to="/events")
@@ -13,16 +13,16 @@
 </template>
 <script>
     export default {
-        props: {
-            value: {
-              type: Boolean,
-              required: true
-            }
-        },
         data() {
             return {
                 group: ''
             }
+        },
+        computed: {
+        drawerState: {
+          get () { return this.$store.getters.drawerState },
+          set (v) { return this.$store.commit('toggleDrawerState', v) }
         }
+      }
     }
 </script>

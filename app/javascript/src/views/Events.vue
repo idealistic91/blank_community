@@ -18,6 +18,7 @@
         margin-bottom: 40px;
     }
     .event {
+        margin-bottom: 20px;
         height: 400px;
         padding: 15px;
     }
@@ -50,6 +51,7 @@
 <script>
 
 import Event from '../components/event'
+import { getEvents } from '../services/eventService'
 
  export default {
      data() {
@@ -64,13 +66,10 @@ import Event from '../components/event'
      },
      methods: {
          getEvents: function(){
-            setTimeout(() =>{
-                this.loading = false
-            }, 2000)
-            let self = this
-            this.$http.get('/communities/22/events?format=json').then(function(res){
-                self.events = res.data.events
+            getEvents(22).then((response) => {
+                this.events = response.events
             })
+            this.loading = false
             // Get events from api, later from axios request (api branch needs to be merged)
          }
      },

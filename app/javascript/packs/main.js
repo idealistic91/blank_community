@@ -13,6 +13,11 @@ import '../src/vue_app.sass'
 import Routes from '../src/config/routes'
 
 Vue.use(VueRouter)
+Vue.use(Vuex)
+
+import store from '../src/store'
+
+const vuexStore = new Vuex.Store(store)
 
 const router = new VueRouter(Routes)
 
@@ -23,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Vue.prototype.$http = axios
 
   const app = new Vue({
+    store: vuexStore,
     router,
     vuetify,
     render: h => h(App)
