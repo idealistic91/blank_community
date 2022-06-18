@@ -1,7 +1,7 @@
 <template lang="pug">
   div
-    v-card.mx-auto.event-card(max-width='400' max-height='400' v-if='!loading' :style='{height: `${height}px`}')
-      v-img.white--text.align-end(height='200px'
+    v-card.mx-auto.event-card(max-height='400' v-if='!loading' :style='{height: `${height}px`}')
+      v-img.white--text.align-end(height='200px' :style='coverStyle'
           @mouseover="gamePreviewView(true)"
           @mouseleave="gamePreviewView(false)"
           :gradient='gradient'
@@ -92,6 +92,7 @@
           return {
             defaultGradient: 'to top right, rgba(100,115,201,.80), rgba(25,32,72,.7)',
             gradient: 'to top right, rgba(100,115,201,.80), rgba(25,32,72,.7)',
+            coverStyle: '',
             hover: false,
             loading: true,
             event: undefined,
@@ -102,9 +103,11 @@
           gamePreviewView: function (onOff = true) {
             this.hover = onOff
             if(this.hover) {
+              this.coverStyle = 'cursor: pointer;'
               this.gradient = ''
             } else {
               this.gradient = this.defaultGradient
+              this.coverStyle = ''
             }
           },
           getEvent: function () {          

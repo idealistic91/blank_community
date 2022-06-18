@@ -6,7 +6,7 @@
           v-list-item-icon
             v-icon mdi-calendar
           v-list-item-title Events
-        v-list-item(to="/communities")
+        v-list-item(to="/my-communities")
           v-list-item-icon
             v-icon mdi-account-group
           v-list-item-title Communities

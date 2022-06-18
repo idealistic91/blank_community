@@ -8,7 +8,7 @@
                         b  ({{ scope.items.length }})
                     hr
                 v-row.event-row
-                    .event.v-col(md="12" lg="3" cols="12" v-for='event in scope.items' :key='event.id')
+                    v-col(class='event' md="12" lg="4" v-for='event in scope.items' :key='event.id')
                         Event(:eventId='event')
         v-overlay(:value='true' v-else)
             v-progress-circular(indeterminate size='64')
