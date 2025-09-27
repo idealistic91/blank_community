@@ -44,3 +44,5 @@ entrypoint.sh
 .DS_Store
 *.DS_Store
 **/.DS_Store
+.yarnrc.yml
+mise.toml
