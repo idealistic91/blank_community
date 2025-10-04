@@ -38,6 +38,9 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
   config.hosts << ENV['HOST']
+
+  # So that docker swarm can do a healthcheck
+  config.hosts << "127.0.0.1"
   #config.web_socket_server_url = "wss://#{ENV['HOST']}/cable"
   # Allow all origins for now
   #config.action_cable.allowed_request_origins = ["https://#{ENV['HOST']}", "http://#{ENV['HOST']}", ENV['CLIENT_URL'], /http:\/\/*/]
