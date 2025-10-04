@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  root to: "home#index"
+  
+  get "/up", to: proc { [200, {"Content-Type"=>"text/plain"}, ["OK"]] }
+
   resources :games do
     collection do
       get :search
@@ -37,7 +41,7 @@ Rails.application.routes.draw do
   }
 
   # mount ActionCable.server => '/cable'
-  root to: "home#index"
+  
   # resources :channels
   # namespace :api, defaults: { format: :json } do
   #   namespace :v1 do
