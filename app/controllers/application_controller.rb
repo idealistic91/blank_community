@@ -15,15 +15,16 @@ class ApplicationController < ActionController::Base
 
     message += "User_id:#{current_user.id}" unless current_user.nil?
     begin
-      bot = Discord::Bot.new(id: ENV['dev_server_id'])
-      bot.send_to_channel(ENV['dev_server_channel'], "#{message}#{backtrace}")
+      Thread.new do
+        bot = Discord::Bot.new(id: ENV['dev_server_id'])
+        bot.send_to_channel(ENV['dev_server_channel'], "#{message}#{backtrace}")
+      end
     rescue
-      flash[:alert] = message
+      
     end
     flash[:alert] = "Es gab einen Fehler bei deiner Anfrage. Das Dev-team is informiert!"
     
-
-    redirect_to :root_path and return
+    Honeybadger.notify(e)
     #redirect_back(fallback_location: root_path) and return
   end
 
