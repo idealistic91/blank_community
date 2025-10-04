@@ -46,3 +46,5 @@ entrypoint.sh
 **/.DS_Store
 .yarnrc.yml
 mise.toml
+
+/config/credentials/production.key

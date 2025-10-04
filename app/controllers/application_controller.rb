@@ -10,7 +10,9 @@ class ApplicationController < ActionController::Base
 
   def notifiy_dev_team(e)
     backtrace = e.backtrace.select{|line| line =~ /blank_app/i }.map{|b| "**#{b}**" }.join("\n")
-    message = "Exception raised in **#{controller_name}##{action_name}**\nException: **#{e.message}**\nParams: **#{params}**\nUser_id:#{current_user.id}\nBacktrace:\n"
+    message = "Exception raised in **#{controller_name}##{action_name}**\nException: **#{e.message}**\nParams: **#{params}**\nBacktrace:\n"
+
+    message += "User_id:#{current_user.id}" unless current_user.nil?
     begin
       bot = Discord::Bot.new(id: ENV['dev_server_id'])
       bot.send_to_channel(ENV['dev_server_channel'], "#{message}#{backtrace}")

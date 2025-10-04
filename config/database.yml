@@ -16,4 +16,7 @@ test:
   database: blank_test
 
 production:
-  url: <%= ENV['DATABASE_URL'] %>
+  <<: *default
+  username: <%= ENV['DB_USER'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
+  database: blank_production

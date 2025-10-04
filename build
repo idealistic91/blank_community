@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker build \
+  -t "registry.codestudio.tech/blank_community:latest" . --push
