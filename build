@@ -1,4 +1,7 @@
 #!/bin/sh
 
+KEY=$(grep -m1 -E '^SECRET_KEY_BASE=' .env | cut -d= -f2-)
+
+
 docker build \
-  -t "registry.codestudio.tech/blank_community:latest" . --push
+  -t "registry.codestudio.tech/blank_community:latest" --build-arg KEY_BASE=${KEY} . --push

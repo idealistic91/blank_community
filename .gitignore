@@ -38,8 +38,6 @@ yarn-debug.log*
 .idea/*
 dev_log/*
 heroku/*
-Dockerfile
-docker-compose.yml
 entrypoint.sh
 .DS_Store
 *.DS_Store
